@@ -40,6 +40,7 @@ run "V0.7.0: ciclo de desarrollo autónomo (3 intentos, bloqueo, dependencias)" 
 run "V1.0: relevo (bloqueo de concurrencia, recuperación, commit controlado)" python3 tests/relevo_test.py
 run "V1.0: matriz de aceptación (4 categorías)" python3 tests/v100_matriz_test.py
 run "V1.0: PREPARAR Y LANZAR extremo a extremo con persistencia" python3 tests/v100_lanzar_test.py
+run "V1.0: VENDER Y OPTIMIZAR con CSV importados (simulados, etiquetados)" python3 tests/v100_vender_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }
