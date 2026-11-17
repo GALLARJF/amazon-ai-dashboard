@@ -22,7 +22,7 @@ No se pide ningún secreto por chat: las credenciales se guardan en ficheros loc
 
 ## Amazon SP-API (pedidos, inventario, catálogo)
 
-- **Estado hoy:** SIN ADAPTADOR TODAVÍA (objetivo V1-13) · NO CONECTADO
+- **Estado hoy:** ADAPTADOR SOLO LECTURA IMPLEMENTADO (probado solo con simulación local) · NO CONECTADO
 - **Credencial (dónde, sin valor):** sp_api.env local: client id, client secret, refresh token (no se piden por chat)
 - **Permiso mínimo:** Solo lectura (pedidos, inventario, informes)
 - **Acción que debes autorizar:** Registrar la app en Seller Central y autorizarla en solo lectura
@@ -31,7 +31,7 @@ No se pide ningún secreto por chat: las credenciales se guardan en ficheros loc
 
 ## Amazon Ads API
 
-- **Estado hoy:** SIN ADAPTADOR TODAVÍA (objetivo V1-13) · NO CONECTADO
+- **Estado hoy:** ADAPTADOR SOLO LECTURA IMPLEMENTADO (probado solo con simulación local) · NO CONECTADO
 - **Credencial (dónde, sin valor):** ads.env local: client id, client secret, refresh token
 - **Permiso mínimo:** Solo lectura de informes; sin crear ni modificar campañas
 - **Acción que debes autorizar:** Solicitar acceso a la Ads API y autorizar el perfil
