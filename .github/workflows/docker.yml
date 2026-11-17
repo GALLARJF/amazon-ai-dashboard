@@ -16,7 +16,7 @@ jobs:
         run: docker build -t amazon-pro:ci amazon-pro-intelligence-v0.6.0-validacion-keepa
       - name: Arrancar contenedor y comprobar /healthz
         run: |
-          docker run -d --name app -p 10000:10000 -e AMAZON_PRO_PUBLIC_HOST=demo.example.com -e AMAZON_PRO_ADMIN_PASSWORD=ci-clave-de-prueba-123 -e AMAZON_PRO_DB=/tmp/ci.db -e AMAZON_PRO_KEEPA_ENABLE=0 amazon-pro:ci
+          docker run -d --name app -p 10000:10000 -e PORT=10000 -e AMAZON_PRO_PUBLIC_HOST=demo.example.com -e AMAZON_PRO_ADMIN_PASSWORD=ci-clave-de-prueba-123 -e AMAZON_PRO_DB=/tmp/ci.db -e AMAZON_PRO_KEEPA_ENABLE=0 amazon-pro:ci
           for i in $(seq 1 30); do curl -fsS -H "Host: demo.example.com" http://127.0.0.1:10000/healthz && ok=1 && break; sleep 1; done
           docker logs app; test "$ok" = 1
           test "$(docker exec app id -u)" = 10001
