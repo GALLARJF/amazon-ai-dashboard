@@ -1,5 +1,5 @@
 """V0.7 — rutas /api/v07/*. El servidor aplica sesión y CSRF antes de llamar; aquí: acceso al catálogo y rol. Solo lectura de datos ya obtenidos (sin red, sin gasto)."""
-from . import keepa_real as KR, expediente7 as EX
+from . import keepa_real as KR, expediente7 as EX, director7 as D7
 from .catalog import ACCOUNT_ID
 
 
@@ -12,6 +12,7 @@ def handle(APP, s, method, path, q, b):
             pid = g("product")
             if not APP["catalog"].get(pid or ""): raise LookupError("producto inexistente")
             return KR.load(pid)
+        if p == "briefing": return D7.briefing(APP, g("product"))
         if p == "expediente":
             fmt = g("fmt") or "json"
             if fmt not in ("json", "md"): raise ValueError("fmt debe ser json o md")
