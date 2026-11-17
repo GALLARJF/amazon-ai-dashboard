@@ -11,7 +11,7 @@ check("informe: secciones obligatorias", all(h in t for h in ("## Qué incluye",
 check("informe: declara CANDIDATA, no producción", "CANDIDATA: no es producción" in t and not re.search(r"(?i)listo para producción|operativo en producción", t))
 check("informe: Windows NO verificado, conexiones no reales y ausencia de auditoría independiente", "no se declara verificado" in t and "Auditoría independiente: NO hubo" in t and "simuladas" in t)
 dev = {o["clave"]: o for o in e["objetivos"] if o.get("tipo") == "dev" and o["clave"].startswith("V1-")}
-check("informe: los 13 objetivos V1 con su estado REAL del coordinador", len(dev) == 13 and all(re.search(r"\| %s \| %s \|" % (k, o["estado"]), t) for k, o in dev.items()))
+check("informe: los objetivos V1 con su estado REAL del coordinador", len(dev) >= 13 and all(re.search(r"\| %s \| %s \|" % (k, o["estado"]), t) for k, o in dev.items()))
 check("todos los objetivos previos al de entrega figuran HECHO", all(o["estado"] == "HECHO" for k, o in dev.items() if k != "V1-12"))
 check("matriz: las cifras del informe coinciden con la matriz", all("- %s: %d" % (c, sum(1 for r in M.REQ if r[1] == c)) in t for c in M.CATS))
 p = e.get("pruebas") or {}

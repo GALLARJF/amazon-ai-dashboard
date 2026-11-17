@@ -2,7 +2,7 @@
 
 Generada por tools/matriz_v100.py. Sin datos inventados; simulado ≠ real.
 
-## VERIFICADO REAL (11)
+## VERIFICADO REAL (13)
 
 | Requisito | Evidencia / causa | Propietario |
 |---|---|---|
@@ -16,6 +16,8 @@ Generada por tools/matriz_v100.py. Sin datos inventados; simulado ≠ real.
 | Exportaciones CSV/HTML/MD con trazabilidad y escapado | v100_export_test 14/14 con los 20 competidores reales de Keepa guardados | — |
 | Copia de seguridad, restauración y arranque ante BD corrupta | v100_persistencia_test 16/16 sobre SQLite real en Linux | — |
 | Interfaz sin desbordes a 390/820/1600 px y producto por defecto ACTIVCORE | ui_v100_test 44/44 en Chromium real (Linux); desborde a 820 px corregido | — |
+| Modo cloud: solo HTTPS y nombre público, cookie Secure, HSTS, usuarios por variables secretas, respaldo automático, logs sin secretos | v100_cloud_test 28/28 con proceso real del servidor; el proxy HTTPS es local, no un proveedor | — |
+| Navegador contra el modo cloud detrás de proxy HTTPS (390/820/1600 px, login, persistencia tras reinicio) | ui_v100_cloud_test 37/37 en Chromium real (Linux) | — |
 | Documentación (manual, instalación) coherente con el producto | v100_docs_test 10/10 | — |
 
 ## VERIFICADO SIMULADO (7)
@@ -35,10 +37,11 @@ Generada por tools/matriz_v100.py. Sin datos inventados; simulado ≠ real.
 | Requisito | Evidencia / causa | Propietario |
 |---|---|---|
 
-## BLOQUEADO (6)
+## BLOQUEADO (7)
 
 | Requisito | Evidencia / causa | Propietario |
 |---|---|---|
+| Imagen Docker construida y servicio desplegado en un proveedor (URL estable) | no hay alojamiento persistente gratuito; no hay demonio Docker en la sesión; Render Starter + disco = 7,25 USD/mes sin contratar | José: autorizar el coste y conectar el repositorio en Render |
 | Keepa /product y dominios DE/FR/IT/UK | sin clave Keepa disponible y sin gasto autorizado | José: nueva clave en keepa.env local + autorizar tokens |
 | OpenAI (IA generativa) | API de pago no autorizada | José: autorizar gasto y clave en ai.env local |
 | Amazon SP-API y Ads API | sin credenciales ni permisos de vendedor | José/Sergio: autorizar app y permisos de solo lectura |

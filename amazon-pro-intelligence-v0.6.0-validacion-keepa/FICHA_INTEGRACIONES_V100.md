@@ -65,6 +65,15 @@ No se pide ningún secreto por chat: las credenciales se guardan en ficheros loc
 - **Coste:** según proveedor
 - **Cómo se verificará:** Registro de claims pasa de PENDIENTE_EVIDENCIA
 
+## Imagen Docker construida y despliegue cloud persistente (Render Starter + disco 1 GB)
+
+- **Estado hoy:** PREPARADO, NO DESPLEGADO (7,25 USD/mes; no existe opción gratuita con disco persistente)
+- **Credencial (dónde, sin valor):** Secretos en el panel de Render: AMAZON_PRO_ADMIN_PASSWORD y AMAZON_PRO_PASSWORD_SERGIO (los escribes tú, no por chat)
+- **Permiso mínimo:** Conectar GitHub (solo lectura del repositorio) y crear el servicio con el Blueprint
+- **Acción que debes autorizar:** Autorizar el gasto de 7,25 USD/mes, crear la cuenta de Render con tarjeta y aplicar el Blueprint
+- **Coste:** 7 USD/mes + 0,25 USD/mes de disco
+- **Cómo se verificará:** Abrir la URL HTTPS, entrar con tu usuario y pasar las pruebas funcionales contra el despliegue
+
 ## Protección de la rama en GitHub
 
 - **Estado hoy:** NO PUDE CONFIGURARLA (el proxy no permite escribir en esa API)

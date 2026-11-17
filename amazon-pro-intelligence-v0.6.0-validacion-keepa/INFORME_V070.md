@@ -52,11 +52,13 @@ Generado desde el estado del coordinador (AUTONOMIA/estado.json). Candidata: NO 
 | v1.0-plan | MOCK | PASA | 14/14 OK |
 | v1.0-conectores | MOCK | PASA | 16/16 OK |
 | v1.0-docs | MOCK | PASA | 10/10 OK |
-| v1.0-entrega | LOCAL | PASA | 16/16 OK |
-| v0.7-registro | LOCAL | PASA | 75/75 OK |
+| v1.0-entrega | LOCAL | FALLA | 15/16 OK |
+| v1.0-cloud | MOCK | PASA | 29/29 OK |
+| v1.0-ui-cloud | MOCK+NAVEGADOR | PASA | 37/37 OK |
+| v0.7-registro | LOCAL | PASA | 79/79 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 30 pasan · 0 intermitentes · 0 fallan · 30 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 31 pasan · 0 intermitentes · 1 fallan · 32 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 

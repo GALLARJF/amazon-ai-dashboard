@@ -20,7 +20,9 @@ from backend.director import Director
 from backend.store import Store, Forbidden
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-HOST = "127.0.0.1"
+HOST = os.environ.get("AMAZON_PRO_BIND", "127.0.0.1")   # V1.0 cloud: 0.0.0.0 detrás del proxy HTTPS del proveedor
+PUBLIC_HOST = (os.environ.get("AMAZON_PRO_PUBLIC_HOST") or os.environ.get("RENDER_EXTERNAL_HOSTNAME") or "").strip().lower()   # p. ej. mi-app.onrender.com (sin esquema)
+CLOUD = bool(PUBLIC_HOST)
 
 CONNECTORS = {
     "sp-api": {"label": "Amazon SP-API", "env": ["SPAPI_CLIENT_ID", "SPAPI_CLIENT_SECRET", "SPAPI_REFRESH_TOKEN"],
@@ -162,6 +164,7 @@ CSP = ("default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline';
        "base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
 SEC = {"Content-Security-Policy": CSP, "X-Content-Type-Options": "nosniff", "X-Frame-Options": "DENY", "Referrer-Policy": "no-referrer",
        "Cross-Origin-Resource-Policy": "same-origin", "Cache-Control": "no-store"}
+if CLOUD: SEC["Strict-Transport-Security"] = "max-age=31536000"
 COOKIE = "apisid"
 
 
@@ -184,6 +187,11 @@ class H(BaseHTTPRequestHandler):
     def _local_origin_ok(self):
         port = self.server.server_address[1]
         allowed_hosts = {f"localhost:{port}", f"127.0.0.1:{port}"}
+        if CLOUD:   # solo el nombre público configurado, por HTTPS (el proxy del proveedor termina TLS)
+            if (self.headers.get("Host") or "").lower() != PUBLIC_HOST or self.headers.get("X-Forwarded-Proto", "https") != "https":
+                return False
+            o = self.headers.get("Origin")
+            return o is None or o == "https://" + PUBLIC_HOST
         if (self.headers.get("Host") or "") not in allowed_hosts:   # protege contra DNS rebinding
             return False
         o = self.headers.get("Origin")
@@ -226,6 +234,8 @@ class H(BaseHTTPRequestHandler):
     # -------- GET --------
     def do_GET(self):
         u = urllib.parse.urlparse(self.path); path = u.path; q = urllib.parse.parse_qs(u.query)
+        if path == "/healthz":   # sin datos: solo para la comprobación de salud del proveedor
+            return self._json({"ok": True})
         if not self._local_origin_ok():
             return self._json({"error": "origen no permitido"}, 403)
         if path == "/api/status":
@@ -489,7 +499,7 @@ class H(BaseHTTPRequestHandler):
                 APP["login_fail"][k] = fails + [now_]
                 return self._json({"error": "credenciales inválidas"}, 401)
             s = APP["store"].session(r["token"])
-            return self._json({"user": s["username"], "role": s["role"], "csrf": r["csrf"]}, extra={"Set-Cookie": f"{COOKIE}={r['token']}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800"})
+            return self._json({"user": s["username"], "role": s["role"], "csrf": r["csrf"]}, extra={"Set-Cookie": f"{COOKIE}={r['token']}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800" + ("; Secure" if CLOUD else "")})
         if not path.startswith("/api/"):
             return self._json({"error": "no encontrado"}, 404)
         s = self._sess(write=True)
@@ -497,7 +507,7 @@ class H(BaseHTTPRequestHandler):
             return
         if path == "/api/logout":
             APP["store"].logout(self._token())
-            return self._json({"ok": True}, extra={"Set-Cookie": f"{COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0"})
+            return self._json({"ok": True}, extra={"Set-Cookie": f"{COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0" + ("; Secure" if CLOUD else "")})
         b = self._body()
         if b is None:
             return
@@ -661,8 +671,10 @@ class H(BaseHTTPRequestHandler):
     def do_PUT(self): self._json({"error": "método no permitido"}, 405)
     do_DELETE = do_PATCH = do_PUT
 
-    def log_message(self, *a):
-        pass
+    def log_message(self, fmt, *a):
+        if CLOUD:   # registro de acceso sin cookies, cabeceras ni cuerpos (el proveedor lo conserva en sus logs)
+            try: print("%s %s" % (time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), (fmt % a)[:200]), flush=True)
+            except Exception: pass
 
 
 def bootstrap(store, admin_password=None):
@@ -674,6 +686,37 @@ def bootstrap(store, admin_password=None):
         store.create_user("admin", created, "admin", [])
         store.create_account("phivital-pendiente", "PhiVital · Amazon.es", "POR CONFIRMAR (titular legal del Seller Central)", None, ["amazon.es"], actor="system")
     return created
+
+
+def seed_users(store):
+    """V1.0 cloud: crea usuarios adicionales SIN contraseñas en el chat. AMAZON_PRO_SEED_USERS="sergio:approver,ana:analyst"; la contraseña de cada uno va en la variable
+    secreta AMAZON_PRO_PASSWORD_<NOMBRE> del panel del proveedor. Idempotente: nunca sobrescribe un usuario existente. Devuelve los nombres creados (sin contraseñas)."""
+    from backend.catalog import ACCOUNT_ID as _AID
+    out = []
+    for item in (os.environ.get("AMAZON_PRO_SEED_USERS") or "").split(","):
+        name, _, role = item.strip().partition(":")
+        if not name or not name.isidentifier() or role not in ("analyst", "approver"): continue   # nunca se crean administradores por esta vía
+        if store.db.execute("SELECT 1 FROM users WHERE username=?", (name,)).fetchone(): continue
+        pw = os.environ.get("AMAZON_PRO_PASSWORD_" + name.upper()) or ""
+        if len(pw) < 12: continue   # sin contraseña segura no se crea
+        store.create_user(name, pw, role, [_AID]); out.append(name)
+    return out
+
+
+def backup_loop(db_path, every_h=24, keep=7):
+    from backend import respaldo100 as RB
+    d = os.environ.get("AMAZON_PRO_BACKUP_DIR") or os.path.join(os.path.dirname(db_path), "backups")
+    while True:
+        try:
+            r = RB.respaldar(db_path, d); print("respaldo creado:", os.path.basename(r["fichero"]), r["sha256"][:12], flush=True)
+            olds = sorted(f for f in os.listdir(d) if f.endswith(".db"))
+            for f in olds[:-keep]:
+                for x in (f, f + ".sha256"):
+                    try: os.remove(os.path.join(d, x))
+                    except OSError: pass
+        except Exception as e:  # noqa: BLE001
+            print("respaldo FALLÓ:", type(e).__name__, flush=True)
+        time.sleep(every_h * 3600)
 
 
 def svc_for(pid):
@@ -705,23 +748,30 @@ def make_server(port=8765, admin_token=None, db_path=None, cfg_fn=None, admin_pa
     APP["login_fail"] = {}
     srv = ThreadingHTTPServer((HOST, port), H)
     srv.initial_admin_password = bootstrap(APP["store"], admin_password)
+    srv.seeded_users = seed_users(APP["store"])
     return srv
 
 
 if __name__ == "__main__":
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else int(os.environ.get("PORT") or 8765)
     os.makedirs(os.path.join(ROOT, "data"), exist_ok=True)
+    if CLOUD and len(os.environ.get("AMAZON_PRO_ADMIN_PASSWORD") or "") < 12:
+        sys.exit("MODO CLOUD: define el secreto AMAZON_PRO_ADMIN_PASSWORD (mínimo 12 caracteres) en el panel del proveedor. No se arranca sin él (no se imprimen contraseñas en los logs).")
     _ef = ENVF.load()  # configuración de IA desde el archivo local seguro (fuera del proyecto)
     _kf = ENVF.load(ENVF.keepa_path())  # configuración de Keepa (fuera del proyecto)
     srv = make_server(port)
     print(f"Archivo de configuración de IA: {_ef['path']} → " + ("ENCONTRADO" if _ef["found"] else "NO existe todavía (la IA seguirá desactivada)") + (f" · ajustes cargados: {', '.join(_ef['names_loaded'])}" if _ef["names_loaded"] else ""))
     print("Archivo de configuración de Keepa: " + _kf["path"] + " → " + ("ENCONTRADO" if _kf["found"] else "NO existe todavía (Keepa desactivado)"))
-    print(f"Amazon Pro Intelligence V1.0.0-candidata → http://localhost:{port}  (solo 127.0.0.1)")
+    print(f"Amazon Pro Intelligence V1.0.0-candidata → " + (f"https://{PUBLIC_HOST} (modo cloud, solo HTTPS, con inicio de sesión)" if CLOUD else f"http://localhost:{port}  (solo 127.0.0.1)"))
     print("Conectores habilitados:", ", ".join(sorted(enabled_connectors())) or "NINGUNO (por defecto)")
     print("IA:", AI.public_status(AI.config())["status"])
-    if srv.initial_admin_password:
+    if srv.initial_admin_password and not CLOUD:
         print("PRIMER ARRANQUE · usuario: admin · contraseña (solo se muestra ahora):", srv.initial_admin_password)
-    if not os.environ.get("AMAZON_PRO_ADMIN_TOKEN"):
+    if CLOUD:
+        print("usuarios creados desde variables secretas:", ", ".join(srv.seeded_users) or "ninguno nuevo", flush=True)
+        _dbp_ = os.environ.get("AMAZON_PRO_DB") or os.path.join(ROOT, "data", "amazon_pro.db")
+        threading.Thread(target=backup_loop, args=(_dbp_, float(os.environ.get("AMAZON_PRO_BACKUP_HOURS") or 24)), daemon=True).start()
+    if not os.environ.get("AMAZON_PRO_ADMIN_TOKEN") and not CLOUD:
         print("Token de administrador de conectores (solo esta sesión):", STATE["admin_token"])
     if not os.environ.get("AMAZON_PRO_NO_WORKER"):  # trabajador en segundo plano: ejecuta SOLO tareas permitidas (N1/N2); lo demás espera aprobación
         def _worker():

@@ -1,0 +1,30 @@
+# Blueprint de Render — NO se ha contratado nada. Coste verificado: web service Starter 7 USD/mes + disco 1 GB 0,25 USD/mes.
+services:
+  - type: web
+    name: amazon-pro-intelligence
+    runtime: docker
+    rootDir: amazon-pro-intelligence-v0.6.0-validacion-keepa   # la app vive en este subdirectorio del repositorio
+    plan: starter            # el plan gratuito NO admite disco persistente y se duerme a los 15 min
+    branch: aht-v100-desarrollo
+    healthCheckPath: /healthz
+    disk:
+      name: datos
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: AMAZON_PRO_BIND
+        value: 0.0.0.0
+      - key: AMAZON_PRO_DB
+        value: /data/amazon_pro.db
+      - key: AMAZON_PRO_BACKUP_DIR
+        value: /data/backups
+      - key: AMAZON_PRO_KEEPA_ENABLE
+        value: "0"
+      - key: AMAZON_PRO_AI_ENABLE
+        value: "0"
+      - key: AMAZON_PRO_SEED_USERS
+        value: "sergio:approver"
+      - key: AMAZON_PRO_ADMIN_PASSWORD     # la escribe el propietario en el panel; nunca en chat ni en GitHub
+        sync: false
+      - key: AMAZON_PRO_PASSWORD_SERGIO    # la escribe el propietario (o Sergio) en el panel
+        sync: false

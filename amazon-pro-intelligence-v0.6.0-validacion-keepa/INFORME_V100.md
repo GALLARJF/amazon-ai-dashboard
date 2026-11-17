@@ -31,13 +31,14 @@ Generado desde el estado del coordinador. **CANDIDATA: no es producción.** Hay 
 | V1-11 | HECHO | 1 | aceptación OK: 10/10 OK |
 | V1-12 | HECHO | 1 | aceptación OK: 16/16 OK |
 | V1-13 | HECHO | 1 | aceptación OK: 16/16 OK |
+| V1-14 | HECHO | 1 | aceptación OK: 37/37 OK |
 
 ## Matriz de aceptación (resumen)
 
-- VERIFICADO REAL: 11
+- VERIFICADO REAL: 13
 - VERIFICADO SIMULADO: 7
 - IMPLEMENTADO NO VERIFICADO: 0
-- BLOQUEADO: 6
+- BLOQUEADO: 7
 
 Detalle en `MATRIZ_ACEPTACION_V100.md`.
 
@@ -73,14 +74,16 @@ Detalle en `MATRIZ_ACEPTACION_V100.md`.
 | v1.0-conectores | MOCK | PASA | 16/16 OK |
 | v1.0-docs | MOCK | PASA | 10/10 OK |
 | v1.0-entrega | LOCAL | PASA | 16/16 OK |
-| v0.7-registro | LOCAL | PASA | 75/75 OK |
+| v1.0-cloud | MOCK | PASA | 29/29 OK |
+| v1.0-ui-cloud | MOCK+NAVEGADOR | PASA | 37/37 OK |
+| v0.7-registro | LOCAL | PASA | 79/79 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 30 pasan · 0 intermitentes · 0 fallan · 30 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 32 pasan · 0 intermitentes · 0 fallan · 32 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 
-- Fecha: 2026-11-17T16:01:41Z · Resultado: **OK**
+- Fecha: 2026-11-17T16:21:53Z · Resultado: **OK**
 - **Auditoría independiente: NO hubo.** No se dispuso de un segundo modelo autorizado y sin coste; la revisión fue determinista (regresión, escaneo de secretos, integridad del registro, pruebas negativas).
 
 ## Qué NO está verificado
@@ -99,6 +102,7 @@ Resumen: 30 pasan · 0 intermitentes · 0 fallan · 30 total. **MOCK = proveedor
 - **Windows (ejecución del servidor y la UI)** — NO VERIFICADO (la sesión es Linux) → Ejecutar python server.py en tu PC y lanzar tests/run_all.sh equivalente; enviar el resultado
 - **Costes, precio objetivo y ventas reales** — SIN DATOS → Sergio/José: aportar costes y precio objetivo por producto (ficha del producto)
 - **Evidencia regulatoria cosmética ACTIVCORE** — SIN EVIDENCIA → Laboratorios Klein / responsable: informe de seguridad, PIF, notificación CPNP
+- **Imagen Docker construida y despliegue cloud persistente (Render Starter + disco 1 GB)** — PREPARADO, NO DESPLEGADO (7,25 USD/mes; no existe opción gratuita con disco persistente) → Autorizar el gasto de 7,25 USD/mes, crear la cuenta de Render con tarjeta y aplicar el Blueprint
 - **Protección de la rama en GitHub** — NO PUDE CONFIGURARLA (el proxy no permite escribir en esa API) → Activar protección para aht-v100-desarrollo: sin force-push ni borrado
 
 ## Límites respetados
