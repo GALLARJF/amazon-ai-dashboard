@@ -1,5 +1,5 @@
 """V0.7 — rutas /api/v07/*. El servidor aplica sesión y CSRF antes de llamar; aquí: acceso al catálogo y rol. Solo lectura de datos ya obtenidos (sin red, sin gasto)."""
-from . import keepa_real as KR
+from . import keepa_real as KR, expediente7 as EX
 from .catalog import ACCOUNT_ID
 
 
@@ -12,4 +12,10 @@ def handle(APP, s, method, path, q, b):
             pid = g("product")
             if not APP["catalog"].get(pid or ""): raise LookupError("producto inexistente")
             return KR.load(pid)
+        if p == "expediente":
+            fmt = g("fmt") or "json"
+            if fmt not in ("json", "md"): raise ValueError("fmt debe ser json o md")
+            d = EX.build(APP, g("product"))
+            if fmt == "md": return ("raw", EX.to_markdown(d).encode("utf-8"), "text/markdown; charset=utf-8", {})
+            return d
     raise LookupError(p)
