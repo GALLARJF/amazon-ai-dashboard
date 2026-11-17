@@ -354,7 +354,7 @@
    "clave": "V1-03",
    "tipo": "dev",
    "titulo": "V1.0 · PREPARAR Y LANZAR: flujo completo ACTIVCORE con persistencia",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 20,
    "handler": null,
    "spec": "Flujo de extremo a extremo en la UI y API: producto → hipótesis → expediente → decisión registrada → persistencia tras reinicio del servidor. Sin datos inventados; huecos explícitos.",
@@ -362,18 +362,27 @@
    "depende": [
     "V1-02"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:46:29Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "12/12 OK",
+     "cola": "con nota)\nOK   la decisión resuelta sale de pendientes\nOK   tras reiniciar: las tareas siguen ahí\nOK   tras reiniciar: expediente igual (determinista)\nOK   tras reiniciar: la decisión resuelta sigue resuelta\nOK   expediente V0.7 sigue NO DECIDIBLE con huecos explícitos\nOK   sin sesión: 401\n12/12 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 12/12 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:46:29Z"
   },
   {
    "id": "OBJ-021",
    "clave": "V1-04",
    "tipo": "dev",
    "titulo": "V1.0 · VENDER Y OPTIMIZAR con informes CSV importados (datos simulados etiquetados)",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 30,
    "handler": null,
    "spec": "Importar CSV de ventas/anuncios, validar columnas, calcular métricas deterministas (ACOS, margen, conversión), etiqueta SIMULADO cuando el dato no sea real; rechazo de CSV malformado.",
@@ -381,18 +390,27 @@
    "depende": [
     "V1-02"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:47:02Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "16/16 OK",
+     "cola": "uplicado rechazado (mismo contenido)\nOK   CSV no reconocido rechazado con columnas halladas\nOK   CSV vacío rechazado\nOK   producto inexistente rechazado\nOK   archivo >5 MB rechazado\nOK   fórmula hostil: no se ejecuta ni rompe (aceptada como dato o rechazada, nunca 500)\nOK   sin sesión: 401\n16/16 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 16/16 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:47:02Z"
   },
   {
    "id": "OBJ-022",
    "clave": "V1-05",
    "tipo": "dev",
    "titulo": "V1.0 · Motor financiero determinista: escenarios, sensibilidad, punto de equilibrio",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 40,
    "handler": null,
    "spec": "Hipótesis etiquetadas como tales, resultados reproducibles, sin costes inventados: NO CALCULABLE si falta un dato.",
@@ -400,18 +418,27 @@
    "depende": [
     "V1-02"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:47:46Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "20/20 OK",
+     "cola": "hazada: [[True], [0.1]]\nOK   entrada inválida rechazada: [[24.2], [1.5]]\nOK   entrada inválida rechazada: [[-5], [0.1]]\nOK   entrada inválida rechazada: [[24.2, 24.2, 24.2, 24.2, 24.2\nOK   coste fijo negativo rechazado\nOK   moneda local (SE/otros) → NO EVALUABLE sin inventar tipo de cambio\n20/20 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 20/20 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:47:46Z"
   },
   {
    "id": "OBJ-023",
    "clave": "V1-06",
    "tipo": "dev",
    "titulo": "V1.0 · Exportaciones CSV/HTML/Markdown con trazabilidad",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 50,
    "handler": null,
    "spec": "Exportar expediente y resultados con fuente, fecha y procedencia; escapado seguro; nombre de fichero saneado.",
@@ -421,11 +448,20 @@
     "V1-04",
     "V1-05"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:48:23Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "14/14 OK",
+     "cola": "procedencia REAL · NO CONFIRMADO\nOK   CSV: metadatos de procedencia al inicio\nOK   endpoint HTML: tabla con caption y 20 filas\nOK   endpoint MD: tabla markdown\nOK   formato inválido → 400\nOK   producto inexistente → 404\nOK   sin sesión → 401\nOK   sin trazas ni rutas del servidor en errores\n14/14 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 14/14 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:48:23Z"
   },
   {
    "id": "OBJ-024",
@@ -451,17 +487,26 @@
    "clave": "V1-08",
    "tipo": "dev",
    "titulo": "V1.0 · Persistencia y recuperación: copia de seguridad, restauración y BD corrupta",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 70,
    "handler": null,
    "spec": "Backup/restore de SQLite verificado con hash; arranque con BD corrupta falla de forma controlada sin pérdida; persistencia entre sesiones.",
    "aceptacion": "python3 tests/v100_persistencia_test.py",
    "depende": [],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:49:19Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "16/16 OK",
+     "cola": "orrupta: el fichero no se borra ni se modifica\nOK   BD inexistente: apertura permitida (se creará nueva)\nOK   una BD corrupta se recupera desde respaldo (queda copia de la corrupta)\nOK   el servidor NO arranca con una BD corrupta (y no la toca)\nOK   el servidor arranca con la BD restaurada\n16/16 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 16/16 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:49:19Z"
   },
   {
    "id": "OBJ-026",
@@ -488,7 +533,7 @@
    "clave": "V1-10",
    "tipo": "dev",
    "titulo": "V1.0 · Ficha única de integraciones bloqueadas",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 90,
    "handler": null,
    "spec": "FICHA_INTEGRACIONES_V100.md: credencial, permiso y acción del propietario por integración (Keepa, OpenAI, SP-API, Ads API, DE/FR/IT/UK, Windows), sin pedir secretos.",
@@ -496,11 +541,20 @@
    "depende": [
     "V1-02"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:49:52Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "6/6 OK",
+     "cola": " integración tiene los 6 campos\nOK   no contiene secretos (ni cadenas largas alfanuméricas ni asignaciones de claves)\nOK   no pide secretos por chat y los ubica en ficheros locales\nOK   coherente con la matriz: todo BLOQUEADO de la matriz aparece en la ficha\nOK   Windows figura NO VERIFICADO\n6/6 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 6/6 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:49:52Z"
   },
   {
    "id": "OBJ-028",
@@ -543,6 +597,25 @@
    "intentos": 0,
    "historial": [],
    "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-030",
+   "clave": "V1-13",
+   "tipo": "dev",
+   "titulo": "V1.0 · Adaptadores OpenAI, SP-API y Ads API (solo lectura) con pruebas simuladas identificadas",
+   "estado": "PENDIENTE",
+   "prioridad": 105,
+   "handler": null,
+   "spec": "backend/conectores100.py: un adaptador por servicio con credenciales leídas solo de ficheros .env locales, solo lectura, tope de gasto 0, modo SIMULADO explícito en cada respuesta (campo origen='SIMULADO'), estado NO CONECTADO sin credenciales, nunca declarar operativo sin prueba real; prueba con servidor HTTP local simulado y guardia de red.",
+   "aceptacion": "python3 tests/v100_conectores_test.py",
+   "depende": [
+    "V1-10"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:49:52Z",
    "nota": null,
    "cada_horas": null
   }
@@ -673,15 +746,10 @@
   "OBJ-010 [2] Mantenimiento: informe de entrega actualizado",
   "OBJ-006 [4] Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector (requiere a Claude/persona)",
   "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)",
-  "OBJ-020 [20] V1.0 · PREPARAR Y LANZAR: flujo completo ACTIVCORE con persistencia (requiere a Claude/persona)",
-  "OBJ-021 [30] V1.0 · VENDER Y OPTIMIZAR con informes CSV importados (datos simulados etiquetados) (requiere a Claude/persona)",
-  "OBJ-022 [40] V1.0 · Motor financiero determinista: escenarios, sensibilidad, punto de equilibrio (requiere a Claude/persona)",
-  "OBJ-023 [50] V1.0 · Exportaciones CSV/HTML/Markdown con trazabilidad (requiere a Claude/persona)",
   "OBJ-024 [60] V1.0 · Director IA: plan de coordinación de especialistas (requiere a Claude/persona)",
-  "OBJ-025 [70] V1.0 · Persistencia y recuperación: copia de seguridad, restauración y BD corrupta (requiere a Claude/persona)",
   "OBJ-026 [80] V1.0 · NEON: cinco secciones en móvil y escritorio (Chromium real) y corrección de desbordes (requiere a Claude/persona)",
-  "OBJ-027 [90] V1.0 · Ficha única de integraciones bloqueadas (requiere a Claude/persona)",
   "OBJ-028 [100] V1.0 · Manual de Sergio v1.0 y documentación de instalación y operación (requiere a Claude/persona)",
+  "OBJ-030 [105] V1.0 · Adaptadores OpenAI, SP-API y Ads API (solo lectura) con pruebas simuladas identificadas (requiere a Claude/persona)",
   "OBJ-029 [110] V1.0 · Entrega candidata V1.0 (ZIP sin claves, copia, evidencias, bloqueos) (requiere a Claude/persona)"
  ],
  "pruebas": {
@@ -867,7 +935,7 @@
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T15:05:04Z",
+ "actualizado": "2026-11-17T15:49:52Z",
  "auditoria": {
   "t": "2026-11-17T14:53:43Z",
   "ok": true,
