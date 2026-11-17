@@ -1,6 +1,6 @@
 # INFORME DE ENTREGA — Amazon Pro Intelligence (coordinador autónomo)
 
-Generado: 2026-11-17T02:31:25Z · Registro íntegro: **SÍ** (35 líneas)
+Generado: 2026-11-17T14:55:22Z · Registro íntegro: **SÍ** (73 líneas)
 
 ## 1. Pruebas
 
@@ -15,8 +15,16 @@ Generado: 2026-11-17T02:31:25Z · Registro íntegro: **SÍ** (35 líneas)
 | API | MOCK | PASA | 1 | 51/51 OK |
 | lanzador | LOCAL | PASA | 1 | 9/9 OK |
 | UI-v0.6 | MOCK+NAVEGADOR | PASA | 1 | 27/27 OK |
+| v0.7-keepa-real | REAL-EVIDENCIA | PASA | 1 | 21/21 OK |
+| v0.7-expediente | MOCK | PASA | 1 | 41/41 OK |
+| v0.7-director | MOCK | PASA | 1 | 29/29 OK |
+| v0.7-seguridad | MOCK | PASA | 1 | 23/23 OK |
+| UI-v0.7 | MOCK+NAVEGADOR | PASA | 1 | 31/31 OK |
+| desarrollo | LOCAL | PASA | 1 | 9/9 OK |
+| v0.7-registro | LOCAL | PASA | 1 | 38/38 OK |
+| v0.7-entrega | LOCAL | PASA | 1 | 15/15 OK |
 
-Resumen: 9 pasan · 0 intermitentes · 0 fallan · 9 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 17 pasan · 0 intermitentes · 0 fallan · 17 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## 2. Conexiones (solo cuenta como verificada la que tiene llamada real y evidencia)
 
@@ -30,7 +38,8 @@ Resumen: 9 pasan · 0 intermitentes · 0 fallan · 9 total. **MOCK = proveedores
 
 ## 3. Incidencias
 
-- ninguna
+- INC-001 · UI-v0.6 · RESUELTA · 6 intentos · tipo PERSISTENTE
+- INC-002 · v0.7-registro · RESUELTA · 3 intentos · tipo PERSISTENTE
 
 ## 4. Objetivos
 
@@ -41,14 +50,19 @@ Resumen: 9 pasan · 0 intermitentes · 0 fallan · 9 total. **MOCK = proveedores
 - [PENDIENTE] OBJ-005 PROPIETARIO: instalar/reconectar la app de GitHub para poder hacer push (hoy 403)
 - [PENDIENTE] OBJ-006 Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector
 - [PENDIENTE] OBJ-007 Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura
-- [PENDIENTE] OBJ-008 Mantenimiento: escaneo de secretos
-- [PENDIENTE] OBJ-009 Mantenimiento: batería de pruebas con reintentos
+- [HECHO] OBJ-008 Mantenimiento: escaneo de secretos
+- [HECHO] OBJ-009 Mantenimiento: batería de pruebas con reintentos
 - [PENDIENTE] OBJ-010 Mantenimiento: informe de entrega actualizado
+- [HECHO] OBJ-011 V0.7.0 · Datos reales de Keepa integrados (sin red ni gasto)
+- [HECHO] OBJ-012 V0.7.0 · Expediente comercial ACTIVCORE v0.7
+- [HECHO] OBJ-013 V0.7.0 · Director IA: briefing determinista con hechos citados
+- [HECHO] OBJ-014 V0.7.0 · Experiencia NEON: Director IA, expediente y procedencia del dato
+- [HECHO] OBJ-015 V0.7.0 · Seguridad de los nuevos endpoints /api/v07/*
+- [HECHO] OBJ-016 V0.7.0 · Registro de suites v0.7 en la batería y el coordinador
+- [HECHO] OBJ-017 V0.7.0 · Entrega candidata V0.7.0 (código, documentación, pruebas, evidencias)
 
 ## 5. Siguientes acciones
 
-- OBJ-008 [0] Mantenimiento: escaneo de secretos
-- OBJ-009 [1] Mantenimiento: batería de pruebas con reintentos
 - OBJ-005 [2] PROPIETARIO: instalar/reconectar la app de GitHub para poder hacer push (hoy 403) (requiere a Claude/persona)
 - OBJ-010 [2] Mantenimiento: informe de entrega actualizado
 - OBJ-006 [4] Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector (requiere a Claude/persona)

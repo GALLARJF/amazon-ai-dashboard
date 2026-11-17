@@ -32,3 +32,10 @@ Ver `INFORME_ENTREGA.md` §2 y el informe ejecutivo. Resumen: el estado vive en 
 
 ## Windows
 El lanzador y su corrección de señales solo se han probado en Linux. **Windows no está verificado.**
+
+## V0.7.0 — Desarrollo autónomo entre sesiones (qué es y qué no es)
+- **Qué es:** una tarea programada diaria (04:17 Madrid) que abre una sesión NUEVA de Claude, clona `aht-v070-desarrollo`, recupera el estado de `aht-autonomia-estado` (`tools/relevo.py --recuperar`), toma el siguiente objetivo (`tools/desarrollo.py siguiente`), escribe la prueba de aceptación, implementa, verifica (máx. 3 intentos; al tercero queda BLOQUEADO y sigue con otro), hace commit/push, audita (`tools/desarrollo.py auditoria`), publica el estado y deja un parte en Drive.
+- **Demostrado:** una sesión programada completó V7-02, V7-03 y V7-04 por su cuenta (commits 90b7b8a, 6502b58, 4ac8caf, 750bf57), con parte honesto en Drive; la auditoría independiente detectó fallos reales (y yo corregí un falso positivo propio).
+- **Qué NO es:** ejecución continua. Es 1 sesión/día, ≈3 objetivos por sesión, sin gasto (0 €, 0 tokens Keepa, 0 IA). Con el backlog vacío, la sesión solo audita (regresión gratuita).
+- **Parada:** crear `AUTONOMIA/PARAR` (o pausar la tarea). Límites en `AUTONOMIA/limites.json`.
+- **Estado:** vive en la rama `aht-autonomia-estado` (no en el código).
