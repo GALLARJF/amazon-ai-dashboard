@@ -15,7 +15,7 @@ Uso: python3 server.py [puerto]
 import csv, hashlib, hmac, io, json, os, re, secrets, sys, threading, time, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from backend import api6 as API6, ai as AI, coworkers as COW, engine as ENG, pilot as PILOT, synthetic as SY, envfile as ENVF, keepa as KP, activcore as AC, eu as EU, eu_director as EUD, catalog as CT, discovery as DSC
+from backend import api6 as API6, api7 as API7, ai as AI, coworkers as COW, engine as ENG, pilot as PILOT, synthetic as SY, envfile as ENVF, keepa as KP, activcore as AC, eu as EU, eu_director as EUD, catalog as CT, discovery as DSC
 from backend.director import Director
 from backend.store import Store, Forbidden
 
@@ -250,7 +250,7 @@ class H(BaseHTTPRequestHandler):
 
     def _v06(self, method, path, q, b, s):
         try:
-            r = API6.handle(APP, s, method, path, q, b)
+            r = (API7 if path.startswith("/api/v07/") else API6).handle(APP, s, method, path, q, b)
         except PermissionError as e:
             return self._json({"error": str(e) or "no permitido"}, 403)
         except LookupError:
@@ -263,7 +263,7 @@ class H(BaseHTTPRequestHandler):
 
     def _api_get(self, path, q):
         st = APP["store"]
-        if path.startswith("/api/v06/"):
+        if path.startswith(("/api/v06/", "/api/v07/")):
             s = self._sess()
             if not s:
                 return
@@ -513,7 +513,7 @@ class H(BaseHTTPRequestHandler):
     def _api_post(self, path, b, s):
         st, dr = APP["store"], APP["director"]
         role = s["role"]
-        if path.startswith("/api/v06/"):
+        if path.startswith(("/api/v06/", "/api/v07/")):
             return self._v06("POST", path, {}, b, s)
         if path.startswith(("/api/eu/", "/api/keepa/", "/api/catalog", "/api/discovery")):
             return self._eu_post(path, b, s)
