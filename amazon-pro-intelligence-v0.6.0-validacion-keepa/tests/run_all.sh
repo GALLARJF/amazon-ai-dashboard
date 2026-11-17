@@ -45,6 +45,7 @@ run "V1.0: motor financiero (escenarios, sensibilidad, equilibrio)" python3 test
 run "V1.0: exportaciones CSV/HTML/MD con trazabilidad" python3 tests/v100_export_test.py
 run "V1.0: persistencia (respaldo, restauración, BD corrupta)" python3 tests/v100_persistencia_test.py
 run "V1.0: ficha única de integraciones bloqueadas" python3 tests/v100_ficha_test.py
+run "V1.0: interfaz NEON móvil/tableta/escritorio (Chromium real)" python3 tests/ui_v100_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }

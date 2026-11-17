@@ -186,3 +186,6 @@ section.v7{margin:14px 0;max-width:100%;min-width:0}.v7-title{font-size:16px;col
 .v7 button:focus-visible,.v7 a:focus-visible{outline:2px solid var(--cy);outline-offset:2px}.v7-kv{display:grid;grid-template-columns:minmax(90px,200px) 1fr;gap:2px 10px;font-size:12px}.v7-kv dt{color:var(--mut)}.v7-kv dd{margin:0}
 .v7-empty{border:1px dashed var(--am);border-radius:10px;padding:8px}.v7-err{color:var(--rd)}
 @media (max-width:600px){.v7-kv{grid-template-columns:1fr}}
+
+/* ===== V1.0: sin desbordes horizontales en tabletas (820 px) ===== */
+@media(max-width:1000px){.top{flex-wrap:wrap;gap:8px}.hr{max-width:100%;align-items:flex-start}.sess{flex-wrap:wrap;max-width:100%}.sess select{max-width:100%}.badge{max-width:100%;white-space:normal}}
