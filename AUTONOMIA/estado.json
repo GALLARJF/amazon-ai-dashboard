@@ -83,12 +83,13 @@
   {
    "id": "OBJ-009",
    "titulo": "Mantenimiento: batería de pruebas con reintentos",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 1,
    "handler": "qa",
    "creado": "2026-11-17T02:22:27Z",
-   "nota": null,
-   "cada_horas": 12.0
+   "nota": "ciclo: {\"ts\": \"2026-11-17T11:56:28Z\", \"resultados\": [{\"suite\": \"keepa-cliente\", \"clase\": \"MOCK\", \"estado\": \"PASA\", \"intentos\": 1, \"resultado\": \"27/27 OK\", \"segundos\": 0.1}, {\"suite\": \"keepa-misión\", \"clase\": \"MOCK\", \"estado\": \"PASA\", \"intentos\": 1, \"resultado\": \"18/18 OK\", \"segundos\": 0.1}, {\"suite\": \"keep",
+   "cada_horas": 12.0,
+   "actualizado": "2026-11-17T11:56:28Z"
   },
   {
    "id": "OBJ-010",
@@ -132,6 +133,11 @@
    "t": "2026-11-17T11:35:57Z",
    "objetivo": "OBJ-008",
    "segundos": 0.2
+  },
+  {
+   "t": "2026-11-17T11:56:28Z",
+   "objetivo": "OBJ-009",
+   "segundos": 26.7
   }
  ],
  "conexiones": [
@@ -180,14 +186,13 @@
   "Las sesiones programadas arrancan AISLADAS: no heredan el sistema de archivos (verificado 2026-11-17 02:28 UTC: proyecto inexistente, rama no encontrada, 0 pruebas). Solo Drive (texto) es canal compartido. Recuperar el proyecto exige publicar el codigo en GitHub (push 403: instalar/reconectar la app de Claude en GALLARJF)."
  ],
  "siguientes_acciones": [
-  "OBJ-009 [1] Mantenimiento: batería de pruebas con reintentos",
   "OBJ-005 [2] PROPIETARIO: instalar/reconectar la app de GitHub para poder hacer push (hoy 403) (requiere a Claude/persona)",
   "OBJ-010 [2] Mantenimiento: informe de entrega actualizado",
   "OBJ-006 [4] Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector (requiere a Claude/persona)",
   "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)"
  ],
  "pruebas": {
-  "ts": "2026-11-17T01:53:35Z",
+  "ts": "2026-11-17T11:56:28Z",
   "resultados": [
    {
     "suite": "keepa-cliente",
@@ -211,7 +216,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "16/16 OK",
-    "segundos": 0.3
+    "segundos": 0.4
    },
    {
     "suite": "keepa-evidencias-reales",
@@ -227,7 +232,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "74/74 OK",
-    "segundos": 0.6
+    "segundos": 0.7
    },
    {
     "suite": "v0.5-catálogo",
@@ -235,7 +240,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "43/43 OK",
-    "segundos": 1.3
+    "segundos": 1.1
    },
    {
     "suite": "API",
@@ -251,7 +256,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "9/9 OK",
-    "segundos": 11.2
+    "segundos": 11.5
    },
    {
     "suite": "UI-v0.6",
@@ -259,7 +264,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "27/27 OK",
-    "segundos": 11.3
+    "segundos": 11.5
    }
   ],
   "pasan": 9,
@@ -297,8 +302,13 @@
    "ts": 1794915357.8095915,
    "t": "2026-11-17T11:35:57Z",
    "objetivo": "OBJ-008"
+  },
+  {
+   "ts": 1794916561.455455,
+   "t": "2026-11-17T11:56:28Z",
+   "objetivo": "OBJ-009"
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T11:35:57Z"
+ "actualizado": "2026-11-17T11:56:28Z"
 }
