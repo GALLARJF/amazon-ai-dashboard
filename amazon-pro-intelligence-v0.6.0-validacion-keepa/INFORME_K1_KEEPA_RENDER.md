@@ -52,7 +52,7 @@ Causa distinguida: **no era un error del filtro ni ausencia real de datos**.
 | `AMAZON_PRO_KEEPA_MISSION_CAP` | `60` (por defecto en la nube) | tope acumulado |
 | `AMAZON_PRO_KEEPA_HARD_CAP` / `_BATCH_BUDGET` | `120` / `30` (por defecto) | no tocar |
 
-**Pasos (sin revelar la clave):** 1) Fusiona el PR de `aht-k1-keepa` en `aht-v100-desarrollo` (provoca un redespliegue: ver §7). 2) Render → servicio `amazon-pro-intelligence` → *Environment* → *Add Environment Variable*: `KEEPA_API_KEY` y pega tú la clave; `AMAZON_PRO_KEEPA_ENABLE=balance`. 3) Guardar (Render reinicia; el disco persiste). 4) En la app: EUROPA · MERCADOS → *Probar conexión*.
+**Pasos (sin revelar la clave):** 1) Revisa y fusiona el PR #1 (https://github.com/GALLARJF/amazon-ai-dashboard/pull/1) de `aht-k1-keepa` en `aht-v100-desarrollo` (provoca un redespliegue: ver §7). 2) Render → servicio `amazon-pro-intelligence` → *Environment* → *Add Environment Variable*: `KEEPA_API_KEY` y pega tú la clave; `AMAZON_PRO_KEEPA_ENABLE=balance`. 3) Guardar (Render reinicia; el disco persiste). 4) En la app: EUROPA · MERCADOS → *Probar conexión*.
 
 ## 7. Efectos sobre Blueprint, disco, secretos y costes (cambio en `render.yaml`)
 - Quitar `AMAZON_PRO_KEEPA_ENABLE` del Blueprint evita que cada sincronización **restablezca** el valor que pongas en el panel. Si no estuviera definido, Keepa queda desactivado (valor por defecto del código). Al ser un cambio en el fichero, el Blueprint se vuelve a sincronizar; el valor `0` ya existente en el panel **se conserva** hasta que lo edites (comportamiento de Render al eliminar una clave del Blueprint: **no verificado** en tu cuenta; comprueba el valor tras el primer despliegue).
@@ -66,7 +66,7 @@ Con `ENABLE=balance`: botón *Probar conexión (saldo de tokens, gratis)* → ll
 Condición: saldo ≥ 20 verificado. Profundidad **ligera**, país **solo España**, **máx. 10 ASIN**: 1 búsqueda (10) + 10 consultas de producto (10) = **20 tokens** (aprobar exactamente 20; `MISSION_CAP` 60 como techo acumulado; sin segunda búsqueda; los duplicados se bloquean). Antes: *Importar competidores ya obtenidos* (0 tokens). Pasos: `ENABLE=1` → EUROPA → País España → ANALIZAR EUROPA → Profundidad ligera, Máx. 10, Autorizar 20 → confirmar. Después compara `tokensConsumed` real con el estimado (el coste de `/product` es el único supuesto no verificado). Cualquier operación fuera de eso (otros países, 160 tokens) requiere nueva aprobación.
 
 ## 10. Reversión
-- Referencia de recuperación: etiqueta Git `k1-recuperacion` = estado desplegable anterior (`cabcf70`).
+- Referencia de recuperación: rama Git `aht-k1-recuperacion` = estado desplegable anterior (`cabcf70`, la rama de despliegue no se ha tocado).
 - Inmediata y sin código: pon `AMAZON_PRO_KEEPA_ENABLE=0` (o bórrala) → Keepa apagado.
 - Si algo falla tras fusionar: Render → *Deploys* → desplegar el despliegue anterior, o revertir el PR. Datos, usuarios y backups no se tocan.
 
