@@ -100,6 +100,139 @@
    "creado": "2026-11-17T02:22:27Z",
    "nota": null,
    "cada_horas": 12.0
+  },
+  {
+   "id": "OBJ-011",
+   "clave": "V7-01",
+   "tipo": "dev",
+   "titulo": "V0.7.0 · Datos reales de Keepa integrados (sin red ni gasto)",
+   "estado": "PENDIENTE",
+   "prioridad": 10,
+   "handler": null,
+   "spec": "backend/keepa_real.py + GET /api/v07/keepa-real?product=<id>: carga docs_v06/evidencia_keepa_real (competidores_ES) y devuelve por competidor precio, price_as_of, BSR, fuente 'Keepa /search (real)', comparabilidad 'NO CONFIRMADA'; resumen (n, mediana y rango de precio, precio normalizado por 100 mL si hay contenido); cero llamadas de red; si falta la evidencia -> SIN DATOS (nunca ceros); títulos externos tratados como datos no fiables (sanitizados).",
+   "aceptacion": "python3 tests/v070_keepa_real_test.py",
+   "depende": [],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T14:28:31Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-012",
+   "clave": "V7-02",
+   "tipo": "dev",
+   "titulo": "V0.7.0 · Expediente comercial ACTIVCORE v0.7",
+   "estado": "PENDIENTE",
+   "prioridad": 20,
+   "handler": null,
+   "spec": "backend/expediente7.py + GET /api/v07/expediente?product=<id>&fmt=json|md: secciones producto, economía (con huecos), mercado real Keepa, regulatorio (requisitos sin evidencia), decisión (NO DECIDIBLE mientras falten datos: nunca GO por defecto), desbloqueos priorizados con propietario y coste (€/tokens), trazabilidad de fuente y fecha por dato; export md determinista.",
+   "aceptacion": "python3 tests/v070_expediente_test.py",
+   "depende": [
+    "V7-01"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T14:28:31Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-013",
+   "clave": "V7-03",
+   "tipo": "dev",
+   "titulo": "V0.7.0 · Director IA: briefing determinista con hechos citados",
+   "estado": "PENDIENTE",
+   "prioridad": 30,
+   "handler": null,
+   "spec": "backend/director7.py + GET /api/v07/briefing?product=<id>: prioridades ordenadas por valor de desbloqueo, máx. 5 preguntas al propietario, hechos [F#] con categoría (DOCUMENTADO/CÁLCULO/INFERENCIA/NO DISPONIBLE), guardia que impide convertir NO DECIDIBLE en GO, texto de competidores con instrucciones inyectadas permanece como dato; funciona SIN IA (sin llamadas).",
+   "aceptacion": "python3 tests/v070_director_test.py",
+   "depende": [
+    "V7-01",
+    "V7-02"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T14:28:31Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-014",
+   "clave": "V7-04",
+   "tipo": "dev",
+   "titulo": "V0.7.0 · Experiencia NEON: Director IA, expediente y procedencia del dato",
+   "estado": "PENDIENTE",
+   "prioridad": 40,
+   "handler": null,
+   "spec": "js/v07.js + estilos: en DIRECTOR IA y LANZAMIENTOS mostrar briefing, expediente y datos reales de Keepa con insignias de procedencia (REAL / CALCULADO / SIN DATOS / NO CONFIRMADO), estados vacíos explicados, accesibilidad (roles/aria, foco), sin errores de consola; capturas 40+ en CAPTURAS_UI.",
+   "aceptacion": "python3 tests/ui_v07_test.py",
+   "depende": [
+    "V7-03"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T14:28:31Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-015",
+   "clave": "V7-05",
+   "tipo": "dev",
+   "titulo": "V0.7.0 · Seguridad de los nuevos endpoints /api/v07/*",
+   "estado": "PENDIENTE",
+   "prioridad": 50,
+   "handler": null,
+   "spec": "Rol y sesión exigidos, CSRF en POST, sin exposición de claves ni rutas del servidor, límites de tamaño, errores sin traza; pruebas negativas.",
+   "aceptacion": "python3 tests/v070_security_test.py",
+   "depende": [
+    "V7-01"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T14:28:31Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-016",
+   "clave": "V7-06",
+   "tipo": "dev",
+   "titulo": "V0.7.0 · Registro de suites v0.7 en la batería y el coordinador",
+   "estado": "PENDIENTE",
+   "prioridad": 60,
+   "handler": null,
+   "spec": "Añadir las suites v070_* y ui_v07 a tests/run_all.sh y a SUITES del coordinador; la batería completa debe pasar.",
+   "aceptacion": "python3 tests/v070_registro_test.py",
+   "depende": [
+    "V7-04",
+    "V7-05"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T14:28:31Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-017",
+   "clave": "V7-07",
+   "tipo": "dev",
+   "titulo": "V0.7.0 · Entrega candidata V0.7.0 (código, documentación, pruebas, evidencias)",
+   "estado": "PENDIENTE",
+   "prioridad": 70,
+   "handler": null,
+   "spec": "INFORME_V070.md (qué se probó y qué NO: Windows y conexiones externas no verificadas), ZIP sin claves con sha256, capturas, registro de auditoría; coordinador.respaldo OK.",
+   "aceptacion": "python3 tests/v070_entrega_test.py",
+   "depende": [
+    "V7-06"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T14:28:31Z",
+   "nota": null,
+   "cada_horas": null
   }
  ],
  "incidencias": [],
@@ -310,5 +443,5 @@
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T11:56:28Z"
+ "actualizado": "2026-11-17T14:28:31Z"
 }

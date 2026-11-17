@@ -40,3 +40,4 @@
 {"t": "2026-11-17T11:56:01Z", "e": "OBJETIVO_INICIO", "d": {"id": "OBJ-009"}, "p": "f9c7252a6e837d554520529fcb5b0ab813358d2f1dd5af400d53645afb277920", "h": "284ad28b6d9a86571e3eebc655a1b02308f92569e5d6b60c7cb7e54104949eea"}
 {"t": "2026-11-17T11:56:28Z", "e": "QA", "d": {"pasan": 9, "intermitentes": 0, "fallan": 0}, "p": "284ad28b6d9a86571e3eebc655a1b02308f92569e5d6b60c7cb7e54104949eea", "h": "80617d083689a2e687f4a6df639652eec90b34a5503f0e653d1db625b1402a52"}
 {"t": "2026-11-17T11:56:28Z", "e": "CICLO", "d": {"objetivo": "OBJ-009"}, "p": "80617d083689a2e687f4a6df639652eec90b34a5503f0e653d1db625b1402a52", "h": "ef7baafc2870d628fdafb8d3487a897658658f2af3c40b99e6f1c0774180f1e7"}
+{"t": "2026-11-17T14:28:31Z", "e": "DEV_SEMBRADO", "d": {"nuevos": 7}, "p": "ef7baafc2870d628fdafb8d3487a897658658f2af3c40b99e6f1c0774180f1e7", "h": "38d6655852ea5c4c8875db317b81d33402543dd419783758ddf832ad8f0809c7"}
