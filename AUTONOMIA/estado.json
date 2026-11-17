@@ -132,7 +132,7 @@
    "clave": "V7-02",
    "tipo": "dev",
    "titulo": "V0.7.0 · Expediente comercial ACTIVCORE v0.7",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 20,
    "handler": null,
    "spec": "backend/expediente7.py + GET /api/v07/expediente?product=<id>&fmt=json|md: secciones producto, economía (con huecos), mercado real Keepa, regulatorio (requisitos sin evidencia), decisión (NO DECIDIBLE mientras falten datos: nunca GO por defecto), desbloqueos priorizados con propietario y coste (€/tokens), trazabilidad de fuente y fecha por dato; export md determinista.",
@@ -140,18 +140,27 @@
    "depende": [
     "V7-01"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T14:37:59Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "40/40 OK",
+     "cola": "K   API json: 200, 5 secciones, veredicto NO DECIDIBLE\nOK   API md: 200, text/markdown y mismo contenido que el export\nOK   API: fmt por defecto = json\nOK   API: fmt inválido → 400, producto inexistente → 404, sin product → 404/400\nOK   API: sin claves ni rutas del servidor en la respuesta\n40/40 OK\n"
+    }
+   ],
    "creado": "2026-11-17T14:28:31Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 40/40 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T14:37:59Z"
   },
   {
    "id": "OBJ-013",
    "clave": "V7-03",
    "tipo": "dev",
    "titulo": "V0.7.0 · Director IA: briefing determinista con hechos citados",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 30,
    "handler": null,
    "spec": "backend/director7.py + GET /api/v07/briefing?product=<id>: prioridades ordenadas por valor de desbloqueo, máx. 5 preguntas al propietario, hechos [F#] con categoría (DOCUMENTADO/CÁLCULO/INFERENCIA/NO DISPONIBLE), guardia que impide convertir NO DECIDIBLE en GO, texto de competidores con instrucciones inyectadas permanece como dato; funciona SIN IA (sin llamadas).",
@@ -160,18 +169,27 @@
     "V7-01",
     "V7-02"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T14:39:25Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "29/29 OK",
+     "cola": " producto inválido '../x' → LookupError\nOK   producto inválido '' → LookupError\nOK   API: sin sesión → 401\nOK   API: 200 con hechos, prioridades, preguntas y veredicto NO DECIDIBLE\nOK   API: producto inexistente → 404; sin producto → 404\nOK   API: sin claves ni rutas del servidor ni trazas\n29/29 OK\n"
+    }
+   ],
    "creado": "2026-11-17T14:28:31Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 29/29 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T14:39:25Z"
   },
   {
    "id": "OBJ-014",
    "clave": "V7-04",
    "tipo": "dev",
    "titulo": "V0.7.0 · Experiencia NEON: Director IA, expediente y procedencia del dato",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 40,
    "handler": null,
    "spec": "js/v07.js + estilos: en DIRECTOR IA y LANZAMIENTOS mostrar briefing, expediente y datos reales de Keepa con insignias de procedencia (REAL / CALCULADO / SIN DATOS / NO CONFIRMADO), estados vacíos explicados, accesibilidad (roles/aria, foco), sin errores de consola; capturas 40+ en CAPTURAS_UI.",
@@ -179,11 +197,20 @@
    "depende": [
     "V7-03"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T14:42:35Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "31/31 OK",
+     "cola": "to fuera de su zona con scroll propio)\nOK   movil 390px: el panel V0.7 cabe (ningún elemento fuera de su zona con scroll propio)\nOK   sin errores de consola ni excepciones de página\nOK   sin peticiones a hosts externos (solo localhost)\nOK   capturas generadas: ≥ 10 ficheros 4x/5x no vacíos\n31/31 OK\n"
+    }
+   ],
    "creado": "2026-11-17T14:28:31Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 31/31 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T14:42:35Z"
   },
   {
    "id": "OBJ-015",
@@ -244,7 +271,29 @@
    "cada_horas": null
   }
  ],
- "incidencias": [],
+ "incidencias": [
+  {
+   "id": "INC-001",
+   "suite": "UI-v0.6",
+   "creada": "2026-11-17T14:43:35Z",
+   "intentos_acumulados": 6,
+   "estado": "RESUELTA",
+   "tipo": "PERSISTENTE",
+   "historial": [
+    {
+     "t": "2026-11-17T14:43:35Z",
+     "estado": "FALLA",
+     "cola": "  DIRECTOR IA: cola con prioridad explicada, autonomía N1–N4, modelos y libro\nOK   interruptor de emergencia activable desde la UI\nOK   Panel DEMO antiguo sigue accesible bajo «Avanzado» y rotulado DEMO\nOK   sin errores JS ni violaciones CSP\nOK   móvil 390 px: sin desbordamiento horizontal\n26/27 OK\n"
+    },
+    {
+     "t": "2026-11-17T14:44:32Z",
+     "estado": "FALLA",
+     "cola": "  DIRECTOR IA: cola con prioridad explicada, autonomía N1–N4, modelos y libro\nOK   interruptor de emergencia activable desde la UI\nOK   Panel DEMO antiguo sigue accesible bajo «Avanzado» y rotulado DEMO\nOK   sin errores JS ni violaciones CSP\nOK   móvil 390 px: sin desbordamiento horizontal\n26/27 OK\n"
+    }
+   ],
+   "resuelta": "2026-11-17T14:46:11Z"
+  }
+ ],
  "ejecuciones": [
   {
    "t": "2026-11-17T01:53:09Z",
@@ -332,15 +381,12 @@
   "OBJ-010 [2] Mantenimiento: informe de entrega actualizado",
   "OBJ-006 [4] Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector (requiere a Claude/persona)",
   "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)",
-  "OBJ-012 [20] V0.7.0 · Expediente comercial ACTIVCORE v0.7 (requiere a Claude/persona)",
-  "OBJ-013 [30] V0.7.0 · Director IA: briefing determinista con hechos citados (requiere a Claude/persona)",
-  "OBJ-014 [40] V0.7.0 · Experiencia NEON: Director IA, expediente y procedencia del dato (requiere a Claude/persona)",
   "OBJ-015 [50] V0.7.0 · Seguridad de los nuevos endpoints /api/v07/* (requiere a Claude/persona)",
   "OBJ-016 [60] V0.7.0 · Registro de suites v0.7 en la batería y el coordinador (requiere a Claude/persona)",
   "OBJ-017 [70] V0.7.0 · Entrega candidata V0.7.0 (código, documentación, pruebas, evidencias) (requiere a Claude/persona)"
  ],
  "pruebas": {
-  "ts": "2026-11-17T11:56:28Z",
+  "ts": "2026-11-17T14:46:11Z",
   "resultados": [
    {
     "suite": "keepa-cliente",
@@ -388,7 +434,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "43/43 OK",
-    "segundos": 1.1
+    "segundos": 1.3
    },
    {
     "suite": "API",
@@ -396,7 +442,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "51/51 OK",
-    "segundos": 1.0
+    "segundos": 1.2
    },
    {
     "suite": "lanzador",
@@ -404,7 +450,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "9/9 OK",
-    "segundos": 11.5
+    "segundos": 11.2
    },
    {
     "suite": "UI-v0.6",
@@ -412,7 +458,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "27/27 OK",
-    "segundos": 11.5
+    "segundos": 11.7
    }
   ],
   "pasan": 9,
@@ -458,5 +504,30 @@
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T14:34:22Z"
+ "actualizado": "2026-11-17T14:46:11Z",
+ "auditoria": {
+  "t": "2026-11-17T14:46:11Z",
+  "ok": false,
+  "detalle": {
+   "suites": {
+    "pasan": 9,
+    "intermitentes": 0,
+    "fallan": 0,
+    "total": 9
+   },
+   "escaneo_secretos": 0,
+   "registro_integro": true,
+   "archivos_v060_borrados": [
+    "amazon-pro-intelligence-v0.6.0-validacion-keepa/AUTONOMIA/estado.json",
+    "amazon-pro-intelligence-v0.6.0-validacion-keepa/AUTONOMIA/limites.json",
+    "amazon-pro-intelligence-v0.6.0-validacion-keepa/AUTONOMIA/registro.jsonl"
+   ],
+   "pruebas_v07_sin_registrar": [
+    "v070_director_test.py",
+    "ui_v07_test.py",
+    "v070_keepa_real_test.py",
+    "v070_expediente_test.py"
+   ]
+  }
+ }
 }
