@@ -1,0 +1,10 @@
+{
+ "max_intentos_incidencia": 3,
+ "max_ciclos_24h": 12,
+ "max_fallos_consecutivos": 3,
+ "timeout_suite_s": 420,
+ "presupuesto_eur": 0,
+ "keepa_tokens_max": 0,
+ "llamadas_ia_max": 0,
+ "nota": "Con 0 el coordinador bloquea cualquier gasto. Solo el propietario debe cambiar estos valores."
+}
