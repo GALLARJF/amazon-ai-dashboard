@@ -55,6 +55,7 @@ run "V1.0: Chromium contra el modo cloud con proxy HTTPS" python3 tests/ui_v100_
 run "V1.0: respaldo fuera del disco, restauración y rotación de contraseñas" python3 tests/v100_respaldo_cloud_test.py
 run "K1: Keepa seguro (modos, aprobación, tope, duplicados, concurrencia, comparabilidad) — simulado" python3 tests/k1_keepa_test.py
 run "K1: capa HTTP de Keepa y descubrimiento — simulado" python3 tests/k1_http_test.py
+run "K2: Director Amazon IA por intención (competidores, precio, país, faltantes, riesgos) — simulado" python3 tests/k2_director_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }

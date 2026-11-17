@@ -52,21 +52,22 @@ Generado desde el estado del coordinador (AUTONOMIA/estado.json). Candidata: NO 
 | v1.0-plan | MOCK | PASA | 14/14 OK |
 | v1.0-conectores | MOCK | PASA | 16/16 OK |
 | v1.0-docs | MOCK | PASA | 10/10 OK |
-| v1.0-entrega | LOCAL | PASA | 16/16 OK |
+| v1.0-entrega | LOCAL | FALLA | 15/16 OK |
 | v1.0-cloud | MOCK | PASA | 29/29 OK |
 | v1.0-ui-cloud | MOCK+NAVEGADOR | PASA | 37/37 OK |
 | v1.0-respaldo-cloud | MOCK | PASA | 20/20 OK |
 | k1-keepa | MOCK | PASA | 29/29 OK |
 | k1-http | MOCK | PASA | 12/12 OK |
-| v0.7-registro | LOCAL | PASA | 84/84 OK |
+| k2-director | MOCK | PASA | 27/27 OK |
+| v0.7-registro | LOCAL | PASA | 85/85 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 35 pasan · 0 intermitentes · 0 fallan · 35 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 35 pasan · 0 intermitentes · 1 fallan · 36 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 
-- Fecha: 2026-11-17T16:21:53Z · Resultado: **OK**
-- Detalle: `{"suites": {"pasan": 32, "intermitentes": 0, "fallan": 0, "total": 32}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
+- Fecha: 2026-11-17T23:20:30Z · Resultado: **CON FALLOS**
+- Detalle: `{"suites": {"pasan": 33, "intermitentes": 1, "fallan": 2, "total": 36}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
 
 ## Qué NO está verificado
 
