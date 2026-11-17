@@ -40,15 +40,28 @@ Generado desde el estado del coordinador (AUTONOMIA/estado.json). Candidata: NO 
 | v0.7-seguridad | MOCK | PASA | 23/23 OK |
 | UI-v0.7 | MOCK+NAVEGADOR | PASA | 31/31 OK |
 | desarrollo | LOCAL | PASA | 9/9 OK |
-| v0.7-registro | LOCAL | PASA | 38/38 OK |
+| relevo | LOCAL | PASA | 14/14 OK |
+| v1.0-matriz | LOCAL | PASA | 6/6 OK |
+| v1.0-lanzar | MOCK | PASA | 12/12 OK |
+| v1.0-vender | MOCK | PASA | 16/16 OK |
+| v1.0-finanzas | MOCK | PASA | 20/20 OK |
+| v1.0-export | MOCK | PASA | 14/14 OK |
+| v1.0-persistencia | MOCK | PASA | 16/16 OK |
+| v1.0-ficha | MOCK | PASA | 6/6 OK |
+| v1.0-ui | MOCK+NAVEGADOR | PASA | 44/44 OK |
+| v1.0-plan | MOCK | PASA | 14/14 OK |
+| v1.0-conectores | MOCK | PASA | 16/16 OK |
+| v1.0-docs | MOCK | PASA | 10/10 OK |
+| v1.0-entrega | LOCAL | PASA | 16/16 OK |
+| v0.7-registro | LOCAL | PASA | 75/75 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 17 pasan · 0 intermitentes · 0 fallan · 17 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 30 pasan · 0 intermitentes · 0 fallan · 30 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 
-- Fecha: 2026-11-17T14:53:43Z · Resultado: **OK**
-- Detalle: `{"suites": {"pasan": 17, "intermitentes": 0, "fallan": 0, "total": 17}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
+- Fecha: 2026-11-17T16:01:41Z · Resultado: **OK**
+- Detalle: `{"suites": {"pasan": 30, "intermitentes": 0, "fallan": 0, "total": 30}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
 
 ## Qué NO está verificado
 

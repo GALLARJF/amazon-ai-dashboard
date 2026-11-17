@@ -49,6 +49,7 @@ run "V1.0: interfaz NEON móvil/tableta/escritorio (Chromium real)" python3 test
 run "V1.0: Director IA plan de especialistas" python3 tests/v100_director_plan_test.py
 run "V1.0: adaptadores SP-API/Ads solo lectura (simulados)" python3 tests/v100_conectores_test.py
 run "V1.0: documentación verificable" python3 tests/v100_docs_test.py
+run "V1.0: entrega candidata (informe, ZIP sin claves)" python3 tests/v100_entrega_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }

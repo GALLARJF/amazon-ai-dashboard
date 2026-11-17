@@ -716,7 +716,7 @@ if __name__ == "__main__":
     srv = make_server(port)
     print(f"Archivo de configuración de IA: {_ef['path']} → " + ("ENCONTRADO" if _ef["found"] else "NO existe todavía (la IA seguirá desactivada)") + (f" · ajustes cargados: {', '.join(_ef['names_loaded'])}" if _ef["names_loaded"] else ""))
     print("Archivo de configuración de Keepa: " + _kf["path"] + " → " + ("ENCONTRADO" if _kf["found"] else "NO existe todavía (Keepa desactivado)"))
-    print(f"Amazon Pro Intelligence V0.7.0 → http://localhost:{port}  (solo 127.0.0.1)")
+    print(f"Amazon Pro Intelligence V1.0.0-candidata → http://localhost:{port}  (solo 127.0.0.1)")
     print("Conectores habilitados:", ", ".join(sorted(enabled_connectors())) or "NINGUNO (por defecto)")
     print("IA:", AI.public_status(AI.config())["status"])
     if srv.initial_admin_password:

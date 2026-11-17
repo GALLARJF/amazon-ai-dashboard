@@ -5,12 +5,12 @@ R = []
 def check(n, c): R.append(bool(c)); print(("OK   " if c else "FAIL ") + n)
 import coordinador as C, informe_v070 as IV
 html = open(os.path.join(ROOT, "index.html"), encoding="utf-8").read(); srv = open(os.path.join(ROOT, "server.py"), encoding="utf-8").read()
-check("index.html: título y cabecera dicen V0.7.0 y ninguna V0.6.0", html.count("V0.7.0") >= 2 and "V0.6.0" not in html)
-check("server.py: el arranque anuncia V0.7.0", "Amazon Pro Intelligence V0.7.0" in srv and "Amazon Pro Intelligence V0.6.0" not in srv)
+check("index.html: título y cabecera dicen V1.0.0-candidata (sucesora de V0.7.0) y ninguna V0.6.0", html.count("V1.0.0-candidata") >= 2 and "V0.6.0" not in html)
+check("server.py: el arranque anuncia V1.0.0-candidata", "Amazon Pro Intelligence V1.0.0-candidata" in srv and "Amazon Pro Intelligence V0.6.0" not in srv)
 d = IV.generar(os.path.join(ROOT, "INFORME_V070.md")); t = open(d, encoding="utf-8").read(); e = C.estado()
 check("informe: secciones obligatorias (incluye, objetivos, pruebas, auditoría, NO verificado, límites)", all(h in t for h in ("## Qué incluye V0.7.0", "## Objetivos de desarrollo", "## Pruebas", "## Auditoría", "## Qué NO está verificado", "## Límites respetados")))
 check("informe: declara que Windows y las conexiones externas NO están verificados y 0 €/0 tokens", "Windows" in t and "no se declara verificado" in t and "Conexiones externas" in t and "0 € · 0 tokens Keepa" in t)
-dev = {o["clave"]: o for o in e["objetivos"] if o.get("tipo") == "dev"}
+dev = {o["clave"]: o for o in e["objetivos"] if o.get("tipo") == "dev" and o["clave"].startswith("V7-")}
 check("informe: lista los 7 objetivos con su estado REAL (coincide con el estado del coordinador)", len(dev) == 7 and all(re.search(r"\| %s \| %s \|" % (k, o["estado"]), t) for k, o in dev.items()))
 check("informe: V7-01..V7-06 figuran HECHO (nada se da por hecho sin aceptación)", all(dev[k]["estado"] == "HECHO" for k in ("V7-01", "V7-02", "V7-03", "V7-04", "V7-05", "V7-06")))
 p = e.get("pruebas") or {}; check("informe: las cifras de pruebas son las del último QA registrado", (not p.get("resultados")) or "Resumen: %s pasan · %s intermitentes · %s fallan · %s total" % (p["pasan"], p["intermitentes"], p["fallan"], p["total"]) in t)

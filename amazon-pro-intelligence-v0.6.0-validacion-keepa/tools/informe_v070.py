@@ -6,7 +6,7 @@ import coordinador as C
 
 
 def generar(destino=None):
-    e = C.estado(); dev = [o for o in e["objetivos"] if o.get("tipo") == "dev"]; au = e.get("auditoria"); p = e.get("pruebas") or {}
+    e = C.estado(); dev = [o for o in e["objetivos"] if o.get("tipo") == "dev" and o["clave"].startswith("V7-")]; au = e.get("auditoria"); p = e.get("pruebas") or {}
     L = ["# INFORME V0.7.0 — Entrega candidata (Amazon Pro Intelligence)", "", "Generado desde el estado del coordinador (AUTONOMIA/estado.json). Candidata: NO es producción; no se ha desplegado ni publicado nada.", "",
          "## Qué incluye V0.7.0", "",
          "- Datos reales de Keepa (única consulta autorizada, 10 tokens, ES) integrados sin red: `GET /api/v07/keepa-real`.",
