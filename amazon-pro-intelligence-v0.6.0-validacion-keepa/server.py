@@ -687,7 +687,11 @@ def svc_for(pid):
 def make_server(port=8765, admin_token=None, db_path=None, cfg_fn=None, admin_password=None, keepa_env_fn=None, keepa_get=None):
     STATE["admin_token"] = admin_token or os.environ.get("AMAZON_PRO_ADMIN_TOKEN") or secrets.token_urlsafe(24)
     os.makedirs(os.path.join(ROOT, "data"), exist_ok=True)
-    APP["store"] = Store(db_path or os.environ.get("AMAZON_PRO_DB") or os.path.join(ROOT, "data", "amazon_pro.db"))
+    _dbp = db_path or os.environ.get("AMAZON_PRO_DB") or os.path.join(ROOT, "data", "amazon_pro.db")
+    if _dbp != ":memory:":
+        from backend import respaldo100 as _RB
+        _RB.abrir_seguro(_dbp)   # V1.0: una BD dañada detiene el arranque con mensaje claro y SIN tocarla
+    APP["store"] = Store(_dbp)
     APP["cfg_fn"] = cfg_fn or AI.config
     APP["director"] = Director(APP["store"], APP["cfg_fn"])
     APP["keepa_env"] = keepa_env_fn or (lambda: None)  # None → os.environ (cargado desde keepa.env al arrancar)
