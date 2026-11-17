@@ -217,7 +217,7 @@
    "clave": "V7-05",
    "tipo": "dev",
    "titulo": "V0.7.0 · Seguridad de los nuevos endpoints /api/v07/*",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 50,
    "handler": null,
    "spec": "Rol y sesión exigidos, CSRF en POST, sin exposición de claves ni rutas del servidor, límites de tamaño, errores sin traza; pruebas negativas.",
@@ -225,18 +225,27 @@
    "depende": [
     "V7-01"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T14:50:51Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "23/23 OK",
+     "cola": "/OpenAI) ni 'api_key' ni rutas del servidor\nOK   md: Content-Type text/markdown, attachment, filename seguro, nosniff\nOK   json: Content-Type application/json y nosniff\nOK   solo lectura: ningún endpoint v07 creó tareas, decisiones ni llamadas Keepa\nOK   el 401 no filtra datos del producto\n23/23 OK\n"
+    }
+   ],
    "creado": "2026-11-17T14:28:31Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 23/23 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T14:50:51Z"
   },
   {
    "id": "OBJ-016",
    "clave": "V7-06",
    "tipo": "dev",
    "titulo": "V0.7.0 · Registro de suites v0.7 en la batería y el coordinador",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 60,
    "handler": null,
    "spec": "Añadir las suites v070_* y ui_v07 a tests/run_all.sh y a SUITES del coordinador; la batería completa debe pasar.",
@@ -245,18 +254,27 @@
     "V7-04",
     "V7-05"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T14:51:14Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "35/35 OK",
+     "cola": ": el fichero existe y la clase es válida\nOK   run_all.sh: ninguna referencia a ficheros inexistentes\nOK   run_all.sh conserva el cierre «TODAS LAS SUITES OK» como última instrucción\nOK   ninguna suite del coordinador puede usar red de pago: entorno de pruebas sin claves y Keepa desactivado\n35/35 OK\n"
+    }
+   ],
    "creado": "2026-11-17T14:28:31Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 35/35 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T14:51:14Z"
   },
   {
    "id": "OBJ-017",
    "clave": "V7-07",
    "tipo": "dev",
    "titulo": "V0.7.0 · Entrega candidata V0.7.0 (código, documentación, pruebas, evidencias)",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 70,
    "handler": null,
    "spec": "INFORME_V070.md (qué se probó y qué NO: Windows y conexiones externas no verificadas), ZIP sin claves con sha256, capturas, registro de auditoría; coordinador.respaldo OK.",
@@ -264,11 +282,20 @@
    "depende": [
     "V7-06"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T14:52:04Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "15/15 OK",
+     "cola": " ZIP: contiene informe, backend v07, pruebas v070, capturas 40+ y evidencias Keepa reales\nOK   ZIP: ningún texto con aspecto de clave real (patrón del coordinador, salvo centinelas de pruebas)\nOK   ZIP: hash registrado en el log coincide con el archivo\nOK   registro del coordinador íntegro\n15/15 OK\n"
+    }
+   ],
    "creado": "2026-11-17T14:28:31Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 15/15 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T14:52:04Z"
   }
  ],
  "incidencias": [
@@ -292,6 +319,22 @@
     }
    ],
    "resuelta": "2026-11-17T14:46:11Z"
+  },
+  {
+   "id": "INC-002",
+   "suite": "v0.7-registro",
+   "creada": "2026-11-17T14:52:48Z",
+   "intentos_acumulados": 3,
+   "estado": "RESUELTA",
+   "tipo": "PERSISTENTE",
+   "historial": [
+    {
+     "t": "2026-11-17T14:52:48Z",
+     "estado": "FALLA",
+     "cola": ": el fichero existe y la clase es válida\nOK   run_all.sh: ninguna referencia a ficheros inexistentes\nOK   run_all.sh conserva el cierre «TODAS LAS SUITES OK» como última instrucción\nOK   ninguna suite del coordinador puede usar red de pago: entorno de pruebas sin claves y Keepa desactivado\n35/37 OK\n"
+    }
+   ],
+   "resuelta": "2026-11-17T14:53:42Z"
   }
  ],
  "ejecuciones": [
@@ -380,13 +423,10 @@
   "OBJ-005 [2] PROPIETARIO: instalar/reconectar la app de GitHub para poder hacer push (hoy 403) (requiere a Claude/persona)",
   "OBJ-010 [2] Mantenimiento: informe de entrega actualizado",
   "OBJ-006 [4] Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector (requiere a Claude/persona)",
-  "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)",
-  "OBJ-015 [50] V0.7.0 · Seguridad de los nuevos endpoints /api/v07/* (requiere a Claude/persona)",
-  "OBJ-016 [60] V0.7.0 · Registro de suites v0.7 en la batería y el coordinador (requiere a Claude/persona)",
-  "OBJ-017 [70] V0.7.0 · Entrega candidata V0.7.0 (código, documentación, pruebas, evidencias) (requiere a Claude/persona)"
+  "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)"
  ],
  "pruebas": {
-  "ts": "2026-11-17T14:46:11Z",
+  "ts": "2026-11-17T14:53:43Z",
   "resultados": [
    {
     "suite": "keepa-cliente",
@@ -426,7 +466,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "74/74 OK",
-    "segundos": 0.7
+    "segundos": 0.8
    },
    {
     "suite": "v0.5-catálogo",
@@ -434,7 +474,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "43/43 OK",
-    "segundos": 1.3
+    "segundos": 1.4
    },
    {
     "suite": "API",
@@ -442,7 +482,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "51/51 OK",
-    "segundos": 1.2
+    "segundos": 1.1
    },
    {
     "suite": "lanzador",
@@ -450,7 +490,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "9/9 OK",
-    "segundos": 11.2
+    "segundos": 11.6
    },
    {
     "suite": "UI-v0.6",
@@ -458,13 +498,77 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "27/27 OK",
-    "segundos": 11.7
+    "segundos": 12.2
+   },
+   {
+    "suite": "v0.7-keepa-real",
+    "clase": "REAL-EVIDENCIA",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "21/21 OK",
+    "segundos": 0.3
+   },
+   {
+    "suite": "v0.7-expediente",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "41/41 OK",
+    "segundos": 0.3
+   },
+   {
+    "suite": "v0.7-director",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "29/29 OK",
+    "segundos": 0.4
+   },
+   {
+    "suite": "v0.7-seguridad",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "23/23 OK",
+    "segundos": 0.6
+   },
+   {
+    "suite": "UI-v0.7",
+    "clase": "MOCK+NAVEGADOR",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "31/31 OK",
+    "segundos": 12.4
+   },
+   {
+    "suite": "desarrollo",
+    "clase": "LOCAL",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "9/9 OK",
+    "segundos": 0.1
+   },
+   {
+    "suite": "v0.7-registro",
+    "clase": "LOCAL",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "38/38 OK",
+    "segundos": 0.0
+   },
+   {
+    "suite": "v0.7-entrega",
+    "clase": "LOCAL",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "15/15 OK",
+    "segundos": 1.2
    }
   ],
-  "pasan": 9,
+  "pasan": 17,
   "intermitentes": 0,
   "fallan": 0,
-  "total": 9
+  "total": 17
  },
  "ciclos": [
   {
@@ -504,30 +608,21 @@
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T14:46:11Z",
+ "actualizado": "2026-11-17T14:53:43Z",
  "auditoria": {
-  "t": "2026-11-17T14:46:11Z",
-  "ok": false,
+  "t": "2026-11-17T14:53:43Z",
+  "ok": true,
   "detalle": {
    "suites": {
-    "pasan": 9,
+    "pasan": 17,
     "intermitentes": 0,
     "fallan": 0,
-    "total": 9
+    "total": 17
    },
    "escaneo_secretos": 0,
    "registro_integro": true,
-   "archivos_v060_borrados": [
-    "amazon-pro-intelligence-v0.6.0-validacion-keepa/AUTONOMIA/estado.json",
-    "amazon-pro-intelligence-v0.6.0-validacion-keepa/AUTONOMIA/limites.json",
-    "amazon-pro-intelligence-v0.6.0-validacion-keepa/AUTONOMIA/registro.jsonl"
-   ],
-   "pruebas_v07_sin_registrar": [
-    "v070_director_test.py",
-    "ui_v07_test.py",
-    "v070_keepa_real_test.py",
-    "v070_expediente_test.py"
-   ]
+   "archivos_v060_borrados": [],
+   "pruebas_v07_sin_registrar": []
   }
  }
 }
