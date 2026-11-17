@@ -72,12 +72,13 @@
   {
    "id": "OBJ-008",
    "titulo": "Mantenimiento: escaneo de secretos",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 0,
    "handler": "escaneo",
    "creado": "2026-11-17T02:22:27Z",
-   "nota": null,
-   "cada_horas": 6.0
+   "nota": "ciclo: {\"hallazgos\": []}",
+   "cada_horas": 6.0,
+   "actualizado": "2026-11-17T11:35:57Z"
   },
   {
    "id": "OBJ-009",
@@ -126,6 +127,11 @@
    "t": "2026-11-17T01:53:37Z",
    "objetivo": null,
    "segundos": 0.1
+  },
+  {
+   "t": "2026-11-17T11:35:57Z",
+   "objetivo": "OBJ-008",
+   "segundos": 0.2
   }
  ],
  "conexiones": [
@@ -174,7 +180,6 @@
   "Las sesiones programadas arrancan AISLADAS: no heredan el sistema de archivos (verificado 2026-11-17 02:28 UTC: proyecto inexistente, rama no encontrada, 0 pruebas). Solo Drive (texto) es canal compartido. Recuperar el proyecto exige publicar el codigo en GitHub (push 403: instalar/reconectar la app de Claude en GALLARJF)."
  ],
  "siguientes_acciones": [
-  "OBJ-008 [0] Mantenimiento: escaneo de secretos",
   "OBJ-009 [1] Mantenimiento: batería de pruebas con reintentos",
   "OBJ-005 [2] PROPIETARIO: instalar/reconectar la app de GitHub para poder hacer push (hoy 403) (requiere a Claude/persona)",
   "OBJ-010 [2] Mantenimiento: informe de entrega actualizado",
@@ -287,8 +292,13 @@
    "ts": 1794880417.4688616,
    "t": "2026-11-17T01:53:37Z",
    "objetivo": null
+  },
+  {
+   "ts": 1794915357.8095915,
+   "t": "2026-11-17T11:35:57Z",
+   "objetivo": "OBJ-008"
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T02:31:25Z"
+ "actualizado": "2026-11-17T11:35:57Z"
 }
