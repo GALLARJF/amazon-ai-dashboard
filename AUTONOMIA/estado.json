@@ -78,7 +78,7 @@
    "creado": "2026-11-17T02:22:27Z",
    "nota": "ciclo: {\"hallazgos\": []}",
    "cada_horas": 6.0,
-   "actualizado": "2026-11-17T11:35:57Z"
+   "actualizado": "2026-11-17T18:00:24Z"
   },
   {
    "id": "OBJ-009",
@@ -832,6 +832,11 @@
    "t": "2026-11-17T11:56:28Z",
    "objetivo": "OBJ-009",
    "segundos": 26.7
+  },
+  {
+   "t": "2026-11-17T18:00:24Z",
+   "objetivo": "OBJ-008",
+   "segundos": 0.2
   }
  ],
  "conexiones": [
@@ -1185,10 +1190,15 @@
    "ts": 1794916561.455455,
    "t": "2026-11-17T11:56:28Z",
    "objetivo": "OBJ-009"
+  },
+  {
+   "ts": 1794938423.8779445,
+   "t": "2026-11-17T18:00:24Z",
+   "objetivo": "OBJ-008"
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T16:21:53Z",
+ "actualizado": "2026-11-17T18:00:24Z",
  "auditoria": {
   "t": "2026-11-17T16:21:53Z",
   "ok": true,
