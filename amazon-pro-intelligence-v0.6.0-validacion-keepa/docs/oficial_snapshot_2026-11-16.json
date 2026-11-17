@@ -1,0 +1,7 @@
+{"verificado": "2026-11-16", "fuentes": ["https://developers.openai.com/api/docs/pricing", "https://developers.openai.com/api/docs/models"],
+ "nota": "La página de precios no muestra fecha de actualización. Standard, USD por 1M tokens. Chat Completions no se menciona para estos modelos; solo Responses API.",
+ "modelos": {
+  "gpt-6-luna":    {"in": 0.10, "cached": 0.01, "out": 0.50, "contexto": "1.05M", "max_salida": "128K", "razonamiento": ["none","low","medium","high","xhigh","max"]},
+  "gpt-6.1-terra": {"in": 1.00, "cached": 0.05, "out": 5.00, "contexto": "1.05M", "max_salida": "128K", "razonamiento": ["none","low","medium","high","xhigh","max"]},
+  "gpt-6.1-sol":   {"in": 2.00, "cached": 0.10, "out": 10.00, "contexto": "1.05M", "max_salida": "128K", "razonamiento": ["low","medium","high","xhigh","max"]},
+  "gpt-6-astra":   {"in": 10.00, "cached": 1.00, "out": 50.00, "contexto": "1.05M", "max_salida": "128K", "razonamiento": ["low","medium","high","xhigh","max"]}}}

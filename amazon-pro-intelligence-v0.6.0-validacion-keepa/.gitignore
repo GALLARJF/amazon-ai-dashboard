@@ -1,0 +1,11 @@
+# Secretos y datos locales: NUNCA al repositorio
+*.env
+ai.env
+.env*
+config/*.local*
+data/
+*.db
+*.db-wal
+*.db-shm
+__pycache__/
+*.pyc

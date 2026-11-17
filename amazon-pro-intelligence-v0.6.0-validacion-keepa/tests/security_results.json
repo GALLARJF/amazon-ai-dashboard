@@ -1,0 +1,214 @@
+[
+ [
+  "index.html se sirve",
+  true
+ ],
+ [
+  "cabeceras de seguridad (CSP, nosniff, frame, no-store)",
+  true
+ ],
+ [
+  "no expone /server.py",
+  true
+ ],
+ [
+  "no expone /tests/economics.test.js",
+  true
+ ],
+ [
+  "no expone /docs/AUDITORIA.md",
+  true
+ ],
+ [
+  "no expone /INFORME.md",
+  true
+ ],
+ [
+  "no expone /README.md",
+  true
+ ],
+ [
+  "no expone /run.bat",
+  true
+ ],
+ [
+  "no expone /data/",
+  true
+ ],
+ [
+  "no expone /../server.py",
+  true
+ ],
+ [
+  "no expone /js/../server.py",
+  true
+ ],
+ [
+  "no expone /js/%2e%2e/server.py",
+  true
+ ],
+ [
+  "no expone /%2e%2e/server.py",
+  true
+ ],
+ [
+  "no expone /js/app.js/../../server.py",
+  true
+ ],
+ [
+  "no expone /js/.hidden.js",
+  true
+ ],
+ [
+  "no expone /schemas/",
+  true
+ ],
+ [
+  "js/calc.js sí se sirve",
+  true
+ ],
+ [
+  "por defecto TODOS los conectores deshabilitados",
+  true
+ ],
+ [
+  "por defecto ninguno es probable",
+  true
+ ],
+ [
+  "write_actions declarado como no implementado",
+  true
+ ],
+ [
+  "GET de prueba ya no existe (sin efectos por GET)",
+  true
+ ],
+ [
+  "POST sin token → 401",
+  true
+ ],
+ [
+  "POST con token erróneo → 401",
+  true
+ ],
+ [
+  "Origin externo → 403 (CSRF)",
+  true
+ ],
+ [
+  "Host externo → 403 (DNS rebinding)",
+  true
+ ],
+ [
+  "form-urlencoded → 415 (CSRF simple)",
+  true
+ ],
+ [
+  "conector deshabilitado → 403 aunque haya credenciales y token",
+  true
+ ],
+ [
+  "con conectores deshabilitados NO hubo ninguna llamada de red",
+  true
+ ],
+ [
+  "helium10 no probable → 404",
+  true
+ ],
+ [
+  "cuerpo >2KB → 413",
+  true
+ ],
+ [
+  "PUT → 405",
+  true
+ ],
+ [
+  "DELETE → 405",
+  true
+ ],
+ [
+  "PATCH → 405",
+  true
+ ],
+ [
+  "tras habilitar explícitamente, aparecen como probables",
+  true
+ ],
+ [
+  "prueba keepa (simulada) OK",
+  true
+ ],
+ [
+  "segunda prueba inmediata → 429",
+  true
+ ],
+ [
+  "prueba sp-api simulada OK",
+  true
+ ],
+ [
+  "prueba ads simulada OK",
+  true
+ ],
+ [
+  "todas las llamadas salientes fueron GET de lectura o el POST de token LWA",
+  true
+ ],
+ [
+  "transporte bloquea PUT https://advertising-api-eu.amazon.com/v2/profiles",
+  true
+ ],
+ [
+  "transporte bloquea POST https://advertising-api-eu.amazon.com/sp/campaigns",
+  true
+ ],
+ [
+  "transporte bloquea DELETE https://sellingpartnerapi-eu.amazon.com/listings/2021-08-01/",
+  true
+ ],
+ [
+  "transporte bloquea PUT https://sellingpartnerapi-eu.amazon.com/listings/2021-08-01/",
+  true
+ ],
+ [
+  "transporte bloquea POST https://sellingpartnerapi-eu.amazon.com/pricing",
+  true
+ ],
+ [
+  "transporte bloquea GET http://api.keepa.com/token",
+  true
+ ],
+ [
+  "transporte bloquea GET https://evil.example/token",
+  true
+ ],
+ [
+  "transporte bloquea PATCH https://api.keepa.com/token",
+  true
+ ],
+ [
+  "error de red: respuesta con código fijo, sin texto de excepción",
+  true
+ ],
+ [
+  "NINGÚN secreto (FAKESECRET) apareció en ninguna respuesta HTTP",
+  true
+ ],
+ [
+  "frontend sin patrones de secretos (client_secret, refresh_token, api key literal, Bearer)",
+  true
+ ],
+ [
+  "frontend sin llamadas a hosts externos",
+  true
+ ],
+ [
+  "servidor escucha solo en 127.0.0.1",
+  true
+ ],
+ [
+  "el código no contiene endpoints de escritura comercial (campaigns, putListings, pricing writes)",
+  true
+ ]
+]

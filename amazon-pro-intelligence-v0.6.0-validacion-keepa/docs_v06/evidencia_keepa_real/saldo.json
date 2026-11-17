@@ -1,0 +1,22 @@
+{
+ "inicial_gratuito": {
+  "tokens_left": 60,
+  "checked_at": "2026-11-17T01:05:52Z"
+ },
+ "antes_de_buscar": {
+  "tokens_left": 60,
+  "checked_at": "2026-11-17T01:07:51Z"
+ },
+ "tras_buscar": {
+  "tokens_left": 50,
+  "checked_at": "2026-11-17T01:07:57Z"
+ },
+ "final": {
+  "tokens_left": 51,
+  "refill_in_ms": 20764,
+  "refill_rate_per_min": 1,
+  "checked_at": "2026-11-17T01:08:59Z"
+ },
+ "consumo_confirmado": 10,
+ "tope_mision": 10
+}

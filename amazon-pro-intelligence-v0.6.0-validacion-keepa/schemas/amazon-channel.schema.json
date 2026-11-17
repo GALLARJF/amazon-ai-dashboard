@@ -1,0 +1,351 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "executive-neon/amazon-channel@1",
+  "title": "Paquete de canal Amazon para Executive Neon",
+  "type": "object",
+  "required": [
+    "schema",
+    "version",
+    "generatedAt",
+    "source",
+    "ingest_allowed",
+    "period",
+    "channel_snapshots",
+    "alerts",
+    "dossiers",
+    "approvals",
+    "module_views"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "executive-neon/amazon-channel@1"
+    },
+    "version": {
+      "type": "string"
+    },
+    "generatedAt": {
+      "type": "string"
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "system",
+        "dataSource",
+        "api_verified"
+      ],
+      "properties": {
+        "system": {
+          "type": "string"
+        },
+        "dataSource": {
+          "enum": [
+            "DEMO",
+            "CSV_IMPORTADO"
+          ]
+        },
+        "api_verified": {
+          "type": "boolean"
+        },
+        "scope": {
+          "type": "object",
+          "description": "Opcional (V0.3). Cuenta/titular al que pertenecen TODOS los registros del paquete; las claves llevan el prefijo acct:<account_id>|.",
+          "required": [
+            "account_id",
+            "legal_entity"
+          ],
+          "properties": {
+            "account_id": {
+              "type": "string"
+            },
+            "legal_entity": {
+              "type": "string"
+            },
+            "seller_central_ref": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "marketplaces": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "brand": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ingest_allowed": {
+      "type": "boolean",
+      "description": "false para DEMO: el consumidor NO debe ingestar"
+    },
+    "period": {
+      "type": "object",
+      "required": [
+        "to",
+        "days"
+      ],
+      "properties": {
+        "to": {
+          "type": "string"
+        },
+        "days": {
+          "type": "integer"
+        }
+      }
+    },
+    "channel_snapshots": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/snapshot"
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/alert"
+      }
+    },
+    "dossiers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/dossier"
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/approval"
+      }
+    },
+    "module_views": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/id"
+          }
+        }
+      }
+    },
+    "upsert_rule": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "pattern": "^amz-[a-z]+-[0-9a-f]{16}$"
+    },
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "id",
+        "key",
+        "entity",
+        "channel",
+        "marketplace",
+        "sku",
+        "period_to",
+        "period_days",
+        "sales_net_eur",
+        "units",
+        "margin_eur",
+        "stock_units"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "key": {
+          "type": "string"
+        },
+        "entity": {
+          "const": "sales_channel_snapshot"
+        },
+        "channel": {
+          "const": "amazon"
+        },
+        "marketplace": {
+          "type": "string"
+        },
+        "sku": {
+          "type": "string"
+        },
+        "period_to": {
+          "type": "string"
+        },
+        "period_days": {
+          "type": "integer"
+        },
+        "sales_net_eur": {
+          "type": "number"
+        },
+        "units": {
+          "type": "number"
+        },
+        "margin_eur": {
+          "type": "number"
+        },
+        "margin_pct": {
+          "type": "number"
+        },
+        "ad_spend_eur": {
+          "type": "number"
+        },
+        "ad_sales_eur": {
+          "type": "number"
+        },
+        "acos": {
+          "type": "number"
+        },
+        "tacos": {
+          "type": "number"
+        },
+        "stock_units": {
+          "type": "number"
+        }
+      }
+    },
+    "alert": {
+      "type": "object",
+      "required": [
+        "id",
+        "key",
+        "entity",
+        "module",
+        "rule",
+        "scope",
+        "severity",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "key": {
+          "type": "string"
+        },
+        "entity": {
+          "const": "alert"
+        },
+        "module": {
+          "enum": [
+            "ventas",
+            "marketing",
+            "finanzas",
+            "logistica"
+          ]
+        },
+        "rule": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "critica",
+            "alta",
+            "media",
+            "baja"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "period_to": {
+          "type": "string"
+        }
+      }
+    },
+    "dossier": {
+      "type": "object",
+      "required": [
+        "id",
+        "key",
+        "entity",
+        "name",
+        "decision"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "key": {
+          "type": "string"
+        },
+        "entity": {
+          "const": "launch_dossier"
+        },
+        "name": {
+          "type": "string"
+        },
+        "decision": {
+          "enum": [
+            "GO",
+            "REVISAR",
+            "NO-GO"
+          ]
+        },
+        "blockers": {
+          "type": "integer"
+        },
+        "warnings": {
+          "type": "integer"
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "required": [
+        "id",
+        "key",
+        "entity",
+        "type",
+        "title",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "key": {
+          "type": "string"
+        },
+        "entity": {
+          "const": "approval_request"
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pendiente",
+            "aprobada",
+            "rechazada"
+          ]
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

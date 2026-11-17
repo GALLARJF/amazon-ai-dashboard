@@ -1,0 +1,162 @@
+[
+ {
+  "check": "carga sin errores JS ni violaciones CSP",
+  "ok": true
+ },
+ {
+  "check": "sin sesión: Director pide iniciar sesión y no responde con datos",
+  "ok": true
+ },
+ {
+  "check": "preguntar sin sesión abre el acceso",
+  "ok": true
+ },
+ {
+  "check": "login erróneo muestra error",
+  "ok": true
+ },
+ {
+  "check": "sesión iniciada con rol visible",
+  "ok": true
+ },
+ {
+  "check": "cuenta/titular visible (no se asume titular legal)",
+  "ok": true
+ },
+ {
+  "check": "badge del panel sigue indicando DEMO",
+  "ok": true
+ },
+ {
+  "check": "5 KPIs, 4 gráficos SVG",
+  "ok": true
+ },
+ {
+  "check": "filtros producto/periodo/marketplace funcionan",
+  "ok": true
+ },
+ {
+  "check": "cabe sin scroll horizontal a 1600x840",
+  "ok": true
+ },
+ {
+  "check": "7 coworkers visibles con estado SIN EJECUCIÓN",
+  "ok": true
+ },
+ {
+  "check": "noticias: solo verificadas, con fuente y fecha",
+  "ok": true
+ },
+ {
+  "check": "sin indicadores falsos de operatividad",
+  "ok": true
+ },
+ {
+  "check": "Director sin IA: etiqueta SIN IA y decisión determinista",
+  "ok": true
+ },
+ {
+  "check": "tras la consulta: mercado y precios ejecutados sobre PRUEBA (no operativos)",
+  "ok": true
+ },
+ {
+  "check": "Director con mock: etiqueta SIMULADA · no es IA real, con tokens y coste",
+  "ok": true
+ },
+ {
+  "check": "IA real NO verificada declarada",
+  "ok": true
+ },
+ {
+  "check": "tras 'resumen general': 7 coworkers ejecutados sobre PRUEBA, ninguno operativo",
+  "ok": true
+ },
+ {
+  "check": "detalle de coworker: hallazgos, origen y verificaciones",
+  "ok": true
+ },
+ {
+  "check": "piloto muestra expedientes del servidor",
+  "ok": true
+ },
+ {
+  "check": "expediente de PRUEBA completo → GO fundamentado (datos ficticios)",
+  "ok": true
+ },
+ {
+  "check": "escenarios de PVP y precios normalizados visibles",
+  "ok": true
+ },
+ {
+  "check": "quitar la evidencia de un coste impide GO (REVISAR)",
+  "ok": true
+ },
+ {
+  "check": "coste alto documentado → NO-GO",
+  "ok": true
+ },
+ {
+  "check": "restaurar → GO",
+  "ok": true
+ },
+ {
+  "check": "importación CSV de competidores en servidor",
+  "ok": true
+ },
+ {
+  "check": "persistencia servidor: tras recargar siguen los 3 competidores importados",
+  "ok": true
+ },
+ {
+  "check": "piloto real: origen INCOMPLETO y decisión REVISAR (no GO, no NO-GO firme)",
+  "ok": true
+ },
+ {
+  "check": "piloto real: costes sin documentar listados y economía sin valores inventados",
+  "ok": true
+ },
+ {
+  "check": "piloto real: sin demanda ni competidores inventados",
+  "ok": true
+ },
+ {
+  "check": "piloto real: datos regulatorios pendientes visibles",
+  "ok": true
+ },
+ {
+  "check": "solicitud de aprobación registrada",
+  "ok": true
+ },
+ {
+  "check": "historial: consultas, ejecuciones IA (SIMULADA), aprobaciones y auditoría íntegra",
+  "ok": true
+ },
+ {
+  "check": "analista no ve botones de aprobar",
+  "ok": true
+ },
+ {
+  "check": "aprobador ve botones de decisión",
+  "ok": true
+ },
+ {
+  "check": "dialogo: no se puede aprobar: la evaluación actual es REVISAR",
+  "ok": true
+ },
+ {
+  "check": "aprobar un expediente que no es GO es rechazado por el servidor",
+  "ok": true
+ },
+ {
+  "check": "Estado: conexiones deshabilitadas por defecto, sin credenciales",
+  "ok": true
+ },
+ {
+  "check": "sin errores JS en toda la sesión",
+  "ok": true
+ },
+ {
+  "check": "móvil sin desbordamiento horizontal del documento",
+  "ok": true
+ }
+]

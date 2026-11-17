@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AHT Executive Neon · Amazon Pro Intelligence V0.6.0</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>AHT</b><span>EXECUTIVE<br><em>NEON</em></span></div>
+  <div class="title"><h1>AMAZON <em>PRO INTELLIGENCE</em></h1><p>AHT EXECUTIVE NEON · DIRECTOR COMERCIAL AUTÓNOMO DE AMAZON · V0.6.0</p></div>
+  <div class="hr"><div id="badge" class="badge">DEMO · SIN DATOS REALES</div><div id="sess" class="sess"></div></div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="inicio" class="on main">INICIO</button>
+  <button data-tab="lanz" class="main">LANZAMIENTOS</button>
+  <button data-tab="ventas" class="main">MIS VENTAS</button>
+  <button data-tab="prod" class="main">PRODUCTOS</button>
+  <button data-tab="dir" class="main">DIRECTOR IA</button>
+  <span class="navsep">Avanzado</span>
+  <button data-tab="panel" class="adv">Panel DEMO</button>
+  <button data-tab="piloto" class="adv">Piloto PHIVITAL</button>
+  <button data-tab="prelaunch" class="adv">Pre-Launch (local)</button>
+  <button data-tab="europa" class="adv">EUROPA · MERCADOS</button>
+  <button data-tab="hist" class="adv">Historial · Auditoría</button>
+  <button data-tab="estado" class="adv">Estado · Conexiones</button>
+  <button data-tab="aprob" class="adv">Aprobaciones <span id="apCount" class="pill">0</span></button>
+</nav>
+<main id="tab-inicio" class="tab on v6root"><div id="v6inicio" class="v6"></div></main>
+<main id="tab-lanz" class="tab v6root"><div id="v6lanz" class="v6"></div></main>
+<main id="tab-ventas" class="tab v6root"><div id="v6ventas" class="v6"></div></main>
+<main id="tab-prod" class="tab v6root"><div id="v6prod" class="v6"></div></main>
+<main id="tab-dir" class="tab v6root"><div id="v6dir" class="v6"></div></main>
+
+<!-- ============ PANEL ============ -->
+<main id="tab-panel" class="tab">
+  <section class="filters neon-v">
+    <label>Producto <select id="fProduct"></select></label>
+    <label>Periodo <select id="fPeriod"><option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option><option value="90">Últimos 90 días</option></select></label>
+    <label>Marketplace <select id="fMkt"><option value="all">Todos</option><option value="ES">Amazon ES</option><option value="DE">Amazon DE</option><option value="FR">Amazon FR</option><option value="IT">Amazon IT</option></select></label>
+    <span class="grow"></span>
+    <label class="btn" for="csvFile">Importar CSV</label><input type="file" id="csvFile" accept=".csv" hidden>
+    <button class="btn ghost" id="csvTpl">Plantilla CSV</button>
+    <button class="btn ghost" id="resetDemo">Volver a DEMO</button>
+  </section>
+  <div id="dq" class="dq" hidden></div>
+
+  <div class="layout">
+    <div class="left">
+      <section class="kpis" id="kpis"></section>
+      <section class="charts">
+        <article class="card c-cyan"><h3>Ventas y margen <small>netas sin IVA (€)</small></h3><div class="chart" id="chSales"></div><div class="lg"><i style="background:#18e6ff"></i>Ventas <i style="background:#b968ff"></i>Margen</div></article>
+        <article class="card c-amber"><h3>Competencia y precios <small>propio vs competidor (€)</small></h3><div class="chart" id="chComp"></div><div class="lg"><i style="background:#ffb02e"></i>Propio <i style="background:#18e6ff"></i>Competidor</div></article>
+        <article class="card c-violet"><h3>Publicidad <small>gasto vs ventas ads (€)</small></h3><div class="chart" id="chAds"></div><div class="lg"><i style="background:#ff4fd8"></i>Gasto ads <i style="background:#18e6ff"></i>Ventas ads</div></article>
+      </section>
+      <section class="row2">
+        <article class="card c-lime"><h3>Posicionamiento <small>BSR medio (menor = mejor)</small></h3><div class="chart" id="chBsr"></div>
+          <div class="kwt" id="kwTable"></div></article>
+        <article class="card c-cyan cw"><h3>Coworkers Amazon <small>estado real · clic para ver/ejecutar</small></h3><div class="cwgrid" id="cwGrid"></div></article>
+      </section>
+    </div>
+
+    <aside class="right">
+      <article class="card c-cyan director">
+        <h3>Director Amazon IA <small>coordina 7 coworkers</small></h3>
+        <div class="engine" id="dirEngine">…</div><label class="fld dsel">Expediente <select id="dirDossier"></select></label><button type="button" id="dirSynth" class="chip" title="Envía SOLO el expediente ficticio a OpenAI, con confirmación previa">🧪 Probar API con expediente SINTÉTICO</button>
+        <div class="chat" id="chat"></div>
+        <div class="chips" id="chips"></div>
+        <form id="chatForm"><input id="chatIn" placeholder="Pregunta al Director Amazon…" autocomplete="off"><button class="send" aria-label="Enviar">➤</button></form>
+      </article>
+      <article class="card c-violet radar">
+        <h3>Alertas <small>reglas sobre datos <span id="alertSrc">DEMO</span></small></h3>
+        <div id="alerts"></div>
+        <h3 style="margin-top:10px">Noticias <small>solo fuentes verificadas</small></h3><div id="newsBox"></div>
+      </article>
+    </aside>
+  </div>
+</main>
+
+<!-- ============ PRE-LAUNCH ============ -->
+<main id="tab-prelaunch" class="tab">
+  <div class="pl2">
+    <section class="plleft" id="plLeft"></section>
+    <section class="plright" id="plRight"></section>
+  </div>
+</main>
+
+<!-- ============ PILOTO ============ -->
+<main id="tab-piloto" class="tab"><div class="pl2"><section class="plleft" id="pilLeft"></section><section class="plright" id="pilRight"></section></div></main>
+
+<!-- ============ HISTORIAL ============ -->
+<main id="tab-europa" class="tab"><div id="euRoot" class="estg"></div></main>
+<main id="tab-hist" class="tab"><div id="histRoot" class="estg"></div></main>
+
+<!-- ============ ESTADO ============ -->
+<main id="tab-estado" class="tab"><div id="estadoRoot" class="estg"></div></main>
+
+<!-- ============ APROBACIONES ============ -->
+<main id="tab-aprob" class="tab">
+  <article class="card c-amber"><h3>Cola local de propuestas <small>solo registro: V0.3 no ejecuta ningún cambio comercial · las aprobaciones del servidor están en Historial</small></h3><div id="apList"></div></article>
+</main>
+
+<div id="modal" class="modal" hidden><div class="mbox card c-cyan"><button class="x" id="mClose" aria-label="Cerrar">✕</button><div id="mBody"></div></div></div>
+
+<script src="js/calc.js"></script>
+<script src="js/economics.js"></script>
+<script src="js/dossier.js"></script>
+<script src="js/data.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/integration.js"></script>
+<script src="js/prelaunch.js"></script>
+<script src="js/estado.js"></script>
+<script src="js/app.js"></script>
+<script src="js/v03.js"></script>
+<script src="js/eu.js"></script>
+<script src="js/v06.js"></script>
+</body>
+</html>

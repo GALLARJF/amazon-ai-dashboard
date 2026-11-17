@@ -1,0 +1,12 @@
+OK  filtro periodo/producto/marketplace
+OK  agregados
+OK  periodo anterior
+OK  serie diaria
+OK  unit economics
+OK  precio mínimo alcanza el margen objetivo
+OK  GO / NO-GO / SIN DECISIÓN
+OK  mediana y percentiles
+OK  CSV válido
+OK  CSV inválido
+
+10 grupos de pruebas OK

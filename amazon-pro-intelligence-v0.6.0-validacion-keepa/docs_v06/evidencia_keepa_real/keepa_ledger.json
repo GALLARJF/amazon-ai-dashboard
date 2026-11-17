@@ -1,0 +1,58 @@
+[
+ {
+  "id": 1,
+  "ts": "2026-11-17T01:07:51Z",
+  "op": "token",
+  "domain": null,
+  "n_asin": 0,
+  "est_tokens": 0,
+  "tokens_consumed": 0,
+  "tokens_left": 60,
+  "refill_rate": 1,
+  "status": "OK",
+  "cache_hits": 0,
+  "note": null
+ },
+ {
+  "id": 2,
+  "ts": "2026-11-17T01:07:57Z",
+  "op": "search",
+  "domain": 9,
+  "n_asin": 0,
+  "est_tokens": 10,
+  "tokens_consumed": 10,
+  "tokens_left": 50,
+  "refill_rate": 1,
+  "status": "OK",
+  "cache_hits": 0,
+  "note": "s\u00e9rum capilar cuero cabelludo"
+ },
+ {
+  "id": 3,
+  "ts": "2026-11-17T01:07:57Z",
+  "op": "token",
+  "domain": null,
+  "n_asin": 0,
+  "est_tokens": 0,
+  "tokens_consumed": 0,
+  "tokens_left": 50,
+  "refill_rate": 1,
+  "status": "OK",
+  "cache_hits": 0,
+  "note": null
+ },
+ {
+  "id": 4,
+  "ts": "2026-11-17T01:08:59Z",
+  "op": "token",
+  "domain": null,
+  "n_asin": 0,
+  "est_tokens": 0,
+  "tokens_consumed": 0,
+  "tokens_left": 51,
+  "refill_rate": 1,
+  "status": "OK",
+  "cache_hits": 0,
+  "note": null
+ }
+]

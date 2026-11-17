@@ -1,0 +1,13 @@
+[
+ {
+  "op_id": "KP-20261117010755-b7c971",
+  "ts": "2026-11-17T01:07:55Z",
+  "path": "/search",
+  "params_hash": "b7c97169ad592a71",
+  "est_tokens": 10,
+  "confirmed_tokens": 10,
+  "tokens_left_after": 50,
+  "status": "OK",
+  "note": null
+ }
+]

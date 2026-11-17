@@ -1,0 +1,48 @@
+== js/calc (heredado V0.2)
+11 grupos de pruebas OK
+== js/economics (heredado V0.2)
+21 pruebas del motor económico OK
+== js/dossier (heredado V0.2)
+29 pruebas del expediente OK
+== js/integration (heredado V0.2)
+16 pruebas de integración OK
+== paridad JS↔Python
+paridad JS↔Python: 657/657 casos idénticos
+== store/auditoría
+17/17 OK
+== backend (motor, coworkers, piloto, IA, Director)
+51/51 OK
+== ámbito/compatibilidad de contrato (JS)
+6 pruebas de ámbito/compatibilidad OK
+== OpenAI (Responses, presupuestos, E2E, sin consumo real)
+50/50 OK
+== presupuesto: concurrencia, reintentos, timeouts, consumo incierto
+29/29 OK
+== IDs/tarifas == documentación oficial
+15/15 OK
+== V0.3.3: ACL usage, no-fuga de clave, sintético, guardia 1ª llamada
+32/32 OK
+== V0.3.3: archivo local de clave, Windows, ENABLE=0 => cero llamadas
+21/21 OK
+== API (auth, roles, aislamiento, Director, aprobaciones)
+51/51 OK
+== seguridad (heredada V0.2)
+53/53 pruebas de seguridad OK
+== esquema
+OK   esquema rechaza: falta ingest_allowed
+== UI (navegador real + capturas)
+40/40 OK
+== V0.3.4: confirmación, procedencia OpenAI, registro mínimo, explicaciones
+23/23 OK
+== V0.3.4: UI prueba sintética (desplegable, confirmación, errores)
+15/15 OK
+== V0.3.4: restablecer contraseña de admin (conserva datos y ai.env)
+21/21 OK
+== V0.4.0: Keepa (cliente, tokens, caché, 429, incompleto, sin claves)
+27/27 OK
+== V0.4.0: motor europeo (economía, benchmark, ranking, sensibilidad)
+30/30 OK
+== V0.4.0: API europea + Director EU (ACL, CSRF, consentimiento, anclaje)
+45/45 OK
+== V0.4.0: UI EUROPA · ACTIVCORE (navegador real + capturas)
+21/21 OK

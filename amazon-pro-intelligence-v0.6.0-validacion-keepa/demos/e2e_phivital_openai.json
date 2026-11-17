@@ -1,0 +1,144 @@
+{
+ "aviso": "SIN CONSUMO REAL: servidor local que imita la Responses API. No es IA real.",
+ "tokens_entrada_prompt_estimados": 1296,
+ "decision_motor": "REVISAR",
+ "coworkers": [
+  {
+   "coworker": "mercado",
+   "estado": "datos_insuficientes",
+   "verificaciones_ok": null,
+   "faltan": [
+    "Importar competidores (CSV) con precio, uds., contenido, fuente y fecha."
+   ]
+  },
+  {
+   "coworker": "seo",
+   "estado": "datos_insuficientes",
+   "verificaciones_ok": null,
+   "faltan": [
+    "Importar keywords (p. ej. export Helium 10) con fuente y fecha ≤ 60 d."
+   ]
+  },
+  {
+   "coworker": "inventario",
+   "estado": "datos_insuficientes",
+   "verificaciones_ok": null,
+   "faltan": [
+    "Informar stock disponible.",
+    "Informar previsión de unidades/mes (decisión humana; no se infiere de ventas inexistentes)."
+   ]
+  },
+  {
+   "coworker": "precios",
+   "estado": "error_datos",
+   "verificaciones_ok": null,
+   "faltan": [
+    "Corregir datos económicos."
+   ]
+  },
+  {
+   "coworker": "creatividad",
+   "estado": "ok",
+   "verificaciones_ok": true,
+   "faltan": []
+  },
+  {
+   "coworker": "ppc",
+   "estado": "datos_insuficientes",
+   "verificaciones_ok": null,
+   "faltan": [
+    "Resolver Precios."
+   ]
+  },
+  {
+   "coworker": "cumplimiento",
+   "estado": "ok",
+   "verificaciones_ok": true,
+   "faltan": [
+    "Aportar valoración propia y de competidores para comparar reputación (no se estima)."
+   ]
+  }
+ ],
+ "peticion_enviada": {
+  "model": "gpt-6-luna",
+  "instructions": "<611 caracteres>",
+  "input": "<4571 caracteres>",
+  "max_output_tokens": 2500,
+  "store": false,
+  "reasoning": {
+   "effort": "low"
+  }
+ },
+ "modo": "PRUEBA_LOCAL",
+ "ai_run": {
+  "model": "gpt-6-luna",
+  "mode": "PRUEBA_LOCAL",
+  "tokens_in": 2100,
+  "tokens_out": 140,
+  "reasoning_tokens": 60,
+  "token_source": "reportado_por_proveedor",
+  "cost_estimate": 0.00028,
+  "price_source": "oficial_openai_2026-11-16",
+  "grounding": {
+   "cited": [
+    "F1",
+    "F2"
+   ],
+   "ok": true,
+   "ungrounded": []
+  },
+  "evidence": [
+   "F1",
+   "F2"
+  ],
+  "limitations": [
+   "La síntesis redacta solo hechos de los coworkers; no aporta datos externos.",
+   "El anclaje de cifras es heurístico: no demuestra veracidad.",
+   "Ejecución contra servidor local de pruebas: no cuenta como ejecución real de proveedor.",
+   "Coste ESTIMADO con tarifa oficial verificada (oficial_openai_2026-11-16); la factura de OpenAI manda."
+  ],
+  "datasets_consulted": [
+   {
+    "coworker_tasks": [
+     "task-ee8f5050debe",
+     "task-4f09313f1abe",
+     "task-abb45417de4c",
+     "task-1c27bd438e69",
+     "task-56baa0343035",
+     "task-0d6203e0b7bd",
+     "task-4414cae9fd64"
+    ],
+    "dossier": "dossier-67cda7c087a1",
+    "sha256": "d2d2fd303cf7dfc526d059b7e87b9249a4cfdfc328129eb1e84bb805591b198d"
+   }
+  ]
+ },
+ "tabla_coste": [
+  {
+   "perfil": "economico",
+   "modelo": "gpt-6-luna",
+   "usd_por_ejecucion_tipica": 0.00043,
+   "usd_por_ejecucion_peor_caso": 0.00138,
+   "permitido_por_tope_por_ejecucion_0.05": true
+  },
+  {
+   "perfil": "razonamiento",
+   "modelo": "gpt-6.1-sol",
+   "usd_por_ejecucion_tipica": 0.008592,
+   "usd_por_ejecucion_peor_caso": 0.027592,
+   "permitido_por_tope_por_ejecucion_0.05": true
+  },
+  {
+   "perfil": "maximo",
+   "modelo": "gpt-6-astra",
+   "usd_por_ejecucion_tipica": 0.04296,
+   "usd_por_ejecucion_peor_caso": 0.13796,
+   "permitido_por_tope_por_ejecucion_0.05": false
+  }
+ ],
+ "presupuesto_pruebas": {
+  "supuesto": "10 ejecuciones con gpt-6-luna + 5 con gpt-6.1-sol",
+  "tipico_usd": 0.0473,
+  "peor_caso_usd": 0.1518
+ }
+}

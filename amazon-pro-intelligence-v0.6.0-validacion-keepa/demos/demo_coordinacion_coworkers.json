@@ -1,0 +1,115 @@
+{
+ "aviso": "Datos ficticios (origen PRUEBA). Los coworkers son deterministas: sin IA ni datos externos.",
+ "peticion": "ppc + cumplimiento",
+ "plan_con_dependencias": [
+  "mercado",
+  "seo",
+  "precios",
+  "creatividad",
+  "ppc",
+  "cumplimiento"
+ ],
+ "flujo_pizarra": [
+  {
+   "from": "mercado",
+   "to": "precios"
+  },
+  {
+   "from": "seo",
+   "to": "creatividad"
+  },
+  {
+   "from": "precios",
+   "to": "ppc"
+  },
+  {
+   "from": "seo",
+   "to": "ppc"
+  },
+  {
+   "from": "creatividad",
+   "to": "cumplimiento"
+  },
+  {
+   "from": "mercado",
+   "to": "cumplimiento"
+  }
+ ],
+ "tareas": [
+  {
+   "coworker": "mercado",
+   "depende_de": [],
+   "estado": "ok",
+   "verificaciones_ok": true,
+   "duracion_ms": 0,
+   "hallazgos": 4,
+   "faltan": []
+  },
+  {
+   "coworker": "seo",
+   "depende_de": [],
+   "estado": "ok",
+   "verificaciones_ok": true,
+   "duracion_ms": 0,
+   "hallazgos": 4,
+   "faltan": []
+  },
+  {
+   "coworker": "precios",
+   "depende_de": [
+    "mercado"
+   ],
+   "estado": "ok",
+   "verificaciones_ok": true,
+   "duracion_ms": 0,
+   "hallazgos": 10,
+   "faltan": []
+  },
+  {
+   "coworker": "creatividad",
+   "depende_de": [
+    "seo"
+   ],
+   "estado": "ok",
+   "verificaciones_ok": true,
+   "duracion_ms": 0,
+   "hallazgos": 5,
+   "faltan": []
+  },
+  {
+   "coworker": "ppc",
+   "depende_de": [
+    "precios",
+    "seo"
+   ],
+   "estado": "ok",
+   "verificaciones_ok": true,
+   "duracion_ms": 0,
+   "hallazgos": 5,
+   "faltan": []
+  },
+  {
+   "coworker": "cumplimiento",
+   "depende_de": [
+    "creatividad",
+    "mercado"
+   ],
+   "estado": "ok",
+   "verificaciones_ok": true,
+   "duracion_ms": 0,
+   "hallazgos": 2,
+   "faltan": [
+    "Aportar valoración propia y de competidores para comparar reputación (no se estima)."
+   ]
+  }
+ ],
+ "estado_coworkers_tras_ejecutar": {
+  "mercado": "EJECUTADO SOBRE DATOS PRUEBA (no operativo)",
+  "seo": "EJECUTADO SOBRE DATOS PRUEBA (no operativo)",
+  "inventario": "SIN EJECUCIÓN",
+  "precios": "EJECUTADO SOBRE DATOS PRUEBA (no operativo)",
+  "creatividad": "EJECUTADO SOBRE DATOS PRUEBA (no operativo)",
+  "ppc": "EJECUTADO SOBRE DATOS PRUEBA (no operativo)",
+  "cumplimiento": "EJECUTADO SOBRE DATOS PRUEBA (no operativo)"
+ }
+}

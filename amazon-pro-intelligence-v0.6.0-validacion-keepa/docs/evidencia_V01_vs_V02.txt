@@ -1,0 +1,12 @@
+caso                                 V0.1                       V0.2 (motor económico)
+precio negativo (-10)                GO (margen 171.4%)         RECHAZADO: PVP con IVA: fuera de rango (0.01–100000)
+IVA negativo (-50 %)                 GO (margen 48.5%)          RECHAZADO: IVA %: fuera de rango (0–30)
+precio NaN                           NO-GO (margen 0.0%)        RECHAZADO: PVP con IVA: valor no numérico
+comisión 150 %                       NO-GO (margen -152.5%)     RECHAZADO: Comisión personalizada: fuera de rango (0–<100)
+devoluciones 100 %                   NO-GO (margen -8.3%)       válido; contribución -9.9 %
+3 competidores = el mismo dato       GO (margen 19.6%)          válido; contribución 10.3 %
+solo margen + 3 precios (cost 4)     GO (margen 25.8%)          válido; contribución 17.2 %
+
+Expediente con margen positivo pero SIN regulatorio/contenido/stock/demanda:
+  V0.1 → GO (solo exigía margen, mediana y 3 precios)
+  V0.2 → REVISAR (14 bloqueos)

@@ -1,0 +1,129 @@
+{
+ "aviso": "NINGUNA de estas ejecuciones es IA real. Las ejecuciones reales con proveedor están PENDIENTES (falta clave).",
+ "ejecuciones": {
+  "1_sin_ia": {
+   "estado_proveedor": "SIN IA CONFIGURADA",
+   "modo_resultado": "SIN_IA",
+   "motivo": "SIN IA CONFIGURADA",
+   "decision_determinista": "GO",
+   "respuesta": "SIN IA · Resumen determinista. Decisión: GO. Sin bloqueos. GO no publica nada: la publicación sigue requiriendo aprobación explícita.\n· Mercado y competencia: ok\n· SEO y keywords: ok\n· Precios y rentabilidad: ok\n· Creatividad, imágenes y vídeos: ok\n· Reputación y cumplimiento: ok — Aportar valoración propia y de competidores para comparar reputación (no se estima).",
+   "ai_run_registrado": null,
+   "duracion_total_ms": 2
+  },
+  "2_proveedor_simulado_mock": {
+   "estado_proveedor": "PROVEEDOR SIMULADO (no es IA real)",
+   "modo_resultado": "SIMULADA",
+   "motivo": null,
+   "decision_determinista": "GO",
+   "respuesta": "RESPUESTA SIMULADA (proveedor mock, no es IA real). Resumen extractivo de los hechos verificados:\n- Decisión determinista del expediente: GO (0 causas NO-GO, 0 bloqueos, 4 avisos). [F1]\n- [Mercado y competencia] 4 competidores válidos de 4 cargados (fuente+fecha ≤ 30 d, sin duplicados ni atípicos). [F2]\n- [Mercado y competencia] Precio normalizado por cápsulas (envío incluido): mediana 0.1871 €, P25 0.1698 €, P75 0.2035 €. Banda para tu formato (120 cápsulas): 20.38–24.43 € (mediana 22.45 €). [F3]\n- [Mercado y competencia] Tu PVP planificado 19.90 € es más caro que 1 de 4 competidores válidos (a igual formato). [F4]\n- [Mercado y competencia] Referencia de reseñas (dato aportado): máx. 800 valoraciones entre los competidores con dato. [F5]\n- [SEO y keywords] 5 keywords vigentes; volumen total aportado 17.400 (fuente: PRUEBA). [F6]\n- [SEO y keywords] Top por volumen aportado: magnesio (9000); citrato de magnesio (4000); magnesio 120 capsulas (2000); magnesio sueño (1500); magnesio cansancio (900) [F7]\n- [SEO y keywords] Cobertura del listing: 4/5 keywords presentes (frase exacta), 95 % del volumen aportado. [F8]\n- [SEO y keywords] Sin cubrir en el listing: magnesio cansancio [F9]\n- [Precios y rentabilidad] A 19.90 € (IVA 10 %): neto 18.09 €, comisión 2.98 €, contribución 5.05 € (27.9 % s/ neto) con ACoS 18 %. [F10]\n- [Precios y rentabilidad] ACoS de equilibrio: 43.4 % (base PVP con IVA). [F11]\n- [Precios y rentabilidad] Precio mínimo para margen 15 % tras publicidad: 14.62 €. [F12]",
+   "ai_run_registrado": {
+    "model": "mock-determinista",
+    "mode": "SIMULADA",
+    "started_at": "2026-11-16T16:23:25Z",
+    "finished_at": "2026-11-16T16:23:25Z",
+    "duration_ms": 0,
+    "tokens_in": 936,
+    "tokens_out": 376,
+    "token_source": "estimado",
+    "cost_estimate": 0.008448,
+    "currency": "USD",
+    "prices_configured": true,
+    "grounding": {
+     "cited": [
+      "F1",
+      "F10",
+      "F11",
+      "F12",
+      "F2",
+      "F3",
+      "F4",
+      "F5",
+      "F6",
+      "F7",
+      "F8",
+      "F9"
+     ],
+     "ok": true,
+     "ungrounded": []
+    },
+    "error": null,
+    "limitations": [
+     "La síntesis redacta solo hechos de los coworkers; no aporta datos externos.",
+     "El anclaje de cifras es heurístico: no demuestra veracidad.",
+     "EJECUCIÓN SIMULADA: no es IA real.",
+     "Tokens estimados (chars/4), no reportados por proveedor."
+    ],
+    "datasets_consulted": [
+     {
+      "coworker_tasks": [
+       "task-f1e2b63d4c8f",
+       "task-8d2874d25f80",
+       "task-0c598fef0dc4",
+       "task-f4a6b49ccf55",
+       "task-a9c9229824fa"
+      ],
+      "dossier": "dossier-8c70a4b05e4e",
+      "sha256": "9fb50a65c1bcbb31ec9b51a0ff53dfc02c646708db4a874561a851722250f2db"
+     }
+    ]
+   },
+   "duracion_total_ms": 2
+  },
+  "3_proveedor_local_de_pruebas_(camino_HTTP_real_del_adaptador)": {
+   "estado_proveedor": "IA CONFIGURADA · sin ejecución real verificada aún",
+   "modo_resultado": "PRUEBA_LOCAL",
+   "motivo": null,
+   "decision_determinista": "GO",
+   "respuesta": "Síntesis de prueba: la decisión determinista es la indicada en [F1]; revisar los bloqueos listados.",
+   "ai_run_registrado": {
+    "model": "proveedor-local-de-pruebas",
+    "mode": "PRUEBA_LOCAL",
+    "started_at": "2026-11-16T16:23:25Z",
+    "finished_at": "2026-11-16T16:23:25Z",
+    "duration_ms": 158,
+    "tokens_in": 1500,
+    "tokens_out": 60,
+    "token_source": "reportado_por_proveedor",
+    "cost_estimate": 0.0054,
+    "currency": "USD",
+    "prices_configured": true,
+    "grounding": {
+     "cited": [
+      "F1"
+     ],
+     "ok": true,
+     "ungrounded": []
+    },
+    "error": null,
+    "limitations": [
+     "La síntesis redacta solo hechos de los coworkers; no aporta datos externos.",
+     "El anclaje de cifras es heurístico: no demuestra veracidad.",
+     "Ejecución contra servidor local de pruebas: no cuenta como ejecución real de proveedor."
+    ],
+    "datasets_consulted": [
+     {
+      "coworker_tasks": [
+       "task-7b22727b5ca5",
+       "task-ebc242a254e2",
+       "task-8ed0afa32b5b",
+       "task-509c3e32430e",
+       "task-8312bfa699a8"
+      ],
+      "dossier": "dossier-8c70a4b05e4e",
+      "sha256": "9fb50a65c1bcbb31ec9b51a0ff53dfc02c646708db4a874561a851722250f2db"
+     }
+    ]
+   },
+   "duracion_total_ms": 160
+  },
+  "4_anthropic_sin_clave_(estado_real_de_este_entorno)": {
+   "estado_proveedor": "IA SIN CLAVE (ANTHROPIC_API_KEY ausente) · ejecuciones reales PENDIENTES",
+   "modo_resultado": "SIN_IA",
+   "motivo": "IA SIN CLAVE (ANTHROPIC_API_KEY ausente) · ejecuciones reales PENDIENTES",
+   "decision_determinista": "GO",
+   "respuesta": "SIN IA · Resumen determinista. Decisión: GO. Sin bloqueos. GO no publica nada: la publicación sigue requiriendo aprobación explícita.\n· Mercado y competencia: ok\n· SEO y keywords: ok\n· Precios y rentabilidad: ok\n· Creatividad, imágenes y vídeos: ok\n· Reputación y cumplimiento: ok — Aportar valoración propia y de competidores para comparar reputación (no se estima).",
+   "ai_run_registrado": null,
+   "duracion_total_ms": 1
+  }
+ }
+}
