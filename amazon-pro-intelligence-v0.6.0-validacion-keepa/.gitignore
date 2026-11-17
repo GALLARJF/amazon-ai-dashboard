@@ -9,3 +9,6 @@ data/
 *.db-shm
 __pycache__/
 *.pyc
+
+# El estado vive en la rama aht-autonomia-estado (lo publica tools/relevo.py)
+AUTONOMIA/
