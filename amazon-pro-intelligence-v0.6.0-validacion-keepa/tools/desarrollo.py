@@ -41,12 +41,27 @@ BACKLOG = [  # clave, prioridad, título, especificación (qué debe cumplir la 
 
 def _o(e, clave): return next((o for o in e["objetivos"] if o.get("clave") == clave), None)
 
+BACKLOG_V1 = [  # V1.0 — cada objetivo exige crear su prueba tests/v100_*_test.py (la prueba es la aceptación)
+    ("V1-01", 5, "Infraestructura de relevo: bloqueo, recuperación y commit controlado", "tools/relevo.py --adquirir/--commit/--publicar --liberar.", "python3 tests/relevo_test.py", []),
+    ("V1-02", 10, "Matriz de aceptación V1.0 (4 categorías) generada desde el estado real", "tools/matriz_v100.py genera MATRIZ_ACEPTACION_V100.md: cada requisito en VERIFICADO REAL / VERIFICADO SIMULADO / IMPLEMENTADO NO VERIFICADO / BLOQUEADO (con causa y propietario). Sin marcar real lo simulado.", "python3 tests/v100_matriz_test.py", []),
+    ("V1-03", 20, "PREPARAR Y LANZAR: flujo completo ACTIVCORE con persistencia", "Flujo de extremo a extremo en la UI y API: producto → hipótesis → expediente → decisión registrada → persistencia tras reinicio del servidor. Sin datos inventados; huecos explícitos.", "python3 tests/v100_lanzar_test.py", ["V1-02"]),
+    ("V1-04", 30, "VENDER Y OPTIMIZAR con informes CSV importados (datos simulados etiquetados)", "Importar CSV de ventas/anuncios, validar columnas, calcular métricas deterministas (ACOS, margen, conversión), etiqueta SIMULADO cuando el dato no sea real; rechazo de CSV malformado.", "python3 tests/v100_vender_test.py", ["V1-02"]),
+    ("V1-05", 40, "Motor financiero determinista: escenarios, sensibilidad, punto de equilibrio", "Hipótesis etiquetadas como tales, resultados reproducibles, sin costes inventados: NO CALCULABLE si falta un dato.", "python3 tests/v100_finanzas_test.py", ["V1-02"]),
+    ("V1-06", 50, "Exportaciones CSV/HTML/Markdown con trazabilidad", "Exportar expediente y resultados con fuente, fecha y procedencia; escapado seguro; nombre de fichero saneado.", "python3 tests/v100_export_test.py", ["V1-03", "V1-04", "V1-05"]),
+    ("V1-07", 60, "Director IA: plan de coordinación de especialistas", "Plan determinista de especialistas (mercado, regulatorio, finanzas, listing, ads) con entradas, salidas, dependencias y propietario; nunca GO por defecto.", "python3 tests/v100_director_plan_test.py", ["V1-03"]),
+    ("V1-08", 70, "Persistencia y recuperación: copia de seguridad, restauración y BD corrupta", "Backup/restore de SQLite verificado con hash; arranque con BD corrupta falla de forma controlada sin pérdida; persistencia entre sesiones.", "python3 tests/v100_persistencia_test.py", []),
+    ("V1-09", 80, "NEON: cinco secciones en móvil y escritorio (Chromium real) y corrección de desbordes", "Playwright a 390, 820 y 1600 px: sin desbordes horizontales (incluye .hr/.sess a 820 px), producto por defecto ACTIVCORE, sin errores de consola, capturas.", "python3 tests/ui_v100_test.py", ["V1-03", "V1-04"]),
+    ("V1-10", 90, "Ficha única de integraciones bloqueadas", "FICHA_INTEGRACIONES_V100.md: credencial, permiso y acción del propietario por integración (Keepa, OpenAI, SP-API, Ads API, DE/FR/IT/UK, Windows), sin pedir secretos.", "python3 tests/v100_ficha_test.py", ["V1-02"]),
+    ("V1-11", 100, "Manual de Sergio v1.0 y documentación de instalación y operación", "MANUAL_SERGIO_V100.md, INSTALACION_V100.md, OPERACION: pasos verificables, sin afirmar Windows verificado.", "python3 tests/v100_docs_test.py", ["V1-03", "V1-04", "V1-10"]),
+    ("V1-12", 110, "Entrega candidata V1.0 (ZIP sin claves, copia, evidencias, bloqueos)", "Informe generado desde el estado real, ZIP sin secretos, hash, lista de bloqueos externos; NO etiquetar producción.", "python3 tests/v100_entrega_test.py", ["V1-06", "V1-07", "V1-08", "V1-09", "V1-11"]),
+]
+
 
 def sembrar():
     e = C.estado(); n = 0
-    for clave, prio, titulo, spec, acept, dep in BACKLOG:
+    for clave, prio, titulo, spec, acept, dep in BACKLOG + BACKLOG_V1:
         if _o(e, clave): continue
-        e["objetivos"].append({"id": "OBJ-%03d" % (len(e["objetivos"]) + 1), "clave": clave, "tipo": "dev", "titulo": "V0.7.0 · " + titulo, "estado": "PENDIENTE", "prioridad": prio, "handler": None,
+        e["objetivos"].append({"id": "OBJ-%03d" % (len(e["objetivos"]) + 1), "clave": clave, "tipo": "dev", "titulo": ("V1.0 · " if clave.startswith("V1-") else "V0.7.0 · ") + titulo, "estado": "PENDIENTE", "prioridad": prio, "handler": None,
                                "spec": spec, "aceptacion": acept, "depende": dep, "intentos": 0, "historial": [], "creado": C.now(), "nota": None, "cada_horas": None}); n += 1
     C.guardar(e); C.log("DEV_SEMBRADO", nuevos=n); return {"nuevos": n, "total_dev": sum(1 for o in e["objetivos"] if o.get("tipo") == "dev")}
 
