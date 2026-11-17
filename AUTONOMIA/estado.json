@@ -468,7 +468,7 @@
    "clave": "V1-07",
    "tipo": "dev",
    "titulo": "V1.0 · Director IA: plan de coordinación de especialistas",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 60,
    "handler": null,
    "spec": "Plan determinista de especialistas (mercado, regulatorio, finanzas, listing, ads) con entradas, salidas, dependencias y propietario; nunca GO por defecto.",
@@ -476,11 +476,20 @@
    "depende": [
     "V1-03"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:53:09Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "14/14 OK",
+     "cola": "OMPLETADOS si sus dependencias lo están\nOK   sin bloqueos pero con secciones PARCIALES: el primero sin dependencias es LISTO PARA TRABAJAR y aparece como siguiente\nOK   endpoint /api/v07/plan 200 y coherente\nOK   sin sesión 401\nOK   producto inexistente: error controlado sin traza ni rutas\n14/14 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 14/14 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:53:09Z"
   },
   {
    "id": "OBJ-025",
@@ -513,7 +522,7 @@
    "clave": "V1-09",
    "tipo": "dev",
    "titulo": "V1.0 · NEON: cinco secciones en móvil y escritorio (Chromium real) y corrección de desbordes",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 80,
    "handler": null,
    "spec": "Playwright a 390, 820 y 1600 px: sin desbordes horizontales (incluye .hr/.sess a 820 px), producto por defecto ACTIVCORE, sin errores de consola, capturas.",
@@ -522,11 +531,20 @@
     "V1-03",
     "V1-04"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:52:16Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "44/44 OK",
+     "cola": "o] DIRECTOR IA: muestra contenido (no vacío)\nOK   [escritorio] producto por defecto en LANZAMIENTOS = ACTIVCORE\nOK   [escritorio] sin errores de consola ni de página\nOK   [escritorio] sin peticiones a red externa\nOK   sin sesión: la interfaz invita a iniciar sesión (estado vacío explicado)\n44/44 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 44/44 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:52:16Z"
   },
   {
    "id": "OBJ-027",
@@ -561,7 +579,7 @@
    "clave": "V1-11",
    "tipo": "dev",
    "titulo": "V1.0 · Manual de Sergio v1.0 y documentación de instalación y operación",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 100,
    "handler": null,
    "spec": "MANUAL_SERGIO_V100.md, INSTALACION_V100.md, OPERACION: pasos verificables, sin afirmar Windows verificado.",
@@ -571,18 +589,27 @@
     "V1-04",
     "V1-10"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:55:35Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "10/10 OK",
+     "cola": "o NO verificado y sin falsas afirmaciones\nOK   no se afirma producción ni conexión real a Amazon/OpenAI\nOK   sin secretos ni claves en la documentación\nOK   los comandos citados existen (INICIAR.bat, server.py, run_all.sh, restablecer)\nOK   límites de 0 € / 0 tokens / sin Amazon declarados\n10/10 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 10/10 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:55:35Z"
   },
   {
    "id": "OBJ-029",
    "clave": "V1-12",
    "tipo": "dev",
    "titulo": "V1.0 · Entrega candidata V1.0 (ZIP sin claves, copia, evidencias, bloqueos)",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 110,
    "handler": null,
    "spec": "Informe generado desde el estado real, ZIP sin secretos, hash, lista de bloqueos externos; NO etiquetar producción.",
@@ -594,18 +621,27 @@
     "V1-09",
     "V1-11"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T16:02:32Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "16/16 OK",
+     "cola": " más de 100 ficheros\nOK   ZIP: sin .env, .db, claves ni PARAR\nOK   ZIP: informe, matriz, ficha, manual, instalación, backend V1 y pruebas V1\nOK   ZIP: capturas de la interfaz V1.0 (60+) y evidencias Keepa reales\nOK   ZIP: ningún texto con aspecto de clave real (salvo centinelas de pruebas)\n16/16 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 16/16 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T16:02:32Z"
   },
   {
    "id": "OBJ-030",
    "clave": "V1-13",
    "tipo": "dev",
    "titulo": "V1.0 · Adaptadores OpenAI, SP-API y Ads API (solo lectura) con pruebas simuladas identificadas",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 105,
    "handler": null,
    "spec": "backend/conectores100.py: un adaptador por servicio con credenciales leídas solo de ficheros .env locales, solo lectura, tope de gasto 0, modo SIMULADO explícito en cada respuesta (campo origen='SIMULADO'), estado NO CONECTADO sin credenciales, nunca declarar operativo sin prueba real; prueba con servidor HTTP local simulado y guardia de red.",
@@ -613,11 +649,20 @@
    "depende": [
     "V1-10"
    ],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:54:29Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "16/16 OK",
+     "cola": "ost oficial de Amazon por HTTPS (transporte inyectado, SIN red en la prueba)\nOK   la prueba no contactó ninguna red externa\nOK   modo inválido y servicio desconocido rechazados\nOK   el código no contiene verbos de escritura ni credenciales literales\nOK   transporte caído → error controlado\n16/16 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:49:52Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 16/16 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:54:29Z"
   }
  ],
  "incidencias": [
@@ -657,6 +702,38 @@
     }
    ],
    "resuelta": "2026-11-17T14:53:42Z"
+  },
+  {
+   "id": "INC-003",
+   "suite": "v0.7-registro",
+   "creada": "2026-11-17T15:57:31Z",
+   "intentos_acumulados": 3,
+   "estado": "RESUELTA",
+   "tipo": "PERSISTENTE",
+   "historial": [
+    {
+     "t": "2026-11-17T15:57:31Z",
+     "estado": "FALLA",
+     "cola": ": el fichero existe y la clase es válida\nOK   run_all.sh: ninguna referencia a ficheros inexistentes\nOK   run_all.sh conserva el cierre «TODAS LAS SUITES OK» como última instrucción\nOK   ninguna suite del coordinador puede usar red de pago: entorno de pruebas sin claves y Keepa desactivado\n72/74 OK\n"
+    }
+   ],
+   "resuelta": "2026-11-17T15:59:11Z"
+  },
+  {
+   "id": "INC-004",
+   "suite": "v1.0-entrega",
+   "creada": "2026-11-17T15:59:11Z",
+   "intentos_acumulados": 3,
+   "estado": "RESUELTA",
+   "tipo": "PERSISTENTE",
+   "historial": [
+    {
+     "t": "2026-11-17T15:59:11Z",
+     "estado": "FALLA",
+     "cola": " más de 100 ficheros\nOK   ZIP: sin .env, .db, claves ni PARAR\nOK   ZIP: informe, matriz, ficha, manual, instalación, backend V1 y pruebas V1\nOK   ZIP: capturas de la interfaz V1.0 (60+) y evidencias Keepa reales\nOK   ZIP: ningún texto con aspecto de clave real (salvo centinelas de pruebas)\n15/16 OK\n"
+    }
+   ],
+   "resuelta": "2026-11-17T16:00:23Z"
   }
  ],
  "ejecuciones": [
@@ -745,15 +822,10 @@
   "OBJ-005 [2] PROPIETARIO: instalar/reconectar la app de GitHub para poder hacer push (hoy 403) (requiere a Claude/persona)",
   "OBJ-010 [2] Mantenimiento: informe de entrega actualizado",
   "OBJ-006 [4] Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector (requiere a Claude/persona)",
-  "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)",
-  "OBJ-024 [60] V1.0 · Director IA: plan de coordinación de especialistas (requiere a Claude/persona)",
-  "OBJ-026 [80] V1.0 · NEON: cinco secciones en móvil y escritorio (Chromium real) y corrección de desbordes (requiere a Claude/persona)",
-  "OBJ-028 [100] V1.0 · Manual de Sergio v1.0 y documentación de instalación y operación (requiere a Claude/persona)",
-  "OBJ-030 [105] V1.0 · Adaptadores OpenAI, SP-API y Ads API (solo lectura) con pruebas simuladas identificadas (requiere a Claude/persona)",
-  "OBJ-029 [110] V1.0 · Entrega candidata V1.0 (ZIP sin claves, copia, evidencias, bloqueos) (requiere a Claude/persona)"
+  "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)"
  ],
  "pruebas": {
-  "ts": "2026-11-17T14:53:43Z",
+  "ts": "2026-11-17T16:01:40Z",
   "resultados": [
    {
     "suite": "keepa-cliente",
@@ -793,7 +865,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "74/74 OK",
-    "segundos": 0.8
+    "segundos": 0.7
    },
    {
     "suite": "v0.5-catálogo",
@@ -801,7 +873,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "43/43 OK",
-    "segundos": 1.4
+    "segundos": 1.3
    },
    {
     "suite": "API",
@@ -809,7 +881,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "51/51 OK",
-    "segundos": 1.1
+    "segundos": 1.2
    },
    {
     "suite": "lanzador",
@@ -817,7 +889,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "9/9 OK",
-    "segundos": 11.6
+    "segundos": 11.3
    },
    {
     "suite": "UI-v0.6",
@@ -825,7 +897,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "27/27 OK",
-    "segundos": 12.2
+    "segundos": 13.0
    },
    {
     "suite": "v0.7-keepa-real",
@@ -833,7 +905,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "21/21 OK",
-    "segundos": 0.3
+    "segundos": 0.5
    },
    {
     "suite": "v0.7-expediente",
@@ -841,7 +913,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "41/41 OK",
-    "segundos": 0.3
+    "segundos": 0.4
    },
    {
     "suite": "v0.7-director",
@@ -857,7 +929,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "23/23 OK",
-    "segundos": 0.6
+    "segundos": 0.9
    },
    {
     "suite": "UI-v0.7",
@@ -865,7 +937,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "31/31 OK",
-    "segundos": 12.4
+    "segundos": 13.4
    },
    {
     "suite": "desarrollo",
@@ -873,14 +945,118 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "9/9 OK",
-    "segundos": 0.1
+    "segundos": 0.2
+   },
+   {
+    "suite": "relevo",
+    "clase": "LOCAL",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "14/14 OK",
+    "segundos": 2.5
+   },
+   {
+    "suite": "v1.0-matriz",
+    "clase": "LOCAL",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "6/6 OK",
+    "segundos": 0.0
+   },
+   {
+    "suite": "v1.0-lanzar",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "12/12 OK",
+    "segundos": 1.5
+   },
+   {
+    "suite": "v1.0-vender",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "16/16 OK",
+    "segundos": 1.0
+   },
+   {
+    "suite": "v1.0-finanzas",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "20/20 OK",
+    "segundos": 0.0
+   },
+   {
+    "suite": "v1.0-export",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "14/14 OK",
+    "segundos": 0.9
+   },
+   {
+    "suite": "v1.0-persistencia",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "16/16 OK",
+    "segundos": 0.2
+   },
+   {
+    "suite": "v1.0-ficha",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "6/6 OK",
+    "segundos": 0.0
+   },
+   {
+    "suite": "v1.0-ui",
+    "clase": "MOCK+NAVEGADOR",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "44/44 OK",
+    "segundos": 15.6
+   },
+   {
+    "suite": "v1.0-plan",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "14/14 OK",
+    "segundos": 0.8
+   },
+   {
+    "suite": "v1.0-conectores",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "16/16 OK",
+    "segundos": 0.6
+   },
+   {
+    "suite": "v1.0-docs",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "10/10 OK",
+    "segundos": 0.0
+   },
+   {
+    "suite": "v1.0-entrega",
+    "clase": "LOCAL",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "16/16 OK",
+    "segundos": 1.5
    },
    {
     "suite": "v0.7-registro",
     "clase": "LOCAL",
     "estado": "PASA",
     "intentos": 1,
-    "resultado": "38/38 OK",
+    "resultado": "75/75 OK",
     "segundos": 0.0
    },
    {
@@ -889,13 +1065,13 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "15/15 OK",
-    "segundos": 1.2
+    "segundos": 1.6
    }
   ],
-  "pasan": 17,
+  "pasan": 30,
   "intermitentes": 0,
   "fallan": 0,
-  "total": 17
+  "total": 30
  },
  "ciclos": [
   {
@@ -935,16 +1111,16 @@
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T15:49:52Z",
+ "actualizado": "2026-11-17T16:02:32Z",
  "auditoria": {
-  "t": "2026-11-17T14:53:43Z",
+  "t": "2026-11-17T16:01:41Z",
   "ok": true,
   "detalle": {
    "suites": {
-    "pasan": 17,
+    "pasan": 30,
     "intermitentes": 0,
     "fallan": 0,
-    "total": 17
+    "total": 30
    },
    "escaneo_secretos": 0,
    "registro_integro": true,
