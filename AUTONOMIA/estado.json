@@ -663,6 +663,35 @@
    "nota": "aceptación OK: 16/16 OK",
    "cada_horas": null,
    "actualizado": "2026-11-17T15:54:29Z"
+  },
+  {
+   "id": "OBJ-031",
+   "clave": "V1-14",
+   "tipo": "dev",
+   "titulo": "V1.0 · Despliegue cloud privado: modo cloud, HTTPS, usuarios por variables secretas, respaldo y paquete Docker/Render",
+   "estado": "HECHO",
+   "prioridad": 108,
+   "handler": null,
+   "spec": "server.py modo cloud (host público, solo HTTPS, cookie Secure, HSTS, /healthz, sin secretos en logs, usuarios sembrados, respaldo automático) + Dockerfile + render.yaml; probado con proceso real y proxy HTTPS local; el despliegue en proveedor NO se realiza sin autorización de coste.",
+   "aceptacion": "python3 tests/v100_cloud_test.py && python3 tests/ui_v100_cloud_test.py",
+   "depende": [
+    "V1-08",
+    "V1-09"
+   ],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T16:16:38Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "37/37 OK",
+     "cola": "ar el servidor: Sergio vuelve a entrar con el mismo usuario (persistencia en disco) y ve los datos de ACTIVCORE\nOK   el servidor reiniciado no tiene errores de consola\nOK   sin sesión, la API devuelve 401 (nada accesible sin autenticar)\nOK   los logs del servidor no contienen la contraseña\n37/37 OK\n"
+    }
+   ],
+   "creado": "2026-11-17T16:16:15Z",
+   "nota": "aceptación OK: 37/37 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T16:16:38Z"
   }
  ],
  "incidencias": [
@@ -734,6 +763,38 @@
     }
    ],
    "resuelta": "2026-11-17T16:00:23Z"
+  },
+  {
+   "id": "INC-005",
+   "suite": "v1.0-ficha",
+   "creada": "2026-11-17T16:18:03Z",
+   "intentos_acumulados": 3,
+   "estado": "RESUELTA",
+   "tipo": "PERSISTENTE",
+   "historial": [
+    {
+     "t": "2026-11-17T16:18:03Z",
+     "estado": "FALLA",
+     "cola": " integración tiene los 6 campos\nOK   no contiene secretos (ni cadenas largas alfanuméricas ni asignaciones de claves)\nOK   no pide secretos por chat y los ubica en ficheros locales\nFAIL coherente con la matriz: todo BLOQUEADO de la matriz aparece en la ficha\nOK   Windows figura NO VERIFICADO\n5/6 OK\n"
+    }
+   ],
+   "resuelta": "2026-11-17T16:19:40Z"
+  },
+  {
+   "id": "INC-006",
+   "suite": "v1.0-entrega",
+   "creada": "2026-11-17T16:20:00Z",
+   "intentos_acumulados": 3,
+   "estado": "RESUELTA",
+   "tipo": "PERSISTENTE",
+   "historial": [
+    {
+     "t": "2026-11-17T16:20:00Z",
+     "estado": "FALLA",
+     "cola": " más de 100 ficheros\nOK   ZIP: sin .env, .db, claves ni PARAR\nOK   ZIP: informe, matriz, ficha, manual, instalación, backend V1 y pruebas V1\nOK   ZIP: capturas de la interfaz V1.0 (60+) y evidencias Keepa reales\nOK   ZIP: ningún texto con aspecto de clave real (salvo centinelas de pruebas)\n15/16 OK\n"
+    }
+   ],
+   "resuelta": "2026-11-17T16:21:27Z"
   }
  ],
  "ejecuciones": [
@@ -825,7 +886,7 @@
   "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)"
  ],
  "pruebas": {
-  "ts": "2026-11-17T16:01:40Z",
+  "ts": "2026-11-17T16:21:51Z",
   "resultados": [
    {
     "suite": "keepa-cliente",
@@ -849,7 +910,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "16/16 OK",
-    "segundos": 0.4
+    "segundos": 0.3
    },
    {
     "suite": "keepa-evidencias-reales",
@@ -873,7 +934,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "43/43 OK",
-    "segundos": 1.3
+    "segundos": 1.2
    },
    {
     "suite": "API",
@@ -881,7 +942,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "51/51 OK",
-    "segundos": 1.2
+    "segundos": 1.1
    },
    {
     "suite": "lanzador",
@@ -889,7 +950,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "9/9 OK",
-    "segundos": 11.3
+    "segundos": 11.6
    },
    {
     "suite": "UI-v0.6",
@@ -897,7 +958,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "27/27 OK",
-    "segundos": 13.0
+    "segundos": 11.6
    },
    {
     "suite": "v0.7-keepa-real",
@@ -905,7 +966,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "21/21 OK",
-    "segundos": 0.5
+    "segundos": 0.3
    },
    {
     "suite": "v0.7-expediente",
@@ -913,7 +974,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "41/41 OK",
-    "segundos": 0.4
+    "segundos": 0.3
    },
    {
     "suite": "v0.7-director",
@@ -921,7 +982,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "29/29 OK",
-    "segundos": 0.4
+    "segundos": 0.3
    },
    {
     "suite": "v0.7-seguridad",
@@ -929,7 +990,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "23/23 OK",
-    "segundos": 0.9
+    "segundos": 0.6
    },
    {
     "suite": "UI-v0.7",
@@ -937,7 +998,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "31/31 OK",
-    "segundos": 13.4
+    "segundos": 11.3
    },
    {
     "suite": "desarrollo",
@@ -945,7 +1006,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "9/9 OK",
-    "segundos": 0.2
+    "segundos": 0.1
    },
    {
     "suite": "relevo",
@@ -953,7 +1014,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "14/14 OK",
-    "segundos": 2.5
+    "segundos": 1.8
    },
    {
     "suite": "v1.0-matriz",
@@ -969,7 +1030,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "12/12 OK",
-    "segundos": 1.5
+    "segundos": 1.4
    },
    {
     "suite": "v1.0-vender",
@@ -977,7 +1038,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "16/16 OK",
-    "segundos": 1.0
+    "segundos": 0.9
    },
    {
     "suite": "v1.0-finanzas",
@@ -993,7 +1054,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "14/14 OK",
-    "segundos": 0.9
+    "segundos": 0.8
    },
    {
     "suite": "v1.0-persistencia",
@@ -1017,7 +1078,7 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "44/44 OK",
-    "segundos": 15.6
+    "segundos": 15.1
    },
    {
     "suite": "v1.0-plan",
@@ -1052,11 +1113,27 @@
     "segundos": 1.5
    },
    {
+    "suite": "v1.0-cloud",
+    "clase": "MOCK",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "29/29 OK",
+    "segundos": 2.0
+   },
+   {
+    "suite": "v1.0-ui-cloud",
+    "clase": "MOCK+NAVEGADOR",
+    "estado": "PASA",
+    "intentos": 1,
+    "resultado": "37/37 OK",
+    "segundos": 20.6
+   },
+   {
     "suite": "v0.7-registro",
     "clase": "LOCAL",
     "estado": "PASA",
     "intentos": 1,
-    "resultado": "75/75 OK",
+    "resultado": "79/79 OK",
     "segundos": 0.0
    },
    {
@@ -1065,13 +1142,13 @@
     "estado": "PASA",
     "intentos": 1,
     "resultado": "15/15 OK",
-    "segundos": 1.6
+    "segundos": 1.5
    }
   ],
-  "pasan": 30,
+  "pasan": 32,
   "intermitentes": 0,
   "fallan": 0,
-  "total": 30
+  "total": 32
  },
  "ciclos": [
   {
@@ -1111,16 +1188,16 @@
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T16:02:32Z",
+ "actualizado": "2026-11-17T16:21:53Z",
  "auditoria": {
-  "t": "2026-11-17T16:01:41Z",
+  "t": "2026-11-17T16:21:53Z",
   "ok": true,
   "detalle": {
    "suites": {
-    "pasan": 30,
+    "pasan": 32,
     "intermitentes": 0,
     "fallan": 0,
-    "total": 30
+    "total": 32
    },
    "escaneo_secretos": 0,
    "registro_integro": true,
