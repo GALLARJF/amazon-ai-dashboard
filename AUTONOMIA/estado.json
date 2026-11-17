@@ -302,34 +302,52 @@
    "clave": "V1-01",
    "tipo": "dev",
    "titulo": "V1.0 · Infraestructura de relevo: bloqueo, recuperación y commit controlado",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 5,
    "handler": null,
    "spec": "tools/relevo.py --adquirir/--commit/--publicar --liberar.",
    "aceptacion": "python3 tests/relevo_test.py",
    "depende": [],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:05:04Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "14/14 OK",
+     "cola": "3})\nOK   commit controlado: rechaza si la rama actual no es la permitida (main)\nOK   commit controlado: rechaza si hay un secreto en el árbol\nOK   commit controlado: limpio → commit + push sin force\nOK   la rama remota existe y el commit lleva la atribución\nOK   el código nunca usa --force\n14/14 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 14/14 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:05:04Z"
   },
   {
    "id": "OBJ-019",
    "clave": "V1-02",
    "tipo": "dev",
    "titulo": "V1.0 · Matriz de aceptación V1.0 (4 categorías) generada desde el estado real",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 10,
    "handler": null,
    "spec": "tools/matriz_v100.py genera MATRIZ_ACEPTACION_V100.md: cada requisito en VERIFICADO REAL / VERIFICADO SIMULADO / IMPLEMENTADO NO VERIFICADO / BLOQUEADO (con causa y propietario). Sin marcar real lo simulado.",
    "aceptacion": "python3 tests/v100_matriz_test.py",
    "depende": [],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T15:05:04Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "6/6 OK",
+     "cola": "OK   las 4 categorías aparecen\nOK   todo requisito tiene categoría válida\nOK   todo BLOQUEADO nombra propietario\nOK   Windows y OpenAI no figuran como verificados\nOK   lo simulado nunca figura como real\nOK   sin claves en el texto\n6/6 OK\n"
+    }
+   ],
    "creado": "2026-11-17T15:04:30Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 6/6 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T15:05:04Z"
   },
   {
    "id": "OBJ-020",
@@ -654,7 +672,17 @@
   "OBJ-005 [2] PROPIETARIO: instalar/reconectar la app de GitHub para poder hacer push (hoy 403) (requiere a Claude/persona)",
   "OBJ-010 [2] Mantenimiento: informe de entrega actualizado",
   "OBJ-006 [4] Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector (requiere a Claude/persona)",
-  "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)"
+  "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)",
+  "OBJ-020 [20] V1.0 · PREPARAR Y LANZAR: flujo completo ACTIVCORE con persistencia (requiere a Claude/persona)",
+  "OBJ-021 [30] V1.0 · VENDER Y OPTIMIZAR con informes CSV importados (datos simulados etiquetados) (requiere a Claude/persona)",
+  "OBJ-022 [40] V1.0 · Motor financiero determinista: escenarios, sensibilidad, punto de equilibrio (requiere a Claude/persona)",
+  "OBJ-023 [50] V1.0 · Exportaciones CSV/HTML/Markdown con trazabilidad (requiere a Claude/persona)",
+  "OBJ-024 [60] V1.0 · Director IA: plan de coordinación de especialistas (requiere a Claude/persona)",
+  "OBJ-025 [70] V1.0 · Persistencia y recuperación: copia de seguridad, restauración y BD corrupta (requiere a Claude/persona)",
+  "OBJ-026 [80] V1.0 · NEON: cinco secciones en móvil y escritorio (Chromium real) y corrección de desbordes (requiere a Claude/persona)",
+  "OBJ-027 [90] V1.0 · Ficha única de integraciones bloqueadas (requiere a Claude/persona)",
+  "OBJ-028 [100] V1.0 · Manual de Sergio v1.0 y documentación de instalación y operación (requiere a Claude/persona)",
+  "OBJ-029 [110] V1.0 · Entrega candidata V1.0 (ZIP sin claves, copia, evidencias, bloqueos) (requiere a Claude/persona)"
  ],
  "pruebas": {
   "ts": "2026-11-17T14:53:43Z",
@@ -839,7 +867,7 @@
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T15:04:30Z",
+ "actualizado": "2026-11-17T15:05:04Z",
  "auditoria": {
   "t": "2026-11-17T14:53:43Z",
   "ok": true,
