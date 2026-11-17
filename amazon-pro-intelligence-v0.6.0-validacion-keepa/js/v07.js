@@ -36,7 +36,7 @@
       <div id="v7s-${i}" class="v7-body" hidden>${kv(s.data)}${s.sources.length ? `<h5>Fuentes y fecha de cada dato</h5><ul>${s.sources.map((x) => `<li><small>${esc(x.field)} — ${esc(x.source)} (${esc(x.date)}) ${badge(x.class, 'b7-doc')}</small></li>`).join('')}</ul>` : '<p class="muted">Sin fuentes: no hay dato.</p>'}</div></div>`).join('');
     const q = encodeURIComponent(product);
     return `<article class="card c-violet v7-exp"><h3>Expediente comercial v0.7 ${stBadge(e.verdict)}</h3><p class="muted">Solo lectura de lo ya registrado: ${e.network_calls} llamadas de red · ${e.tokens_spent_now} tokens · ${e.cost_now_eur} €. Nunca GO por defecto.</p>${secs}${unlocksHtml(e.unlocks)}
-      <p><a class="btn ghost" download href="/api/v07/expediente?product=${q}&fmt=md" aria-label="Descargar expediente v0.7 en Markdown">⬇ Expediente v0.7 (MD)</a> <a class="btn ghost" download href="/api/v07/expediente?product=${q}&fmt=json" aria-label="Descargar expediente v0.7 en JSON">⬇ JSON</a></p>
+      <p><a class="btn ghost v7-dl" href="/api/v07/expediente?product=${q}&fmt=md" aria-label="Descargar expediente v0.7 en Markdown">⬇ Expediente v0.7 (MD)</a> <a class="btn ghost v7-dl" href="/api/v07/expediente?product=${q}&fmt=json" aria-label="Descargar expediente v0.7 en JSON">⬇ JSON</a></p>
       <ul>${e.limits.map((x) => `<li><small class="muted">${esc(x)}</small></li>`).join('')}</ul></article>`;
   }
   function keepaHtml(k) {

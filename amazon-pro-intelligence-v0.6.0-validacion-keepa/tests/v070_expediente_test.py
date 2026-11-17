@@ -93,6 +93,8 @@ c, body, ct = call("GET", f"/api/v07/expediente?product={AC}&fmt=json"); j = jso
 check("API json: 200, 5 secciones, veredicto NO DECIDIBLE", c == 200 and "json" in ct and len(j["sections"]) == 5 and j["verdict"] == "NO DECIDIBLE")
 c2, body2, ct2 = call("GET", f"/api/v07/expediente?product={AC}&fmt=md")
 check("API md: 200, text/markdown y mismo contenido que el export", c2 == 200 and "markdown" in ct2 and body2.decode() == a)
+with op.open(urllib.request.Request(f"http://127.0.0.1:{port}/api/v07/expediente?product={AC}&fmt=md"), timeout=30) as _r: _cd = _r.headers.get("Content-Disposition", "")
+check("API md: Content-Disposition adjunto con nombre seguro", _cd == 'attachment; filename="expediente_v07_PRD-ACTIVCORE-V2.md"')
 check("API: fmt por defecto = json", json.loads(call("GET", f"/api/v07/expediente?product={AC}")[1])["verdict"] == "NO DECIDIBLE")
 check("API: fmt inválido → 400, producto inexistente → 404, sin product → 404/400", call("GET", f"/api/v07/expediente?product={AC}&fmt=xml")[0] == 400 and call("GET", "/api/v07/expediente?product=PRD-NO")[0] == 404 and call("GET", "/api/v07/expediente")[0] in (400, 404))
 blob = body.decode() + body2.decode(); check("API: sin claves ni rutas del servidor en la respuesta", "KEEPA_API_KEY" not in blob and "sk-" not in blob and ROOT not in blob and "Traceback" not in blob)

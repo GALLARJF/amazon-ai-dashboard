@@ -17,6 +17,6 @@ def handle(APP, s, method, path, q, b):
             fmt = g("fmt") or "json"
             if fmt not in ("json", "md"): raise ValueError("fmt debe ser json o md")
             d = EX.build(APP, g("product"))
-            if fmt == "md": return ("raw", EX.to_markdown(d).encode("utf-8"), "text/markdown; charset=utf-8", {})
+            if fmt == "md": return ("raw", EX.to_markdown(d).encode("utf-8"), "text/markdown; charset=utf-8", {"Content-Disposition": 'attachment; filename="expediente_v07_%s.md"' % d["product_id"]})
             return d
     raise LookupError(p)

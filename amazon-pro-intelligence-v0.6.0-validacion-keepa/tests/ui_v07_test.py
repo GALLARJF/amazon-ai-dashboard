@@ -37,7 +37,7 @@ with sync_playwright() as p:
     check("precios obsoletos marcados OBSOLETO", P.locator(".v7-keepa .b7-stale").count() >= 1)
     check("medianas con insignia CALCULADO; economía con SIN DATOS/NO CALCULABLE", P.locator(".b7-calc").count() >= 1 and re.search(r"NO CALCULABLE|SIN DATOS", P.locator(".v7-exp").inner_text()))
     check("expediente: 5 secciones + desbloqueos priorizados con propietario y coste", P.locator(".v7-exp .v7-sec").count() == 5 and P.locator(".v7-exp .v7-unlock").count() >= 4 and "propietario" in P.locator(".v7-exp").inner_text().lower() and "tokens" in P.locator(".v7-exp").inner_text().lower())
-    check("descargas del expediente md/json con atributo download", P.locator("a[download][href*='/api/v07/expediente'][href*='fmt=md']").count() == 1 and P.locator("a[download][href*='fmt=json']").count() == 1)
+    check("descargas del expediente md/json (enlaces .v7-dl; el md llega como adjunto)", P.locator("a.v7-dl[href*='/api/v07/expediente'][href*='fmt=md']").count() == 1 and P.locator("a.v7-dl[href*='fmt=json']").count() == 1 and "attachment" in pg.evaluate("fetch(document.querySelector('a.v7-dl[href*=\"fmt=md\"]').href).then(r=>r.headers.get('content-disposition')||'')"))
     check("sin 'undefined', 'NaN', 'null' ni 'None' en el panel", not re.search(r"undefined|NaN|\bnull\b|\bNone\b", t))
     check("diseño NEON: tarjeta con borde de color y fondo oscuro coherente", pg.evaluate("getComputedStyle(document.body).backgroundColor") == "rgb(2, 5, 13)" and P.locator(".card").count() >= 3)
     shot(pg, "40_v07_lanzamientos_activcore", full_page=True)
