@@ -21,4 +21,7 @@ jobs:
           docker logs app; test "$ok" = 1
           test "$(docker exec app id -u)" = 10001
       - name: Sin Host público el contenedor rechaza peticiones
-        run: test "$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: evil.example' http://127.0.0.1:10000/api/me)" != 200
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: evil.example' http://127.0.0.1:10000/api/me)
+          echo "HTTP $code"
+          test "$code" != 200
