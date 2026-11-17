@@ -175,3 +175,14 @@ input.sm{width:84px}
 @media(max-width:700px){.tabs button.main{padding:7px 10px;font-size:12px}.navsep{display:none}}
 .euform .wide{grid-column:1/-1}.euform textarea{width:100%}
 .inv6 #badge{display:none}
+
+/* ===== V0.7.0 · procedencia del dato, briefing, expediente (V7-04) ===== */
+section.v7{margin:14px 0;max-width:100%;min-width:0}.v7-title{font-size:16px;color:var(--cy);margin:0 0 6px}
+.b7{display:inline-block;font-size:11px;font-weight:800;border-radius:8px;padding:2px 8px;border:1px solid;margin:0 2px;white-space:nowrap}
+.b7-real{color:#b6ff2e}.b7-calc{color:#18e6ff}.b7-none{color:#ff6b81}.b7-unc,.b7-wait,.b7-stale{color:#ffb02e}.b7-doc{color:#b968ff}.b7-inf{color:#ff9ad5}
+.v7 .card{margin:10px 0;max-width:100%;min-width:0;overflow-wrap:anywhere}.v7 h4{margin:10px 0 4px;color:var(--cy);font-size:13px}.v7 h5{margin:6px 0 2px;font-size:12px}
+.v7 ol,.v7 ul{margin:4px 0 6px 20px;padding:0}.v7 li{margin:4px 0}.v7-scroll{overflow-x:auto;max-width:100%}.v7-scroll table{min-width:760px}.v7 caption{caption-side:top;text-align:left;color:var(--mut);font-size:12px;padding:4px 0}
+.v7-toggle{all:unset;cursor:pointer;color:var(--cy);font:inherit;font-weight:800;padding:4px 6px;border-radius:6px}.v7-toggle::before{content:"▸ "}.v7-toggle[aria-expanded="true"]::before{content:"▾ "}
+.v7 button:focus-visible,.v7 a:focus-visible{outline:2px solid var(--cy);outline-offset:2px}.v7-kv{display:grid;grid-template-columns:minmax(90px,200px) 1fr;gap:2px 10px;font-size:12px}.v7-kv dt{color:var(--mut)}.v7-kv dd{margin:0}
+.v7-empty{border:1px dashed var(--am);border-radius:10px;padding:8px}.v7-err{color:var(--rd)}
+@media (max-width:600px){.v7-kv{grid-template-columns:1fr}}
