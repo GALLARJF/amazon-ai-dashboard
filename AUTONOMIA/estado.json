@@ -296,6 +296,237 @@
    "nota": "aceptación OK: 15/15 OK",
    "cada_horas": null,
    "actualizado": "2026-11-17T14:52:04Z"
+  },
+  {
+   "id": "OBJ-018",
+   "clave": "V1-01",
+   "tipo": "dev",
+   "titulo": "V1.0 · Infraestructura de relevo: bloqueo, recuperación y commit controlado",
+   "estado": "PENDIENTE",
+   "prioridad": 5,
+   "handler": null,
+   "spec": "tools/relevo.py --adquirir/--commit/--publicar --liberar.",
+   "aceptacion": "python3 tests/relevo_test.py",
+   "depende": [],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-019",
+   "clave": "V1-02",
+   "tipo": "dev",
+   "titulo": "V1.0 · Matriz de aceptación V1.0 (4 categorías) generada desde el estado real",
+   "estado": "PENDIENTE",
+   "prioridad": 10,
+   "handler": null,
+   "spec": "tools/matriz_v100.py genera MATRIZ_ACEPTACION_V100.md: cada requisito en VERIFICADO REAL / VERIFICADO SIMULADO / IMPLEMENTADO NO VERIFICADO / BLOQUEADO (con causa y propietario). Sin marcar real lo simulado.",
+   "aceptacion": "python3 tests/v100_matriz_test.py",
+   "depende": [],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-020",
+   "clave": "V1-03",
+   "tipo": "dev",
+   "titulo": "V1.0 · PREPARAR Y LANZAR: flujo completo ACTIVCORE con persistencia",
+   "estado": "PENDIENTE",
+   "prioridad": 20,
+   "handler": null,
+   "spec": "Flujo de extremo a extremo en la UI y API: producto → hipótesis → expediente → decisión registrada → persistencia tras reinicio del servidor. Sin datos inventados; huecos explícitos.",
+   "aceptacion": "python3 tests/v100_lanzar_test.py",
+   "depende": [
+    "V1-02"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-021",
+   "clave": "V1-04",
+   "tipo": "dev",
+   "titulo": "V1.0 · VENDER Y OPTIMIZAR con informes CSV importados (datos simulados etiquetados)",
+   "estado": "PENDIENTE",
+   "prioridad": 30,
+   "handler": null,
+   "spec": "Importar CSV de ventas/anuncios, validar columnas, calcular métricas deterministas (ACOS, margen, conversión), etiqueta SIMULADO cuando el dato no sea real; rechazo de CSV malformado.",
+   "aceptacion": "python3 tests/v100_vender_test.py",
+   "depende": [
+    "V1-02"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-022",
+   "clave": "V1-05",
+   "tipo": "dev",
+   "titulo": "V1.0 · Motor financiero determinista: escenarios, sensibilidad, punto de equilibrio",
+   "estado": "PENDIENTE",
+   "prioridad": 40,
+   "handler": null,
+   "spec": "Hipótesis etiquetadas como tales, resultados reproducibles, sin costes inventados: NO CALCULABLE si falta un dato.",
+   "aceptacion": "python3 tests/v100_finanzas_test.py",
+   "depende": [
+    "V1-02"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-023",
+   "clave": "V1-06",
+   "tipo": "dev",
+   "titulo": "V1.0 · Exportaciones CSV/HTML/Markdown con trazabilidad",
+   "estado": "PENDIENTE",
+   "prioridad": 50,
+   "handler": null,
+   "spec": "Exportar expediente y resultados con fuente, fecha y procedencia; escapado seguro; nombre de fichero saneado.",
+   "aceptacion": "python3 tests/v100_export_test.py",
+   "depende": [
+    "V1-03",
+    "V1-04",
+    "V1-05"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-024",
+   "clave": "V1-07",
+   "tipo": "dev",
+   "titulo": "V1.0 · Director IA: plan de coordinación de especialistas",
+   "estado": "PENDIENTE",
+   "prioridad": 60,
+   "handler": null,
+   "spec": "Plan determinista de especialistas (mercado, regulatorio, finanzas, listing, ads) con entradas, salidas, dependencias y propietario; nunca GO por defecto.",
+   "aceptacion": "python3 tests/v100_director_plan_test.py",
+   "depende": [
+    "V1-03"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-025",
+   "clave": "V1-08",
+   "tipo": "dev",
+   "titulo": "V1.0 · Persistencia y recuperación: copia de seguridad, restauración y BD corrupta",
+   "estado": "PENDIENTE",
+   "prioridad": 70,
+   "handler": null,
+   "spec": "Backup/restore de SQLite verificado con hash; arranque con BD corrupta falla de forma controlada sin pérdida; persistencia entre sesiones.",
+   "aceptacion": "python3 tests/v100_persistencia_test.py",
+   "depende": [],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-026",
+   "clave": "V1-09",
+   "tipo": "dev",
+   "titulo": "V1.0 · NEON: cinco secciones en móvil y escritorio (Chromium real) y corrección de desbordes",
+   "estado": "PENDIENTE",
+   "prioridad": 80,
+   "handler": null,
+   "spec": "Playwright a 390, 820 y 1600 px: sin desbordes horizontales (incluye .hr/.sess a 820 px), producto por defecto ACTIVCORE, sin errores de consola, capturas.",
+   "aceptacion": "python3 tests/ui_v100_test.py",
+   "depende": [
+    "V1-03",
+    "V1-04"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-027",
+   "clave": "V1-10",
+   "tipo": "dev",
+   "titulo": "V1.0 · Ficha única de integraciones bloqueadas",
+   "estado": "PENDIENTE",
+   "prioridad": 90,
+   "handler": null,
+   "spec": "FICHA_INTEGRACIONES_V100.md: credencial, permiso y acción del propietario por integración (Keepa, OpenAI, SP-API, Ads API, DE/FR/IT/UK, Windows), sin pedir secretos.",
+   "aceptacion": "python3 tests/v100_ficha_test.py",
+   "depende": [
+    "V1-02"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-028",
+   "clave": "V1-11",
+   "tipo": "dev",
+   "titulo": "V1.0 · Manual de Sergio v1.0 y documentación de instalación y operación",
+   "estado": "PENDIENTE",
+   "prioridad": 100,
+   "handler": null,
+   "spec": "MANUAL_SERGIO_V100.md, INSTALACION_V100.md, OPERACION: pasos verificables, sin afirmar Windows verificado.",
+   "aceptacion": "python3 tests/v100_docs_test.py",
+   "depende": [
+    "V1-03",
+    "V1-04",
+    "V1-10"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
+  },
+  {
+   "id": "OBJ-029",
+   "clave": "V1-12",
+   "tipo": "dev",
+   "titulo": "V1.0 · Entrega candidata V1.0 (ZIP sin claves, copia, evidencias, bloqueos)",
+   "estado": "PENDIENTE",
+   "prioridad": 110,
+   "handler": null,
+   "spec": "Informe generado desde el estado real, ZIP sin secretos, hash, lista de bloqueos externos; NO etiquetar producción.",
+   "aceptacion": "python3 tests/v100_entrega_test.py",
+   "depende": [
+    "V1-06",
+    "V1-07",
+    "V1-08",
+    "V1-09",
+    "V1-11"
+   ],
+   "intentos": 0,
+   "historial": [],
+   "creado": "2026-11-17T15:04:30Z",
+   "nota": null,
+   "cada_horas": null
   }
  ],
  "incidencias": [
@@ -608,7 +839,7 @@
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T14:53:43Z",
+ "actualizado": "2026-11-17T15:04:30Z",
  "auditoria": {
   "t": "2026-11-17T14:53:43Z",
   "ok": true,
