@@ -1,5 +1,5 @@
 """V0.7 — rutas /api/v07/*. El servidor aplica sesión y CSRF antes de llamar; aquí: acceso al catálogo y rol. Solo lectura de datos ya obtenidos (sin red, sin gasto)."""
-from . import keepa_real as KR, expediente7 as EX, director7 as D7, export100 as XP
+from . import keepa_real as KR, expediente7 as EX, director7 as D7, export100 as XP, plan100 as PL
 from .catalog import ACCOUNT_ID
 
 
@@ -19,6 +19,7 @@ def handle(APP, s, method, path, q, b):
             d = EX.build(APP, g("product"))
             if fmt == "md": return ("raw", EX.to_markdown(d).encode("utf-8"), "text/markdown; charset=utf-8", {"Content-Disposition": 'attachment; filename="expediente_v07_%s.md"' % d["product_id"]})
             return d
+        if p == "plan": return PL.build(APP, g("product"))
         if p == "export":
             pid = g("product"); fmt = g("fmt") or "csv"
             if fmt not in ("csv", "html", "md"): raise ValueError("fmt debe ser csv, html o md")
