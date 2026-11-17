@@ -6,7 +6,8 @@ import server as S
 R = []
 def check(n, c): R.append((n, bool(c))); print(("OK   " if c else "FAIL ") + n)
 KEY = "KEEPA-CENTINELA-V050-0123456789abcdef0123456789abcdef"
-KENV = {"KEEPA_API_KEY": KEY, "AMAZON_PRO_KEEPA_ENABLE": "1", "AMAZON_PRO_KEEPA_MIN_GAP_S": "0", "AMAZON_PRO_KEEPA_BATCH_BUDGET": "30", "AMAZON_PRO_KEEPA_HARD_CAP": "120"}
+# K1: el tope absoluto por ejecución ahora se APLICA también al total aprobado de un descubrimiento; este test ejecuta el plan completo de 160 tokens, así que usa tope 200.
+KENV = {"KEEPA_API_KEY": KEY, "AMAZON_PRO_KEEPA_ENABLE": "1", "AMAZON_PRO_KEEPA_MIN_GAP_S": "0", "AMAZON_PRO_KEEPA_BATCH_BUDGET": "30", "AMAZON_PRO_KEEPA_HARD_CAP": "200"}
 ENV_BOX = {"e": KENV}
 KC = []
 SERUM = {3: ["Haarserum Kopfhaut Koffein %d ml", "Kopfhaut Serum gegen Haarausfall %d ml"], 4: ["sérum cuir chevelu caféine %d ml", "sérum anti-chute cheveux %d ml"], 8: ["siero capelli cuoio capelluto %d ml", "siero anticaduta capelli %d ml"], 9: ["sérum capilar cuero cabelludo cafeína %d ml", "tratamiento anticaída cuero cabelludo sérum %d ml"]}

@@ -9,7 +9,7 @@ Reglas:
   * Sin saldo (429 / tokensLeft insuficiente) NO se bloquea la aplicación: lo no consultado queda PENDIENTE con su tiempo estimado de espera.
   * Lo que Keepa no devuelve se muestra NO DISPONIBLE (None); nunca se convierte en cero.
   * Cobertura: Keepa NO cubre amazon.nl, .pl, .se, .com.be ni .ie → esos países son NO EVALUABLE por esta vía."""
-import csv, gzip, hashlib, io, json, os, re, time, urllib.error, urllib.parse, urllib.request, zlib
+import threading, csv, gzip, hashlib, io, json, os, re, time, urllib.error, urllib.parse, urllib.request, zlib
 
 HOST = "api.keepa.com"
 ALLOWED_PATHS = {"/token", "/product", "/search"}
@@ -46,6 +46,10 @@ EXPLAIN = {
     "KEEPA_MISION_AGOTADA": "Presupuesto de la misión agotado o insuficiente para esta consulta: no se ha realizado ninguna llamada.",
     "KEEPA_DUPLICADA": "Consulta idéntica ya realizada en esta misión: se reutiliza el resultado guardado, sin gastar tokens.",
     "KEEPA_PRESUPUESTO_EXCEDIDO": "El consumo previsto supera el presupuesto autorizado del lote. Hace falta aprobación explícita.",
+    "KEEPA_SOLO_SALDO": "Keepa está en modo SOLO SALDO (AMAZON_PRO_KEEPA_ENABLE=balance): solo se puede consultar el saldo de tokens (gratis). Las búsquedas y consultas de producto están bloqueadas.",
+    "KEEPA_SIN_APROBACION": "Falta la aprobación explícita del administrador con un máximo de tokens verificable. No se ha llamado a Keepa ni se ha gastado nada.",
+    "KEEPA_APROBACION_SUPERA_TOPE": "La aprobación pedida supera el tope absoluto por ejecución (AMAZON_PRO_KEEPA_HARD_CAP). Reduce países/profundidad y ejecuta por partes.",
+    "KEEPA_OCUPADO": "Ya hay una operación de pago de Keepa en curso. Espera a que termine (protección frente a doble clic y concurrencia).",
     "KEEPA_ERROR_RED": "No se pudo conectar con Keepa (red). Reintenta más tarde.",
 }
 
@@ -71,7 +75,9 @@ def config(env=None):
     e = os.environ if env is None else env
     fi = lambda k, d: int(e.get(k) or d)
     key = e.get("KEEPA_API_KEY") or e.get("KEEPA_KEY") or ""
-    return {"key": key, "enabled": (e.get("AMAZON_PRO_KEEPA_ENABLE") or "0").strip() == "1", "batch_budget": fi("AMAZON_PRO_KEEPA_BATCH_BUDGET", 30),
+    mode = (e.get("AMAZON_PRO_KEEPA_ENABLE") or "0").strip().lower()   # "0" apagado · "balance" SOLO consulta de saldo (gratis) · "1" operaciones de pago con aprobación
+    mode = mode if mode in ("1", "balance") else "0"
+    return {"key": key.strip(), "mode": mode, "enabled": mode == "1", "require_approval": (e.get("AMAZON_PRO_KEEPA_REQUIRE_APPROVAL") or "0").strip() == "1", "batch_budget": fi("AMAZON_PRO_KEEPA_BATCH_BUDGET", 30),
             "hard_cap": fi("AMAZON_PRO_KEEPA_HARD_CAP", 120), "cache_hours": fi("AMAZON_PRO_KEEPA_CACHE_HOURS", 24), "timeout": fi("AMAZON_PRO_KEEPA_TIMEOUT", 30),
             "chunk": max(1, min(fi("AMAZON_PRO_KEEPA_CHUNK", 10), 100)), "cost_per_asin": fi("AMAZON_PRO_KEEPA_COST_PER_ASIN", 1), "search_cost": fi("AMAZON_PRO_KEEPA_SEARCH_COST", 10),
             "min_gap_s": float(e.get("AMAZON_PRO_KEEPA_MIN_GAP_S") or 1.0),
@@ -82,7 +88,7 @@ def public_status(cfg):
     """Nunca incluye la clave; solo si existe y si parece plausible."""
     k = cfg["key"]
     return {"enabled": cfg["enabled"], "key_present": bool(k), "key_format_ok": bool(k) and len(k) >= 20 and not any(c.isspace() for c in k),
-            "can_call": cfg["enabled"] and bool(k), "batch_budget": cfg["batch_budget"], "hard_cap": cfg["hard_cap"], "cache_hours": cfg["cache_hours"],
+            "can_call": cfg["enabled"] and bool(k), "mode": cfg["mode"], "can_check_balance": cfg["mode"] in ("1", "balance") and bool(k), "require_approval": cfg["require_approval"], "mission_cap": cfg["mission_cap"], "batch_budget": cfg["batch_budget"], "hard_cap": cfg["hard_cap"], "cache_hours": cfg["cache_hours"],
             "supported": {c: MARKET_HOST[c] for c in DOMAINS}, "unsupported": dict(UNSUPPORTED)}
 
 
@@ -192,7 +198,7 @@ def normalize_product(p, country, domain, fetched_at):
 class Keepa:
     def __init__(self, store, cfg_fn, get_fn=None, clock=time.time, sleep=time.sleep):
         self.store, self.cfg_fn, self._get, self.clock, self.sleep = store, cfg_fn, get_fn or _default_get, clock, sleep
-        self.tokens = {"left": None, "refill_in_ms": None, "rate": None, "at": None}; self._last_call = 0.0
+        self.tokens = {"left": None, "refill_in_ms": None, "rate": None, "at": None}; self._last_call = 0.0; self._paid_lock = threading.Lock(); self._grant = threading.local()
         with self.store.lock:
             self.store.db.execute("CREATE TABLE IF NOT EXISTS keepa_mission(op_id TEXT PRIMARY KEY, ts TEXT NOT NULL, path TEXT NOT NULL, params_hash TEXT NOT NULL, est_tokens INTEGER NOT NULL, confirmed_tokens INTEGER, tokens_left_after INTEGER, status TEXT NOT NULL, note TEXT)")
             self.store.db.commit()
@@ -203,13 +209,51 @@ class Keepa:
         return str(s).replace(k, "[CLAVE-OCULTA]") if k else str(s)
 
     def _request(self, path, params, est=0):
+        if path not in ("/product", "/search"):
+            return self._request_inner(path, params, est)
+        if not self._paid_lock.acquire(blocking=False):
+            raise KeepaError("KEEPA_OCUPADO")      # una sola operación de pago a la vez (protege de concurrencia y doble clic)
+        try:
+            return self._request_inner(path, params, est)
+        finally:
+            self._paid_lock.release()
+
+    # ---- aprobación explícita del administrador (V1.0 K1) ----------------------------------------
+    def grant(self, tokens):
+        """Context manager: autoriza un máximo VERIFICABLE de tokens para las llamadas de pago hechas dentro del bloque. Fuera de él (y con require_approval) no sale ninguna búsqueda."""
+        cfg = self.cfg_fn(); kp = self
+        if isinstance(tokens, bool) or not isinstance(tokens, int) or tokens < 1:
+            raise KeepaError("KEEPA_SIN_APROBACION")
+        if tokens > cfg["hard_cap"]:
+            raise KeepaError("KEEPA_APROBACION_SUPERA_TOPE")
+        class _G:
+            def __enter__(_s):
+                kp._grant.remaining = tokens; return _s
+            def __exit__(_s, *a):
+                kp._grant.remaining = None; return False
+        return _G()
+
+    def _consume_grant(self, est):
+        rem = getattr(self._grant, "remaining", None)
+        if rem is None:
+            raise KeepaError("KEEPA_SIN_APROBACION")
+        if est > rem:
+            raise KeepaError("KEEPA_PRESUPUESTO_EXCEDIDO")
+        self._grant.remaining = rem - est
+
+    def _request_inner(self, path, params, est=0):
         cfg = self.cfg_fn()
-        if not cfg["enabled"]:
+        if cfg["mode"] == "0":
             raise KeepaError("KEEPA_DESACTIVADO")
         if not cfg["key"]:
             raise KeepaError("KEEPA_SIN_CLAVE")
         if path not in ALLOWED_PATHS:
             raise KeepaError("KEEPA_HOST_NO_PERMITIDO")
+        paid = path in ("/product", "/search")
+        if paid and cfg["mode"] != "1":
+            raise KeepaError("KEEPA_SOLO_SALDO")   # modo balance: jamás se llama a endpoints que consumen tokens
+        if paid and cfg["require_approval"]:
+            self._consume_grant(est)               # sin aprobación explícita del administrador y presupuesto verificable no sale ninguna búsqueda
         op = self._mission_begin(path, params, est) if path in ("/product", "/search") else None  # parada automática por presupuesto / duplicados ANTES de la red
         try:
             gap = cfg["min_gap_s"] - (self.clock() - self._last_call)

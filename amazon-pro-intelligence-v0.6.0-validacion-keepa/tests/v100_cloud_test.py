@@ -66,7 +66,7 @@ check("render.yaml: plan starter, disco persistente, healthcheck y rama", "plan:
 rr = open(os.path.join(ROOT, "..", "render.yaml"), encoding="utf-8").read() if os.path.exists(os.path.join(ROOT, "..", "render.yaml")) else None
 check("render.yaml de la raíz del repositorio = el del proyecto + rootDir (si existe la raíz del repo)", rr is None or rr.replace("    rootDir: amazon-pro-intelligence-v0.6.0-validacion-keepa   # la app vive en este subdirectorio del repositorio\n", "") == y)
 check("render.yaml: secretos con sync:false y ningún valor de contraseña", all(re.search(k + r"\s*#?[^\n]*\n\s*sync: false", y) for k in ("AMAZON_PRO_ADMIN_PASSWORD", "AMAZON_PRO_PASSWORD_SERGIO")) and not re.search(r"(?i)PASSWORD[A-Z_]*\s*\n\s*value:", y))
-check("render.yaml: IA y Keepa desactivadas por defecto", re.search(r'AMAZON_PRO_KEEPA_ENABLE\s*\n\s*value: "0"', y) and re.search(r'AMAZON_PRO_AI_ENABLE\s*\n\s*value: "0"', y))
+check("render.yaml: IA desactivada y Keepa NO activado por el Blueprint (ENABLE/KEY los gestiona el panel)", not re.search(r'key: AMAZON_PRO_KEEPA_ENABLE\s*\n\s*value: "?1', y) and "KEEPA_API_KEY\n        value" not in y and re.search(r'AMAZON_PRO_AI_ENABLE\s*\n\s*value: "0"', y))
 check("Dockerfile: usuario no root, sin COPY de claves ni ENV de secretos", "USER app" in dk and not re.search(r"(?i)(KEY|PASSWORD|SECRET|TOKEN)\s*=", dk))
 check(".dockerignore excluye datos, estado autónomo, .env y .git", all(x in di for x in ("data/", "AUTONOMIA/", "*.env", ".git/")))
 check("sin cadenas con aspecto de clave en el paquete de despliegue", not re.search(r"[A-Za-z0-9]{32,}", y + dk + di))
