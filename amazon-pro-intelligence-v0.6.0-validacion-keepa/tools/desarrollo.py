@@ -110,7 +110,7 @@ def auditoria():
     det["escaneo_secretos"] = len(C.escaneo()); det["registro_integro"] = C.verificar()["ok"]
     borr = _git("diff", "--diff-filter=D", "--name-only", "origin/aht-v060-validado...HEAD"); det["archivos_v060_borrados"] = [f for f in (borr.splitlines() if borr else []) if "/AUTONOMIA/" not in f]  # AUTONOMIA/ salió del código a propósito (vive en aht-autonomia-estado) if borr is not None else "no comprobable (sin git/origen)"
     run_all = open(os.path.join(C.ROOT, "tests", "run_all.sh"), encoding="utf-8").read() if os.path.exists(os.path.join(C.ROOT, "tests", "run_all.sh")) else ""
-    tests_v7 = [f for f in os.listdir(os.path.join(C.ROOT, "tests")) if f.startswith(("v070_", "ui_v07", "relevo_")) and f.endswith(".py")]
+    tests_v7 = [f for f in os.listdir(os.path.join(C.ROOT, "tests")) if f.startswith(("v070_", "ui_v07", "relevo_", "v100_", "ui_v100")) and f.endswith(".py")]
     det["pruebas_v07_sin_registrar"] = [f for f in tests_v7 if f not in run_all]
     ok = det["suites"]["fallan"] == 0 and det["escaneo_secretos"] == 0 and det["registro_integro"] and not det["archivos_v060_borrados"]
     e = C.estado(); e["auditoria"] = {"t": C.now(), "ok": ok, "detalle": det}; C.guardar(e); C.log("DEV_AUDITORIA", ok=ok, **{k: v for k, v in det["suites"].items()})

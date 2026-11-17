@@ -6,7 +6,7 @@ R = []
 def check(n, c): R.append(bool(c)); print(("OK   " if c else "FAIL ") + n)
 import coordinador as C
 T = os.path.join(ROOT, "tests"); run_all = open(os.path.join(T, "run_all.sh"), encoding="utf-8").read()
-v7 = sorted(f for f in os.listdir(T) if re.match(r"(v070_.*_test|ui_v07_test|desarrollo_test|relevo_test)\.py$", f) and f != "v070_registro_test.py")
+v7 = sorted(f for f in os.listdir(T) if re.match(r"(v070_.*_test|ui_v07_test|desarrollo_test|relevo_test|v100_.*_test)\.py$", f) and f != "v070_registro_test.py")
 check("hay al menos las 7 pruebas v0.7/desarrollo esperadas: %s" % v7, {"v070_keepa_real_test.py", "v070_expediente_test.py", "v070_director_test.py", "v070_security_test.py", "ui_v07_test.py", "desarrollo_test.py"} <= set(v7))
 for f in v7 + ["v070_registro_test.py"]:
     check("run_all.sh ejecuta tests/%s" % f, ("python3 tests/" + f) in run_all)

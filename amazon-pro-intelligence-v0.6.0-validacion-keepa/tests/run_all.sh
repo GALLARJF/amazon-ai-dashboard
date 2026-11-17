@@ -38,6 +38,7 @@ run "V0.7.0: seguridad de /api/v07/*" python3 tests/v070_security_test.py
 run "V0.7.0: UI NEON (navegador real + capturas)" python3 tests/ui_v07_test.py
 run "V0.7.0: ciclo de desarrollo autónomo (3 intentos, bloqueo, dependencias)" python3 tests/desarrollo_test.py
 run "V1.0: relevo (bloqueo de concurrencia, recuperación, commit controlado)" python3 tests/relevo_test.py
+run "V1.0: matriz de aceptación (4 categorías)" python3 tests/v100_matriz_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }
