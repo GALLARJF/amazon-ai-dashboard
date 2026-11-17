@@ -106,17 +106,26 @@
    "clave": "V7-01",
    "tipo": "dev",
    "titulo": "V0.7.0 · Datos reales de Keepa integrados (sin red ni gasto)",
-   "estado": "PENDIENTE",
+   "estado": "HECHO",
    "prioridad": 10,
    "handler": null,
    "spec": "backend/keepa_real.py + GET /api/v07/keepa-real?product=<id>: carga docs_v06/evidencia_keepa_real (competidores_ES) y devuelve por competidor precio, price_as_of, BSR, fuente 'Keepa /search (real)', comparabilidad 'NO CONFIRMADA'; resumen (n, mediana y rango de precio, precio normalizado por 100 mL si hay contenido); cero llamadas de red; si falta la evidencia -> SIN DATOS (nunca ceros); títulos externos tratados como datos no fiables (sanitizados).",
    "aceptacion": "python3 tests/v070_keepa_real_test.py",
    "depende": [],
-   "intentos": 0,
-   "historial": [],
+   "intentos": 1,
+   "historial": [
+    {
+     "t": "2026-11-17T14:34:22Z",
+     "intento": 1,
+     "rc": 0,
+     "resultado": "21/21 OK",
+     "cola": "in excepción\nOK   evidencia ausente → SIN DATOS (instalación limpia)\nOK   API: sin sesión → 401\nOK   API: con sesión devuelve los 20 competidores reales\nOK   API: producto inexistente → 404\nOK   API: ruta v07 desconocida → 404\nOK   API: la respuesta no contiene claves ni rutas del servidor\n21/21 OK\n"
+    }
+   ],
    "creado": "2026-11-17T14:28:31Z",
-   "nota": null,
-   "cada_horas": null
+   "nota": "aceptación OK: 21/21 OK",
+   "cada_horas": null,
+   "actualizado": "2026-11-17T14:34:22Z"
   },
   {
    "id": "OBJ-012",
@@ -322,7 +331,13 @@
   "OBJ-005 [2] PROPIETARIO: instalar/reconectar la app de GitHub para poder hacer push (hoy 403) (requiere a Claude/persona)",
   "OBJ-010 [2] Mantenimiento: informe de entrega actualizado",
   "OBJ-006 [4] Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector (requiere a Claude/persona)",
-  "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)"
+  "OBJ-007 [9] Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura (requiere a Claude/persona)",
+  "OBJ-012 [20] V0.7.0 · Expediente comercial ACTIVCORE v0.7 (requiere a Claude/persona)",
+  "OBJ-013 [30] V0.7.0 · Director IA: briefing determinista con hechos citados (requiere a Claude/persona)",
+  "OBJ-014 [40] V0.7.0 · Experiencia NEON: Director IA, expediente y procedencia del dato (requiere a Claude/persona)",
+  "OBJ-015 [50] V0.7.0 · Seguridad de los nuevos endpoints /api/v07/* (requiere a Claude/persona)",
+  "OBJ-016 [60] V0.7.0 · Registro de suites v0.7 en la batería y el coordinador (requiere a Claude/persona)",
+  "OBJ-017 [70] V0.7.0 · Entrega candidata V0.7.0 (código, documentación, pruebas, evidencias) (requiere a Claude/persona)"
  ],
  "pruebas": {
   "ts": "2026-11-17T11:56:28Z",
@@ -443,5 +458,5 @@
   }
  ],
  "fallos_consecutivos": 0,
- "actualizado": "2026-11-17T14:28:31Z"
+ "actualizado": "2026-11-17T14:34:22Z"
 }
