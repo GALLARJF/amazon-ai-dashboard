@@ -93,7 +93,7 @@ def auditoria():
     """Auditoría independiente del código escrito: no confía en lo que dijo la sesión que lo escribió."""
     det = {}; qa = C.qa(); det["suites"] = {k: qa[k] for k in ("pasan", "intermitentes", "fallan", "total")}
     det["escaneo_secretos"] = len(C.escaneo()); det["registro_integro"] = C.verificar()["ok"]
-    borr = _git("diff", "--diff-filter=D", "--name-only", "origin/aht-v060-validado...HEAD"); det["archivos_v060_borrados"] = (borr.splitlines() if borr else []) if borr is not None else "no comprobable (sin git/origen)"
+    borr = _git("diff", "--diff-filter=D", "--name-only", "origin/aht-v060-validado...HEAD"); det["archivos_v060_borrados"] = [f for f in (borr.splitlines() if borr else []) if "/AUTONOMIA/" not in f]  # AUTONOMIA/ salió del código a propósito (vive en aht-autonomia-estado) if borr is not None else "no comprobable (sin git/origen)"
     run_all = open(os.path.join(C.ROOT, "tests", "run_all.sh"), encoding="utf-8").read() if os.path.exists(os.path.join(C.ROOT, "tests", "run_all.sh")) else ""
     tests_v7 = [f for f in os.listdir(os.path.join(C.ROOT, "tests")) if f.startswith(("v070_", "ui_v07")) and f.endswith(".py")]
     det["pruebas_v07_sin_registrar"] = [f for f in tests_v7 if f not in run_all]

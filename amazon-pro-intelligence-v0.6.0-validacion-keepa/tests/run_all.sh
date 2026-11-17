@@ -31,4 +31,11 @@ run "V0.6.0: UI cinco espacios NEON (navegador real + capturas)" python3 tests/u
 run "V0.6.0 misión Keepa: presupuesto, duplicados, errores, persistencia (MOCK)" python3 tests/keepa_mision_test.py
 run "V0.6.0 misión Keepa: flujo Director IA con tope 10 (MOCK)" python3 tests/keepa_mision_flow_test.py
 run "V0.6.0 misión Keepa: coherencia de evidencias REALES (lectura de ficheros)" python3 tests/keepa_real_evidence_test.py
+run "V0.7.0: datos reales de Keepa integrados (sin red ni gasto)" python3 tests/v070_keepa_real_test.py
+run "V0.7.0: expediente comercial ACTIVCORE" python3 tests/v070_expediente_test.py
+run "V0.7.0: Director IA, briefing determinista" python3 tests/v070_director_test.py
+run "V0.7.0: seguridad de /api/v07/*" python3 tests/v070_security_test.py
+run "V0.7.0: UI NEON (navegador real + capturas)" python3 tests/ui_v07_test.py
+run "V0.7.0: ciclo de desarrollo autónomo (3 intentos, bloqueo, dependencias)" python3 tests/desarrollo_test.py
+run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }
