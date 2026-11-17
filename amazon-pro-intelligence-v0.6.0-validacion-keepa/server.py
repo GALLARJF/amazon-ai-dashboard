@@ -29,7 +29,7 @@ CONNECTORS = {
                "note": "Prueba de solo lectura: token LWA + marketplaceParticipations (EU)."},
     "ads": {"label": "Amazon Ads API", "env": ["ADS_CLIENT_ID", "ADS_CLIENT_SECRET", "ADS_REFRESH_TOKEN"],
             "note": "Prueba de solo lectura: token LWA + GET /v2/profiles (EU)."},
-    "keepa": {"label": "Keepa", "env": ["KEEPA_KEY"], "note": "Prueba de solo lectura: GET /token."},
+    "keepa": {"label": "Keepa", "env": ["KEEPA_API_KEY"], "note": "Prueba de solo lectura: GET /token."},
     "helium10": {"label": "Helium 10", "env": ["H10_API_KEY"], "note": "Sin API pública verificada: usar importación CSV."},
 }
 TESTABLE = {"sp-api", "ads", "keepa"}
@@ -72,7 +72,7 @@ def run_test(name):
     """Devuelve (ok, código_fijo). NUNCA devuelve texto de excepciones (podrían contener secretos)."""
     try:
         if name == "keepa":
-            s, t = guarded_request("GET", "https://api.keepa.com/token?key=" + urllib.parse.quote(os.environ["KEEPA_KEY"]))
+            s, t = guarded_request("GET", "https://api.keepa.com/token?key=" + urllib.parse.quote(os.environ.get("KEEPA_API_KEY") or os.environ.get("KEEPA_KEY") or ""))
             return s == 200 and "tokensLeft" in t, "KEEPA_HTTP_%d" % s
         if name == "sp-api":
             s, _ = guarded_request("GET", "https://sellingpartnerapi-eu.amazon.com/sellers/v1/marketplaceParticipations", headers={"x-amz-access-token": _lwa("SPAPI")})
@@ -377,6 +377,15 @@ class H(BaseHTTPRequestHandler):
             return self._send(200, fn().encode("utf-8-sig"), "text/csv; charset=utf-8", {"Content-Disposition": "attachment; filename=%s_%s_EU.csv" % (svc.pid, what.upper())})
         return self._json({"error": "no encontrado"}, 404)
 
+    def _keepa_granted(self, kp, b, fn):
+        """K1: con aprobación obligatoria, la aprobación (approved_tokens ≤ tope) es un permiso VERIFICABLE a nivel de llamada; sin ella no sale nada."""
+        at = b.get("approved_tokens")
+        if kp.cfg_fn()["require_approval"] and not (isinstance(at, int) and not isinstance(at, bool) and at >= 1):
+            raise KP.KeepaError("KEEPA_SIN_APROBACION")
+        if isinstance(at, int) and not isinstance(at, bool) and at >= 1:
+            with kp.grant(at): return fn()
+        return fn()
+
     def _eu_post(self, path, b, s):
         kp, role, actor = APP["keepa"], s["role"], s["username"]
         if path.startswith("/api/keepa/"):
@@ -389,9 +398,12 @@ class H(BaseHTTPRequestHandler):
                 if path == "/api/keepa/plan":
                     return self._json(kp.plan(items, history=b.get("history") is not False, rating=b.get("rating") is True))
                 if path == "/api/keepa/fetch":
-                    return self._json(kp.fetch(items, history=b.get("history") is not False, rating=b.get("rating") is True, approved_tokens=b.get("approved_tokens")))
+                    return self._json(self._keepa_granted(kp, b, lambda: kp.fetch(items, history=b.get("history") is not False, rating=b.get("rating") is True, approved_tokens=b.get("approved_tokens"))))
                 if path == "/api/keepa/search":
-                    return self._json(kp.search(str(b.get("country")), str(b.get("term")), approved_tokens=b.get("approved_tokens")))
+                    return self._json(self._keepa_granted(kp, b, lambda: kp.search(str(b.get("country")), str(b.get("term")), approved_tokens=b.get("approved_tokens"))))
+                if path == "/api/keepa/importar-evidencia":
+                    from backend import keepa_k1 as K1
+                    pid_ = str(b.get("product") or "PRD-ACTIVCORE-V2"); svc_ = APP["eu"]; r = K1.importar_evidencia(kp, pid_, APP["catalog"].get(pid_), register=lambda c, a, n, sc, why, src: svc_.register_candidate(c, a, n, sc, why, src, actor)); APP["store"].audit(None, actor, "keepa.import_evidence", {"product": b.get("product"), "n": r.get("importados")}); return self._json(r)
             except KP.KeepaError as e:
                 return self._json({"ok": False, "error": e.code, "explanation": KP.explain(e.code)}, 200)
             return self._json({"error": "no encontrado"}, 404)
@@ -771,6 +783,8 @@ if __name__ == "__main__":
     os.makedirs(os.path.join(ROOT, "data"), exist_ok=True)
     if CLOUD and len(os.environ.get("AMAZON_PRO_ADMIN_PASSWORD") or "") < 12:
         sys.exit("MODO CLOUD: define el secreto AMAZON_PRO_ADMIN_PASSWORD (mínimo 12 caracteres) en el panel del proveedor. No se arranca sin él (no se imprimen contraseñas en los logs).")
+    if CLOUD:   # K1: valores prudentes por defecto en la nube (el propietario puede cambiarlos en el panel; nunca activan Keepa por sí solos)
+        os.environ.setdefault("AMAZON_PRO_KEEPA_REQUIRE_APPROVAL", "1"); os.environ.setdefault("AMAZON_PRO_KEEPA_MISSION_CAP", "60")
     _ef = ENVF.load()  # configuración de IA desde el archivo local seguro (fuera del proyecto)
     _kf = ENVF.load(ENVF.keepa_path())  # configuración de Keepa (fuera del proyecto)
     srv = make_server(port)

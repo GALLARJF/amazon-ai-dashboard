@@ -43,6 +43,9 @@
 - **NO verificado (requiere cuenta Render)**: despliegue real del Blueprint desde la rama `aht-v100-desarrollo`, montaje del disco, comportamiento del plan Starter. No se pudo leer la página de la especificación de Blueprint desde este entorno; los campos usados (`runtime: docker`, `plan`, `branch`, `disk`, `healthCheckPath`, `sync: false`) son los habituales y debe confirmarlos el primer despliegue.
 - **Imagen Docker**: no hay Docker local. Se añadió `.github/workflows/docker.yml` (construye la imagen, arranca el contenedor, comprueba `/healthz` y usuario no root). **Resultado real (GitHub Actions, commit f48d192, éxito)**: la imagen construye, el contenedor arranca como usuario no root (uid 10001), `/healthz` responde 200 y un Host ajeno no obtiene 200. El CI detectó y corregimos dos fallos reales del Dockerfile (sin `PORT` escuchaba en 8765; el usuario no root no podía crear `/app/data`). Sigue sin probarse en Render ni con disco persistente.
 
+## Keepa en Render (K1)
+Ver `INFORME_K1_KEEPA_RENDER.md`: modo `AMAZON_PRO_KEEPA_ENABLE=balance` (solo saldo, gratis) → `1` (búsquedas con aprobación obligatoria, tope 120 por ejecución, tope acumulado 60). La clave `KEEPA_API_KEY` la escribe el propietario en el panel; nunca en chat ni GitHub.
+
 ## Ficheros
 `Dockerfile`, `.dockerignore`, `render.yaml` (en la raíz del repositorio con `rootDir`), `server.py` (modo cloud), `tests/v100_cloud_test.py` (28/28) y `tests/ui_v100_cloud_test.py` (37/37, Chromium a 390/820/1600 px).
 

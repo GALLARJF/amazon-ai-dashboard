@@ -18,8 +18,9 @@ services:
         value: /data/amazon_pro.db
       - key: AMAZON_PRO_BACKUP_DIR
         value: /data/backups
-      - key: AMAZON_PRO_KEEPA_ENABLE
-        value: "0"
+      # K1: AMAZON_PRO_KEEPA_ENABLE y KEEPA_API_KEY NO se gestionan aquí a propósito: si el Blueprint fijara un valor, cada sincronización
+      # lo restablecería. Los escribe el propietario en el panel (Environment): ENABLE=balance (solo saldo, gratis) → ENABLE=1 (búsquedas con aprobación).
+      # Sin definir, Keepa queda DESACTIVADO (valor por defecto del código).
       - key: AMAZON_PRO_AI_ENABLE
         value: "0"
       - key: AMAZON_PRO_SEED_USERS

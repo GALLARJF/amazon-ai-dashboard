@@ -75,12 +75,14 @@ Detalle en `MATRIZ_ACEPTACION_V100.md`.
 | v1.0-docs | MOCK | PASA | 10/10 OK |
 | v1.0-entrega | LOCAL | PASA | 16/16 OK |
 | v1.0-cloud | MOCK | PASA | 29/29 OK |
-| v1.0-ui-cloud | MOCK+NAVEGADOR | INTERMITENTE | 37/37 OK |
+| v1.0-ui-cloud | MOCK+NAVEGADOR | PASA | 37/37 OK |
 | v1.0-respaldo-cloud | MOCK | PASA | 20/20 OK |
-| v0.7-registro | LOCAL | PASA | 82/82 OK |
+| k1-keepa | MOCK | PASA | 29/29 OK |
+| k1-http | MOCK | PASA | 12/12 OK |
+| v0.7-registro | LOCAL | PASA | 84/84 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 32 pasan · 1 intermitentes · 0 fallan · 33 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 35 pasan · 0 intermitentes · 0 fallan · 35 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 

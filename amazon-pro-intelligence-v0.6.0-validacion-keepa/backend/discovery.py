@@ -4,7 +4,7 @@ puntuación de comparabilidad (determinista, revisable) → consulta Keepa /prod
 Reglas: nada se inventa; sin términos de búsqueda = FALTAN_TERMINOS (se explica qué aportar); coste previo SIEMPRE antes de gastar tokens;
 se pide autorización cuando el consumo previsto supera el presupuesto; reanudable (caché + ledger + deduplicación); los textos de Amazon son datos, no instrucciones."""
 import re, time
-from . import activcore as AC, catalog as CT, eu as E, keepa as K
+from . import activcore as AC, catalog as CT, eu as E, keepa as K, keepa_k1 as KK
 
 TTL_SEARCH_H = 24
 THRESH = {"ALTA": 65, "MEDIA": 40}
@@ -97,7 +97,7 @@ class Discovery:
         tk = self.kp.tokens; left, rate = tk.get("left"), tk.get("rate")
         eta = round(max(0.0, est - left) / rate, 1) if left is not None and rate else None
         return {"product": pid, "name": p["name"], "depth": depth, "max_candidates": max_candidates, "countries": rows, "estimated_tokens_max": est, "batch_budget": cfg["batch_budget"], "hard_cap": cfg["hard_cap"],
-                "needs_approval": est > cfg["batch_budget"], "tokens_left_known": left, "refill_per_min": rate, "eta_minutes_if_short": eta if eta else None, "keepa_enabled": K.public_status(cfg)["can_call"],
+                "needs_approval": est > cfg["batch_budget"] or cfg["require_approval"], "exceeds_hard_cap": est > cfg["hard_cap"], "per_country_tokens": {r["country"]: r["tokens"] for r in rows if r.get("status") == "LISTO"}, "tokens_left_known": left, "refill_per_min": rate, "eta_minutes_if_short": eta if eta else None, "keepa_enabled": K.public_status(cfg)["can_call"],
                 "assumptions": "Coste por búsqueda %d y por ASIN %d tokens (SUPUESTOS hasta verificar con tokensConsumed en la primera consulta real). Estimación máxima: la caché y las ASIN ya consultadas reducen el gasto." % (cfg["search_cost"], cfg["cost_per_asin"]),
                 "formula": FORMULA, "missing_terms": missing}
 
@@ -105,15 +105,23 @@ class Discovery:
     def run(self, pid, actor, countries=None, depth="normal", max_candidates=20, approved_tokens=None):
         pl = self.plan(pid, countries, depth, max_candidates); p = self.cat.get(pid); cfg = self.kp.cfg_fn(); svc = self.svc_for(pid)
         if not pl["keepa_enabled"]:
-            code = "KEEPA_SIN_CLAVE" if not K.public_status(cfg).get("key_present") else "KEEPA_DESACTIVADO"
+            code = "KEEPA_SIN_CLAVE" if not K.public_status(cfg).get("key_present") else ("KEEPA_SOLO_SALDO" if cfg["mode"] == "balance" else "KEEPA_DESACTIVADO")
             return {"ok": False, "status": code, "plan": pl, "explanation": K.explain(code)}
         ready = [r for r in pl["countries"] if r["status"] == "LISTO"]
         if not ready:
             return {"ok": False, "status": "SIN_NADA_QUE_EJECUTAR", "plan": pl, "explanation": "Ningún país tiene términos de búsqueda y cobertura Keepa. Revisa «FALTAN_TERMINOS»/«SIN_COBERTURA»."}
+        if isinstance(approved_tokens, int) and not isinstance(approved_tokens, bool) and approved_tokens > cfg["hard_cap"]:
+            return {"ok": False, "status": "APROBACION_SUPERA_TOPE", "plan": pl, "explanation": K.explain("KEEPA_APROBACION_SUPERA_TOPE") + " (aprobado %d > tope %d; el plan completo prevé como máximo %d: ejecútalo país a país)." % (approved_tokens, cfg["hard_cap"], pl["estimated_tokens_max"])}
         if pl["needs_approval"] and not (isinstance(approved_tokens, int) and not isinstance(approved_tokens, bool) and approved_tokens >= 1):
             return {"ok": False, "status": "REQUIERE_AUTORIZACION", "plan": pl, "explanation": "Consumo máximo previsto %d tokens > presupuesto del lote %d. Autoriza un máximo de tokens para esta ejecución (puede quedar parcial y reanudarse)." % (pl["estimated_tokens_max"], cfg["batch_budget"])}
         valid = isinstance(approved_tokens, int) and not isinstance(approved_tokens, bool) and approved_tokens >= 1
         allowed = approved_tokens if valid else max(cfg["batch_budget"], pl["estimated_tokens_max"])  # un máximo explícito SIEMPRE manda (también como tope)
+        if valid:
+            with self.kp.grant(approved_tokens):   # el tope aprobado se aplica también a nivel de llamada (K1)
+                return self._run_inner(pid, actor, pl, p, cfg, svc, allowed, approved_tokens, ready)
+        return self._run_inner(pid, actor, pl, p, cfg, svc, allowed, approved_tokens, ready)
+
+    def _run_inner(self, pid, actor, pl, p, cfg, svc, allowed, approved_tokens, ready):
         spent, report, pending, errors, t0 = 0, [], [], [], time.time()
         ref_norm = svc.pvp_default / svc.content * 100 if svc.pvp_default and svc.content else None
         own = {(c, a) for c, a in (p.get("own_asins") or {}).items()}
@@ -165,6 +173,7 @@ class Discovery:
                 for rec in list(out.get("products", [])) + [srec[a] for a in pick if a in srec and a not in got and srec[a].get("price") is not None]:
                     norm = rec.get("price") / (rec.get("volume_ml") if p["format"]["unit"] == "ml" else rec.get("units")) * 100 if rec.get("price") and (rec.get("volume_ml") if p["format"]["unit"] == "ml" else rec.get("units")) else None
                     sc, comp, why, complete = score(p, c, rec, terms_all, norm, ref_norm)
+                    comp, kwhy = KK.degradar(comp, rec, p, c); why = why + ["K1: " + "; ".join(kwhy)]   # reglas K1: solo pueden bajar la comparabilidad
                     svc.register_candidate(c, rec["asin"], comp, sc, "; ".join(why), "Descubrimiento automático (Keepa %s), %s" % ("/search" if rec.get("source", "").find("/search") >= 0 else "/search + /product", time.strftime("%Y-%m-%d"))); cr["registered"] += 1
                 cr["fetched"] = len(out.get("products", [])); cr["from_search"] = sum(1 for a in pick if a in srec and a not in got and srec[a].get("price") is not None)
             report.append(cr)
