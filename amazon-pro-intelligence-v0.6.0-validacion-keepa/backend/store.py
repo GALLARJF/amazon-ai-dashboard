@@ -33,7 +33,7 @@ def canon(o):
 
 class Store:
     def __init__(self, path=":memory:"):
-        self.lock = threading.RLock()
+        self.lock = threading.RLock(); self.path = path
         self.db = sqlite3.connect(path, check_same_thread=False)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
@@ -54,6 +54,16 @@ class Store:
             self.db.execute("INSERT OR REPLACE INTO users VALUES(?,?,?,?,?,1)", (username, salt, self._hash(password, salt), role, json.dumps(accounts)))
             self.db.commit()
         self.audit(None, "system", "user.create", {"username": username, "role": role, "accounts": accounts})
+
+    def rotate_password(self, username, password):
+        """Cambia la contraseña conservando rol y cuentas, reactiva al usuario y cierra TODAS sus sesiones. Auditado sin la contraseña."""
+        if len(password) < 12: raise ValueError("la contraseña nueva debe tener al menos 12 caracteres")
+        with self.lock:
+            if not self.db.execute("SELECT 1 FROM users WHERE username=?", (username,)).fetchone(): raise LookupError("usuario inexistente")
+            salt = os.urandom(16)
+            self.db.execute("UPDATE users SET pw_salt=?, pw_hash=?, active=1 WHERE username=?", (salt, self._hash(password, salt), username))
+            self.db.execute("DELETE FROM sessions WHERE username=?", (username,)); self.db.commit()
+        self.audit(None, "system", "user.rotate", {"username": username})
 
     def login(self, username, password):
         with self.lock:

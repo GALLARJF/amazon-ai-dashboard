@@ -55,3 +55,36 @@ def abrir_seguro(db_path):
         v = verificar(db_path)
         if not v["ok"]: raise RespaldoError("la BD está dañada (%s); no se ha modificado. Restaura un respaldo con restaurar()." % v["motivo"])
     return True
+
+
+def exportar_bytes(db_path):
+    """Respaldo coherente y verificado en memoria para descargarlo FUERA del disco del servidor. Devuelve (bytes, sha256)."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        r = respaldar(db_path, d)
+        data = open(r["fichero"], "rb").read()
+    return data, hashlib.sha256(data).hexdigest()
+
+def guardar_pendiente(db_path, data, sha256):
+    """Valida un respaldo recibido (hash, integridad SQLite, cadena de auditoría) y lo deja como RESTAURACIÓN PENDIENTE; se aplica en el próximo arranque, nunca sobre la BD en uso."""
+    if hashlib.sha256(data).hexdigest() != (sha256 or "").lower(): raise RespaldoError("el hash no coincide con el contenido recibido")
+    import tempfile
+    d = os.path.join(os.path.dirname(os.path.abspath(db_path)), "restore"); os.makedirs(d, exist_ok=True)
+    tmp = os.path.join(d, "recibido.tmp"); open(tmp, "wb").write(data)
+    v = verificar(tmp)
+    if not v["ok"]: os.remove(tmp); raise RespaldoError("respaldo no íntegro: " + v["motivo"])
+    dst = os.path.join(d, "pendiente.db"); os.replace(tmp, dst); open(dst + ".sha256", "w").write("%s  pendiente.db\n" % sha256.lower())
+    return {"pendiente": True, "filas_auditoria": v["filas_auditoria"]}
+
+def aplicar_pendiente(db_path):
+    """Se llama ANTES de abrir la BD. Si hay una restauración pendiente válida, la aplica (conservando copia del estado previo) y la archiva. Devuelve None o el resultado."""
+    d = os.path.join(os.path.dirname(os.path.abspath(db_path)), "restore"); f = os.path.join(d, "pendiente.db")
+    if not os.path.isfile(f): return None
+    try:
+        r = restaurar(f, db_path)
+    except RespaldoError as e:
+        os.replace(f, os.path.join(d, "rechazado-%s.db" % time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()))); return {"restaurado": False, "motivo": str(e)}
+    for x in (f, f + ".sha256"):
+        try: os.replace(x, os.path.join(d, "aplicado-%s%s" % (time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()), ".sha256" if x.endswith(".sha256") else ".db")))
+        except OSError: pass
+    return r

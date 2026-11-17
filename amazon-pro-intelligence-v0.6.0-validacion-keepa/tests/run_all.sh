@@ -52,6 +52,7 @@ run "V1.0: documentación verificable" python3 tests/v100_docs_test.py
 run "V1.0: entrega candidata (informe, ZIP sin claves)" python3 tests/v100_entrega_test.py
 run "V1.0: modo cloud (proceso real, HTTPS simulado, secretos, respaldo)" python3 tests/v100_cloud_test.py
 run "V1.0: Chromium contra el modo cloud con proxy HTTPS" python3 tests/ui_v100_cloud_test.py
+run "V1.0: respaldo fuera del disco, restauración y rotación de contraseñas" python3 tests/v100_respaldo_cloud_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }

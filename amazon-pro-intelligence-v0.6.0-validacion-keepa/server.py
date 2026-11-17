@@ -703,6 +703,17 @@ def seed_users(store):
     return out
 
 
+def rotate_credentials(store):
+    """V1.0 cloud: recuperación del administrador y rotación de contraseñas SIN chat. El propietario cambia el secreto en el panel del proveedor y pone AMAZON_PRO_ROTATE="admin,sergio";
+    al arrancar se aplican (mín. 12 caracteres), se cierran las sesiones de esos usuarios y se audita sin contraseñas. Después conviene quitar AMAZON_PRO_ROTATE (reaplicarlo es inofensivo)."""
+    hechos = []
+    for name in [x.strip() for x in (os.environ.get("AMAZON_PRO_ROTATE") or "").split(",") if x.strip()]:
+        var = "AMAZON_PRO_ADMIN_PASSWORD" if name == "admin" else "AMAZON_PRO_PASSWORD_" + name.upper()
+        try: store.rotate_password(name, os.environ.get(var) or ""); hechos.append(name)
+        except (ValueError, LookupError) as e: print("rotación omitida para", name, "-", type(e).__name__, flush=True)
+    return hechos
+
+
 def backup_loop(db_path, every_h=24, keep=7):
     from backend import respaldo100 as RB
     d = os.environ.get("AMAZON_PRO_BACKUP_DIR") or os.path.join(os.path.dirname(db_path), "backups")
@@ -733,6 +744,8 @@ def make_server(port=8765, admin_token=None, db_path=None, cfg_fn=None, admin_pa
     _dbp = db_path or os.environ.get("AMAZON_PRO_DB") or os.path.join(ROOT, "data", "amazon_pro.db")
     if _dbp != ":memory:":
         from backend import respaldo100 as _RB
+        _res = _RB.aplicar_pendiente(_dbp)
+        if _res: print("restauración pendiente:", "APLICADA" if _res.get("restaurado") else "RECHAZADA (" + str(_res.get("motivo"))[:120] + ")", flush=True)
         _RB.abrir_seguro(_dbp)   # V1.0: una BD dañada detiene el arranque con mensaje claro y SIN tocarla
     APP["store"] = Store(_dbp)
     APP["cfg_fn"] = cfg_fn or AI.config
@@ -749,6 +762,7 @@ def make_server(port=8765, admin_token=None, db_path=None, cfg_fn=None, admin_pa
     srv = ThreadingHTTPServer((HOST, port), H)
     srv.initial_admin_password = bootstrap(APP["store"], admin_password)
     srv.seeded_users = seed_users(APP["store"])
+    srv.rotated_users = rotate_credentials(APP["store"])
     return srv
 
 
@@ -769,6 +783,7 @@ if __name__ == "__main__":
         print("PRIMER ARRANQUE · usuario: admin · contraseña (solo se muestra ahora):", srv.initial_admin_password)
     if CLOUD:
         print("usuarios creados desde variables secretas:", ", ".join(srv.seeded_users) or "ninguno nuevo", flush=True)
+        if srv.rotated_users: print("contraseñas rotadas para:", ", ".join(srv.rotated_users), "(quita AMAZON_PRO_ROTATE cuando termines)", flush=True)
         _dbp_ = os.environ.get("AMAZON_PRO_DB") or os.path.join(ROOT, "data", "amazon_pro.db")
         threading.Thread(target=backup_loop, args=(_dbp_, float(os.environ.get("AMAZON_PRO_BACKUP_HOURS") or 24)), daemon=True).start()
     if not os.environ.get("AMAZON_PRO_ADMIN_TOKEN") and not CLOUD:
