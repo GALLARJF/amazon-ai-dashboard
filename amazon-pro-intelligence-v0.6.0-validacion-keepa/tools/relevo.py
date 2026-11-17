@@ -3,7 +3,10 @@
 
 Las sesiones programadas arrancan aisladas (sin ficheros). El código viene de la rama de código y el ESTADO de una rama propia
 (por defecto aht-autonomia-estado). Sin claves: usa el git ya configurado en la sesión. Nunca invoca Keepa ni APIs de pago.
-Uso:  python3 tools/relevo.py [--sin-push]      Variables: AHT_REMOTE (URL), AHT_RAMA_ESTADO
+Uso:  python3 tools/relevo.py [--sin-push]          recupera estado, ejecuta UN ciclo del coordinador y publica el estado
+      python3 tools/relevo.py --recuperar         (sesión de desarrollo) solo recupera el estado
+      python3 tools/relevo.py --publicar [-m txt]  (sesión de desarrollo) publica el estado tras desarrollar
+Variables: AHT_REMOTE (URL), AHT_RAMA_ESTADO
 """
 import os, subprocess, sys, json, shutil, tempfile, time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,7 +29,35 @@ def coord(*a):
     return subprocess.run([sys.executable, os.path.join(ROOT, "tools", "coordinador.py")] + list(a), capture_output=True, text=True, env=env, cwd=ROOT, timeout=3000)
 
 
+def publicar(msg):
+    """Publica AUTONOMIA/ en la rama de estado (clon limpio + superposición; un reintento si otra sesión se adelantó)."""
+    for intento in (1, 2):
+        w = os.path.join(tempfile.mkdtemp(prefix="pub_"), "e")
+        if sh(["git", "ls-remote", "--heads", REMOTE, RAMA], ok=True).stdout.strip(): sh(["git", "clone", "-q", "--branch", RAMA, "--single-branch", REMOTE, w])
+        else: sh(["git", "init", "-q", "-b", RAMA, w]); sh(["git", "remote", "add", "origin", REMOTE], cwd=w)
+        os.makedirs(os.path.join(w, "AUTONOMIA"), exist_ok=True)
+        for f in FICHEROS:
+            if os.path.exists(os.path.join(AUT, f)): shutil.copy(os.path.join(AUT, f), os.path.join(w, "AUTONOMIA", f))
+        sh(["git", "add", "-f", "-A"], cwd=w); sh(GIT + ["commit", "-q", "-m", msg + "\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"], cwd=w, ok=True)
+        p = sh(["git", "push", "-q", "origin", RAMA], cwd=w, ok=True)
+        if p.returncode == 0: return {"push_ok": True, "commit_estado": sh(["git", "rev-parse", "--short", "HEAD"], cwd=w).stdout.strip(), "intento": intento}
+    return {"push_ok": False, "push_error": p.stderr[-300:]}
+
+
+def recuperar():
+    w = os.path.join(tempfile.mkdtemp(prefix="rec_"), "e"); os.makedirs(AUT, exist_ok=True)
+    if not sh(["git", "ls-remote", "--heads", REMOTE, RAMA], ok=True).stdout.strip(): return {"estado_recuperado": False}
+    sh(["git", "clone", "-q", "--branch", RAMA, "--single-branch", REMOTE, w])
+    for f in FICHEROS:
+        if os.path.exists(os.path.join(w, "AUTONOMIA", f)): shutil.copy(os.path.join(w, "AUTONOMIA", f), os.path.join(AUT, f))
+    v = json.loads(coord("verificar").stdout or "{}")
+    return {"estado_recuperado": True, "commit_estado": sh(["git", "rev-parse", "--short", "HEAD"], cwd=w).stdout.strip(), "registro_integro": v.get("ok"), "lineas_registro": v.get("lineas")}
+
+
 def main():
+    if "--recuperar" in sys.argv: print(json.dumps(recuperar(), ensure_ascii=False, indent=1)); return 0
+    if "--publicar" in sys.argv:
+        m = sys.argv[sys.argv.index("-m") + 1] if "-m" in sys.argv else "Estado tras sesion de desarrollo"; r = publicar(m); print(json.dumps(r, ensure_ascii=False, indent=1)); return 0 if r["push_ok"] else 2
     push = "--sin-push" not in sys.argv; r = {"inicio": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "remoto": REMOTE, "rama_estado": RAMA}
     tmp = tempfile.mkdtemp(prefix="relevo_"); w = os.path.join(tmp, "estado")
     existe = sh(["git", "ls-remote", "--heads", REMOTE, RAMA], ok=True).stdout.strip()
