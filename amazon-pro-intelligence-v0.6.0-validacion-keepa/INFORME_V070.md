@@ -61,14 +61,17 @@ Generado desde el estado del coordinador (AUTONOMIA/estado.json). Candidata: NO 
 | k2-director | MOCK | PASA | 33/33 OK |
 | k3-segmentacion | MOCK | PASA | 90/90 OK |
 | UI-k3 | MOCK+NAVEGADOR | PASA | 37/37 OK |
-| v0.7-registro | LOCAL | PASA | 87/87 OK |
+| k4-unidad | MOCK | PASA | 46/46 OK |
+| k4-api | MOCK | PASA | 43/43 OK |
+| UI-k4 | MOCK+NAVEGADOR | PASA | 34/34 OK |
+| v0.7-registro | LOCAL | PASA | 90/90 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 38 pasan · 0 intermitentes · 0 fallan · 38 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 41 pasan · 0 intermitentes · 0 fallan · 41 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 
-- Fecha: 2026-11-18T21:49:05Z · Resultado: **OK**
+- Fecha: 2026-11-18T22:07:34Z · Resultado: **OK**
 - Detalle: `{"suites": {"pasan": 38, "intermitentes": 0, "fallan": 0, "total": 38}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
 
 ## Qué NO está verificado
