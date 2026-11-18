@@ -68,8 +68,8 @@ Resumen: 38 pasan · 0 intermitentes · 0 fallan · 38 total. **MOCK = proveedor
 
 ## Auditoría
 
-- Fecha: 2026-11-18T21:41:21Z · Resultado: **CON FALLOS**
-- Detalle: `{"suites": {"pasan": 37, "intermitentes": 0, "fallan": 1, "total": 38}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
+- Fecha: 2026-11-18T21:49:05Z · Resultado: **OK**
+- Detalle: `{"suites": {"pasan": 38, "intermitentes": 0, "fallan": 0, "total": 38}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
 
 ## Qué NO está verificado
 

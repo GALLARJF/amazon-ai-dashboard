@@ -90,6 +90,8 @@ Primera pasada ciega (v1): 5 errores (4 FN relevantes: «siero» italiano, «Haa
 - H12: motor = pendiente, referencia = economica
 - H26: motor = pendiente, referencia = no_comparable
 
+**Aclaración sobre H07, H12 y H26.** El conjunto tiene 3 desacuerdos sobre 32 casos (29 coinciden = 90,6 %). Solo H07 (Maria Nila, motor = económica, referencia = funcional) cuenta como falso negativo «relevante»: es una marca sin clasificar que el motor degrada a económica. H12 (Pantene sérum, motor = pendiente, referencia = económica) y H26 (Elvive sérum de puntas, motor = pendiente, referencia = no comparable) son desacuerdos de etiqueta entre dos categorías NO relevantes para el competidor directo: el motor es más prudente que la referencia (pide evidencia en vez de decidir) y no cuentan como FP ni FN. Por eso el resumen dice «1 FN» y la lista muestra 3 errores de acuerdo. **El 91 % es acuerdo técnico con una referencia escrita por el propio autor del motor y ajustada tras la primera pasada: NO es precisión independiente demostrada.** La validación comercial independiente (humana, ≥40-60 productos) sigue pendiente.
+
 Lectura honesta: 0 falsos positivos (ningún producto de aclarado, medicamento, suplemento o aceite genérico se cuela como competidor) y 1 falso negativo (Maria Nila, sérum calmante de marca sin clasificar → económica; falta clasificar la marca). **Las pruebas de código en verde no validan por sí solas el motor**: la validez comercial depende de que AHT revise la referencia y la lista de marcas.
 
 ## 7. Pruebas

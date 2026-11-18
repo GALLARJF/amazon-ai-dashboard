@@ -89,7 +89,7 @@ Resumen: 38 pasan · 0 intermitentes · 0 fallan · 38 total. **MOCK = proveedor
 
 ## Auditoría
 
-- Fecha: 2026-11-18T21:41:21Z · Resultado: **CON FALLOS**
+- Fecha: 2026-11-18T21:49:05Z · Resultado: **OK**
 - **Auditoría independiente: NO hubo.** No se dispuso de un segundo modelo autorizado y sin coste; la revisión fue determinista (regresión, escaneo de secretos, integridad del registro, pruebas negativas).
 
 ## Qué NO está verificado
