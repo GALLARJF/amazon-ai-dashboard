@@ -18,7 +18,8 @@
   "cobertura_min": 0.6,
   "muestra_min_precio": 3,
   "frescura_actual_dias": 7,
-  "frescura_reciente_dias": 30
+  "frescura_reciente_dias": 30,
+  "funcional_especializado": 75
  },
  "esenciales": [
   "necesidad",
@@ -404,5 +405,20 @@
   "ALTERNATIVA ECONÓMICA / MERCADO MASIVO",
   "NO COMPARABLE",
   "PENDIENTE DE EVIDENCIA"
- ]
+ ],
+ "confianza": {
+  "fiabilidad_fuente": {
+   "dato": 1.0,
+   "título": 0.6,
+   "marca": 0.6,
+   "maqueta": 0.4,
+   "supuesto prudente": 0.2
+  },
+  "niveles": {
+   "ALTA": 0.7,
+   "MEDIA": 0.5,
+   "BAJA": 0.3
+  },
+  "aviso": "La confianza mide la CALIDAD de la evidencia (no la equivalencia). Sin ficha verificada (INCI/descripción/concentración comprobados) el nivel máximo es MEDIA y la equivalencia es solo ESTIMADA."
+ }
 }

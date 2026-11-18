@@ -1,6 +1,6 @@
 # INFORME DE ENTREGA — Amazon Pro Intelligence (coordinador autónomo)
 
-Generado: 2026-11-17T14:55:22Z · Registro íntegro: **SÍ** (73 líneas)
+Generado: 2026-11-18T21:47:25Z · Registro íntegro: **SÍ** (195 líneas)
 
 ## 1. Pruebas
 
@@ -21,10 +21,31 @@ Generado: 2026-11-17T14:55:22Z · Registro íntegro: **SÍ** (73 líneas)
 | v0.7-seguridad | MOCK | PASA | 1 | 23/23 OK |
 | UI-v0.7 | MOCK+NAVEGADOR | PASA | 1 | 31/31 OK |
 | desarrollo | LOCAL | PASA | 1 | 9/9 OK |
-| v0.7-registro | LOCAL | PASA | 1 | 38/38 OK |
+| relevo | LOCAL | PASA | 1 | 14/14 OK |
+| v1.0-matriz | LOCAL | PASA | 1 | 6/6 OK |
+| v1.0-lanzar | MOCK | PASA | 1 | 12/12 OK |
+| v1.0-vender | MOCK | PASA | 1 | 16/16 OK |
+| v1.0-finanzas | MOCK | PASA | 1 | 20/20 OK |
+| v1.0-export | MOCK | PASA | 1 | 14/14 OK |
+| v1.0-persistencia | MOCK | PASA | 1 | 16/16 OK |
+| v1.0-ficha | MOCK | PASA | 1 | 6/6 OK |
+| v1.0-ui | MOCK+NAVEGADOR | PASA | 1 | 44/44 OK |
+| v1.0-plan | MOCK | PASA | 1 | 14/14 OK |
+| v1.0-conectores | MOCK | PASA | 1 | 16/16 OK |
+| v1.0-docs | MOCK | PASA | 1 | 10/10 OK |
+| v1.0-entrega | LOCAL | PASA | 1 | 16/16 OK |
+| v1.0-cloud | MOCK | PASA | 1 | 29/29 OK |
+| v1.0-ui-cloud | MOCK+NAVEGADOR | PASA | 1 | 37/37 OK |
+| v1.0-respaldo-cloud | MOCK | PASA | 1 | 20/20 OK |
+| k1-keepa | MOCK | PASA | 1 | 29/29 OK |
+| k1-http | MOCK | PASA | 1 | 12/12 OK |
+| k2-director | MOCK | PASA | 1 | 33/33 OK |
+| k3-segmentacion | MOCK | PASA | 1 | 90/90 OK |
+| UI-k3 | MOCK+NAVEGADOR | PASA | 1 | 37/37 OK |
+| v0.7-registro | LOCAL | PASA | 1 | 87/87 OK |
 | v0.7-entrega | LOCAL | PASA | 1 | 15/15 OK |
 
-Resumen: 17 pasan · 0 intermitentes · 0 fallan · 17 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 38 pasan · 0 intermitentes · 0 fallan · 38 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## 2. Conexiones (solo cuenta como verificada la que tiene llamada real y evidencia)
 
@@ -40,6 +61,15 @@ Resumen: 17 pasan · 0 intermitentes · 0 fallan · 17 total. **MOCK = proveedor
 
 - INC-001 · UI-v0.6 · RESUELTA · 6 intentos · tipo PERSISTENTE
 - INC-002 · v0.7-registro · RESUELTA · 3 intentos · tipo PERSISTENTE
+- INC-003 · v0.7-registro · RESUELTA · 3 intentos · tipo PERSISTENTE
+- INC-004 · v1.0-entrega · RESUELTA · 3 intentos · tipo PERSISTENTE
+- INC-005 · v1.0-ficha · RESUELTA · 3 intentos · tipo PERSISTENTE
+- INC-006 · v1.0-entrega · RESUELTA · 3 intentos · tipo PERSISTENTE
+- INC-007 · UI-k3 · RESUELTA · 6 intentos · tipo PERSISTENTE
+- INC-008 · v1.0-entrega · RESUELTA · 6 intentos · tipo PERSISTENTE
+- INC-009 · UI-v0.7 · RESUELTA · 2 intentos · tipo INTERMITENTE
+- INC-010 · UI-k3 · RESUELTA · 2 intentos · tipo INTERMITENTE
+- INC-011 · v1.0-entrega · RESUELTA · 3 intentos · tipo PERSISTENTE
 
 ## 4. Objetivos
 
@@ -51,7 +81,7 @@ Resumen: 17 pasan · 0 intermitentes · 0 fallan · 17 total. **MOCK = proveedor
 - [PENDIENTE] OBJ-006 Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector
 - [PENDIENTE] OBJ-007 Fase siguiente (V0.7): preparada en PLAN_FASE_SIGUIENTE.md; NO iniciar hasta validar la infraestructura
 - [HECHO] OBJ-008 Mantenimiento: escaneo de secretos
-- [HECHO] OBJ-009 Mantenimiento: batería de pruebas con reintentos
+- [PENDIENTE] OBJ-009 Mantenimiento: batería de pruebas con reintentos
 - [PENDIENTE] OBJ-010 Mantenimiento: informe de entrega actualizado
 - [HECHO] OBJ-011 V0.7.0 · Datos reales de Keepa integrados (sin red ni gasto)
 - [HECHO] OBJ-012 V0.7.0 · Expediente comercial ACTIVCORE v0.7
@@ -60,9 +90,24 @@ Resumen: 17 pasan · 0 intermitentes · 0 fallan · 17 total. **MOCK = proveedor
 - [HECHO] OBJ-015 V0.7.0 · Seguridad de los nuevos endpoints /api/v07/*
 - [HECHO] OBJ-016 V0.7.0 · Registro de suites v0.7 en la batería y el coordinador
 - [HECHO] OBJ-017 V0.7.0 · Entrega candidata V0.7.0 (código, documentación, pruebas, evidencias)
+- [HECHO] OBJ-018 V1.0 · Infraestructura de relevo: bloqueo, recuperación y commit controlado
+- [HECHO] OBJ-019 V1.0 · Matriz de aceptación V1.0 (4 categorías) generada desde el estado real
+- [HECHO] OBJ-020 V1.0 · PREPARAR Y LANZAR: flujo completo ACTIVCORE con persistencia
+- [HECHO] OBJ-021 V1.0 · VENDER Y OPTIMIZAR con informes CSV importados (datos simulados etiquetados)
+- [HECHO] OBJ-022 V1.0 · Motor financiero determinista: escenarios, sensibilidad, punto de equilibrio
+- [HECHO] OBJ-023 V1.0 · Exportaciones CSV/HTML/Markdown con trazabilidad
+- [HECHO] OBJ-024 V1.0 · Director IA: plan de coordinación de especialistas
+- [HECHO] OBJ-025 V1.0 · Persistencia y recuperación: copia de seguridad, restauración y BD corrupta
+- [HECHO] OBJ-026 V1.0 · NEON: cinco secciones en móvil y escritorio (Chromium real) y corrección de desbordes
+- [HECHO] OBJ-027 V1.0 · Ficha única de integraciones bloqueadas
+- [HECHO] OBJ-028 V1.0 · Manual de Sergio v1.0 y documentación de instalación y operación
+- [HECHO] OBJ-029 V1.0 · Entrega candidata V1.0 (ZIP sin claves, copia, evidencias, bloqueos)
+- [HECHO] OBJ-030 V1.0 · Adaptadores OpenAI, SP-API y Ads API (solo lectura) con pruebas simuladas identificadas
+- [HECHO] OBJ-031 V1.0 · Despliegue cloud privado: modo cloud, HTTPS, usuarios por variables secretas, respaldo y paquete Docker/Render
 
 ## 5. Siguientes acciones
 
+- OBJ-009 [1] Mantenimiento: batería de pruebas con reintentos
 - OBJ-005 [2] PROPIETARIO: instalar/reconectar la app de GitHub para poder hacer push (hoy 403) (requiere a Claude/persona)
 - OBJ-010 [2] Mantenimiento: informe de entrega actualizado
 - OBJ-006 [4] Claude: subir copia y estado a Drive (carpeta AHT_AMAZON_PRO_AUTONOMIA) tras cada ciclo con conector (requiere a Claude/persona)

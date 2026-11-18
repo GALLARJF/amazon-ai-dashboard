@@ -59,8 +59,8 @@ Generado desde el estado del coordinador (AUTONOMIA/estado.json). Candidata: NO 
 | k1-keepa | MOCK | PASA | 29/29 OK |
 | k1-http | MOCK | PASA | 12/12 OK |
 | k2-director | MOCK | PASA | 33/33 OK |
-| k3-segmentacion | MOCK | PASA | 71/71 OK |
-| UI-k3 | MOCK+NAVEGADOR | PASA | 29/29 OK |
+| k3-segmentacion | MOCK | PASA | 90/90 OK |
+| UI-k3 | MOCK+NAVEGADOR | PASA | 37/37 OK |
 | v0.7-registro | LOCAL | PASA | 87/87 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
@@ -68,8 +68,8 @@ Resumen: 38 pasan · 0 intermitentes · 0 fallan · 38 total. **MOCK = proveedor
 
 ## Auditoría
 
-- Fecha: 2026-11-17T16:21:53Z · Resultado: **OK**
-- Detalle: `{"suites": {"pasan": 32, "intermitentes": 0, "fallan": 0, "total": 32}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
+- Fecha: 2026-11-18T21:41:21Z · Resultado: **CON FALLOS**
+- Detalle: `{"suites": {"pasan": 37, "intermitentes": 0, "fallan": 1, "total": 38}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
 
 ## Qué NO está verificado
 

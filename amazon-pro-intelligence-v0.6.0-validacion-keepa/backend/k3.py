@@ -115,6 +115,7 @@ class Segmenter:
                 if r.search(norm(a)): acts[norm(a)] = (k, v)
         f["activos"] = acts; f["activos_fuente"] = "maqueta" if ov.get("activos_doc") else ("título" if acts else None)
         f["vol"], f["vol_fuente"] = self.volume(rec)
+        if rec.get("evidence_kind") == "MAQUETA" and f["vol_fuente"] == "dato": f["vol_fuente"] = "maqueta"
         f["tier"], f["tier_val"], f["canal_val"], f["tier_nota"] = self.brand_tier(brand, title)
         f["posicionamiento_maqueta"] = ov.get("posicionamiento_maqueta")
         return f
@@ -195,11 +196,25 @@ class Segmenter:
         else: seg, why = ECONOMICA, "equivalencia %.1f (<%g): alternativa de menor equivalencia funcional" % (sc, self.t["funcional"])
         if seg in (FUNCIONAL, ECONOMICA) and f["tier"] is None and not f["overlay"]: why += " (marca sin clasificar: nunca puede ser premium)"
         vol, vsrc = f["vol"], f["vol_fuente"]
-        out = {"segmento": seg, "codigo": SEG_CODE[seg], "equivalencia": sc, "cobertura": cov, "explicacion": why, "elegibilidad": {"estado": estado, "razones": razones},
+        conf = self.confidence(C, bool(rec.get("ficha_verificada")))
+        sub = None
+        if seg == PREMIUM: sub = "PREMIUM"
+        elif seg == FUNCIONAL:
+            sub = "ESPECIALIZADO" if (sc >= self.t["funcional_especializado"] and f["necesidad"] == self.ref["necesidad_principal"] and f["tipo"] in ("serum", "locion") and f["zona"] != "longitud") else "GENERAL"
+        out = {"subgrupo": sub, "confianza": conf, "equivalencia_estado": "ESTIMADA (sin ficha verificada: no demostrada)" if not conf["ficha_verificada"] else "SOBRE FICHA VERIFICADA","segmento": seg, "codigo": SEG_CODE[seg], "equivalencia": sc, "cobertura": cov, "explicacion": why, "elegibilidad": {"estado": estado, "razones": razones},
                "componentes": {k: {"nombre": COMP_NAME[k], "peso": self.w[k], "valor": C[k][0], "puntos": pts[k], "razon": C[k][1], "evidencia": C[k][2]} for k in COMPONENTES},
                "faltan": faltan, "premium": gate, "necesidades": f["necesidades"], "tipo": f["tipo"], "zona": f["zona"], "leave_on": (True if f["leave_on_exp"] else False if f["rinse"] else None),
                "activos": sorted(f["activos"]), "volumen_ml": vol, "volumen_fuente": vsrc, "marca_tier": f["tier"] or "NO CLASIFICADA", "evidencia": (("MAQUETA (no verificada)" if not rec.get("asin") else "KEEPA (título/marca/formato) + MAQUETA (necesidad/activos, no verificada)") if f["overlay"] else "TÍTULO/MARCA/FORMATO (Keepa en caché)")}
         return out
+
+    def confidence(self, C, ficha_verificada=False):
+        """Nivel de confianza de la EVIDENCIA, independiente de la puntuación de equivalencia."""
+        cf = self.cfg["confianza"]; rel = cf["fiabilidad_fuente"]; tot = float(sum(self.w[k] for k in COMPONENTES)) or 1.0
+        det = {k: round(rel.get(C[k][2] or "", 0.0) if C[k][0] is not None else 0.0, 2) for k in COMPONENTES}
+        pct = round(sum(self.w[k] * det[k] for k in COMPONENTES) / tot, 3); nv = cf["niveles"]
+        nivel = "ALTA" if pct >= nv["ALTA"] else "MEDIA" if pct >= nv["MEDIA"] else "BAJA" if pct >= nv["BAJA"] else "MUY BAJA"
+        if not ficha_verificada and nivel == "ALTA": nivel = "MEDIA"
+        return {"pct": pct, "nivel": nivel, "ficha_verificada": bool(ficha_verificada), "por_variable": det, "nota": cf["aviso"]}
 
     def _premium_gate(self, f, sc):
         falla = []
@@ -253,6 +268,7 @@ def classify_all(seg, recs, reviews=None, now=None):
         if p is not None and inf.get("duracion_dias") and pcls in ("ACTUAL", "RECIENTE"): cost_day = round(p / inf["duracion_dias"], 2)
         rows.append({"key": key, "asin": r.get("asin"), "country": r.get("country") or "ES", "brand": r.get("brand") or r.get("marca"), "title": r.get("title"), "url": r.get("url") or ("https://www.amazon.es/dp/%s" % r["asin"] if r.get("asin") else None),
                      "image": None, "image_nota": "sin imagen: la caché Keepa no incluye imágenes autorizadas",
+                     "origen": ("REFERENCIA SIN ASIN (maqueta, no es dato Keepa)" if not r.get("asin") else "KEEPA (ASIN real)" + (" + datos de maqueta" if r.get("infografia") else "")), "grupo_origen": "referencia_sin_asin" if not r.get("asin") else "keepa", "subgrupo": c["subgrupo"], "confianza": c["confianza"],
                      "price": p, "price_as_of": r.get("price_as_of"), "price_age_days": age, "price_class": pcls, "price_100ml": round(p / ml * 100, 2) if p is not None and ml else None,
                      "cost_day": cost_day, "cost_day_nota": None if cost_day is not None else "NO DISPONIBLE: pauta/duración no documentada o precio no vigente",
                      "bsr": r.get("bsr"), "bsr_nota": "BSR = ranking de categoría, NO ventas", "evidence_kind": r.get("evidence_kind"), "automatic": c, "review": rv,
@@ -269,9 +285,9 @@ def median(xs):
 def panels(rows, own_pvp=None, own_ml=None, muestra_min=3, own_cost_day=None):
     """Tres paneles SEPARADOS (nunca se mezclan medianas de segmentos). Estadísticos solo con precios vigentes (≤30 d) y muestra mínima."""
     out = {}
-    for code, title in (("premium", "A · Competencia directa premium"), ("funcional", "B · Competencia funcional"), ("economica", "C · Mercado económico / masivo")):
-        rs = [r for r in rows if r["codigo"] == code]; vig = [r for r in rs if r["price_class"] in ("ACTUAL", "RECIENTE") and r["price_100ml"] is not None]; xs = [r["price_100ml"] for r in vig]
-        p = {"titulo": title, "n": len(rs), "n_precio_vigente": len(vig), "n_historico_o_sin_fecha": sum(1 for r in rs if r["price_class"] in ("HISTÓRICO", "FECHA DESCONOCIDA")), "n_sin_precio": sum(1 for r in rs if r["price_class"] == "SIN PRECIO"), "estadisticos": None}
+    for code, title in (("premium", "A · Competencia directa premium"), ("funcional_especializado", "B1 · Funcional ESPECIALIZADO de alta equivalencia"), ("funcional", "B2 · Resto de competencia funcional"), ("economica", "C · Mercado económico / masivo")):
+        rs = [r for r in rows if (r["codigo"] == "funcional" and r.get("subgrupo") == "ESPECIALIZADO") ] if code == "funcional_especializado" else [r for r in rows if r["codigo"] == "funcional" and r.get("subgrupo") != "ESPECIALIZADO"] if code == "funcional" else [r for r in rows if r["codigo"] == code]; vig = [r for r in rs if r["price_class"] in ("ACTUAL", "RECIENTE") and r["price_100ml"] is not None]; xs = [r["price_100ml"] for r in vig]
+        p = {"titulo": title, "n": len(rs), "n_keepa": sum(1 for r in rs if r.get("asin")), "n_referencias_sin_asin": sum(1 for r in rs if not r.get("asin")), "n_precio_vigente": len(vig), "n_historico_o_sin_fecha": sum(1 for r in rs if r["price_class"] in ("HISTÓRICO", "FECHA DESCONOCIDA")), "n_sin_precio": sum(1 for r in rs if r["price_class"] == "SIN PRECIO"), "estadisticos": None}
         if len(xs) >= muestra_min:
             p["estadisticos"] = {"mediana_100ml": round(median(xs), 2), "min_100ml": round(min(xs), 2), "max_100ml": round(max(xs), 2), "n": len(xs)}
         else:
@@ -307,7 +323,9 @@ def explain(row):
     L.append("Equivalencia (etapa B): %.1f/100 con cobertura de evidencia %d %%." % (a["equivalencia"], a["cobertura"] * 100))
     for k in COMPONENTES:
         c = a["componentes"][k]; L.append("  · %s (%d %%): %s — %s" % (c["nombre"], c["peso"], ("%.1f/%d" % (c["puntos"], c["peso"])) if c["puntos"] is not None else "SIN DATOS", c["razon"]))
-    L.append("Decisión: " + a["explicacion"] + ".")
+    L.append("Confianza de la evidencia: %s (%d %%) — %s." % (a["confianza"]["nivel"], round(a["confianza"]["pct"] * 100), "la equivalencia es ESTIMADA: no hay ficha verificada" if not a["confianza"]["ficha_verificada"] else "ficha verificada"))
+    L.append("Origen del dato: %s." % row.get("origen", "n/d"))
+    L.append("Decisión: " + a["explicacion"] + (" Subgrupo: %s." % row["automatic"]["subgrupo"] if a.get("subgrupo") else "") + ".")
     if a["premium"]["falla"] and a["segmento"] != NOCOMP: L.append("No es premium porque: " + "; ".join(a["premium"]["falla"]) + ".")
     L.append("El precio NO interviene en la equivalencia ni en el segmento.")
     return L

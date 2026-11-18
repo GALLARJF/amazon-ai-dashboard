@@ -56,11 +56,14 @@ class K3Service:
                 "coste_dia_estado": "TEÓRICO: %s" % ref["dosis_estado"] if dur else "NO DISPONIBLE", "ficha": {k: ref[k] for k in ("categoria_real", "necesidad_principal", "zona", "tipo_tratamiento", "aclarado", "regulacion", "formato_ml", "dosis_ml_dia", "publico", "evidencia", "activos", "posicionamiento", "canal")}}
 
     def filtrar(self, rows, g):
+        sub, org = (g.get("subgrupo") or "").upper(), (g.get("origen") or "").lower()
         seg, pais, activo, mn, mx, app = (g.get("segmento") or "", (g.get("country") or "").upper(), norm_(g.get("activo")), _num(g.get("min_ml")), _num(g.get("max_ml")), norm_(g.get("aplicacion")))
         out = []
         for r in rows:
             a = r["automatic"]
             if seg and r["codigo"] != seg: continue
+            if sub and (r.get("subgrupo") or "") != sub: continue
+            if org and r["grupo_origen"] != org: continue
             if pais and (r["country"] or "") != pais: continue
             if activo and not any(activo in x for x in a["activos"]): continue
             if mn is not None and (a["volumen_ml"] is None or a["volumen_ml"] < mn): continue
@@ -73,7 +76,9 @@ class K3Service:
         rows, dups = self.rows(now); own = self.own(); allrows = rows; view = self.filtrar(rows, g or {})
         pan = M.panels(allrows, own["pvp"], own["ml"], self.seg.t["muestra_min_precio"])
         cnt = {c: sum(1 for r in allrows if r["codigo"] == c) for c in M.CODE_SEG}
-        return {"disponible": True, "version": self.seg.cfg["version"], "categoria": self.seg.cfg["categoria"], "pesos": self.seg.w, "umbrales": self.seg.t, "propio": own, "conteo": cnt, "n_total": len(allrows), "n_visibles": len(view), "paneles": pan, "filas": view, "duplicados": dups,
+        origen = {"keepa": sum(1 for r in allrows if r["grupo_origen"] == "keepa"), "referencia_sin_asin": sum(1 for r in allrows if r["grupo_origen"] == "referencia_sin_asin")}
+        sub = {"premium": cnt["premium"], "funcional_especializado": sum(1 for r in allrows if r["codigo"] == "funcional" and r["subgrupo"] == "ESPECIALIZADO"), "funcional_general": sum(1 for r in allrows if r["codigo"] == "funcional" and r["subgrupo"] != "ESPECIALIZADO")}
+        return {"origen_conteo": origen, "subgrupos": sub, "pvp_nota": "El PVP es el PROPUESTO por AHT. K3 no recomienda ni modifica el PVP y no usa precios históricos, sin fecha o de maqueta.", "disponible": True, "version": self.seg.cfg["version"], "categoria": self.seg.cfg["categoria"], "pesos": self.seg.w, "umbrales": self.seg.t, "propio": own, "conteo": cnt, "n_total": len(allrows), "n_visibles": len(view), "paneles": pan, "filas": view, "duplicados": dups,
                 "nota_precio": "El precio NO interviene en la equivalencia ni en el segmento. Solo se usan precios ACTUAL/RECIENTE (≤30 d) para estadísticos y posición; los HISTÓRICOS se muestran como referencia.",
                 "aviso_evidencia": "Clasificación automática por título, marca y formato (+ datos de maqueta marcados como no verificados). Es REVISABLE: confirma o rechaza con justificación."}
 

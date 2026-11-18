@@ -375,7 +375,7 @@ class H(BaseHTTPRequestHandler):
                 return self._json({"disponible": False, "motivo": "Este producto no tiene perfil de segmentación K3 (hoy: cosmética capilar / cuero cabelludo)."})
             k3s = K3S.K3Service(APP["store"], svc)
             if path == "/api/eu/k3":
-                return self._json(k3s.resumen({k: g(k) for k in ("segmento", "country", "activo", "min_ml", "max_ml", "aplicacion")}))
+                return self._json(k3s.resumen({k: g(k) for k in ("segmento", "subgrupo", "origen", "country", "activo", "min_ml", "max_ml", "aplicacion")}))
             if path == "/api/eu/k3/explicar":
                 key = str(g("key") or "").upper() if not str(g("key") or "").startswith("INF:") else g("key")
                 row = next((r for r in k3s.rows()[0] if r["key"] == key), None)
