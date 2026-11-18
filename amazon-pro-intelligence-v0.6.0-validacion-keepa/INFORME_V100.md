@@ -79,14 +79,15 @@ Detalle en `MATRIZ_ACEPTACION_V100.md`.
 | v1.0-respaldo-cloud | MOCK | PASA | 20/20 OK |
 | k1-keepa | MOCK | PASA | 29/29 OK |
 | k1-http | MOCK | PASA | 12/12 OK |
-| v0.7-registro | LOCAL | PASA | 84/84 OK |
+| k2-director | MOCK | PASA | 33/33 OK |
+| v0.7-registro | LOCAL | PASA | 85/85 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 35 pasan · 0 intermitentes · 0 fallan · 35 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 36 pasan · 0 intermitentes · 0 fallan · 36 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 
-- Fecha: 2026-11-17T16:21:53Z · Resultado: **OK**
+- Fecha: 2026-11-18T01:17:59Z · Resultado: **CON FALLOS**
 - **Auditoría independiente: NO hubo.** No se dispuso de un segundo modelo autorizado y sin coste; la revisión fue determinista (regresión, escaneo de secretos, integridad del registro, pruebas negativas).
 
 ## Qué NO está verificado

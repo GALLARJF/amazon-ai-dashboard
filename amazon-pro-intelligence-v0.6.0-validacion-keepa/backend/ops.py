@@ -123,7 +123,7 @@ class Ops:
                 p = self.db.execute("SELECT * FROM policies6 WHERE action=? AND enabled=1", (action,)).fetchone()
                 if not p:
                     return {"level": "N3", "decision": "PEDIR_APROBACION", "reason": "sin política N2 expresa para esta acción: se trata como N3"}
-                today = time.strftime("%Y-%m-%d")
+                today = time.strftime("%Y-%m-%d", time.gmtime())
                 n = self.db.execute("SELECT COUNT(*) c FROM events6 WHERE type='n2_exec' AND substr(ts,1,10)=? AND detail LIKE ?", (today, '%"action": "' + action + '"%')).fetchone()["c"]
             if n >= p["max_per_day"]:
                 return {"level": "N3", "decision": "PEDIR_APROBACION", "reason": "límite diario de la política N2 alcanzado (%d)" % p["max_per_day"]}
