@@ -78,6 +78,16 @@ class EUDirector:
         return "general"
 
     @staticmethod
+    def price_freshness(as_of, now=None):
+        """ACTUAL ≤ 7 días · RECIENTE ≤ 30 · HISTÓRICO > 30 · FECHA DESCONOCIDA. Los precios HISTÓRICOS no sustentan conclusiones de competitividad presente."""
+        try:
+            t = time.mktime(time.strptime(str(as_of)[:10], "%Y-%m-%d")); d = int(((now or time.time()) - t) / 86400)
+        except (ValueError, TypeError, OverflowError):
+            return None, "FECHA DESCONOCIDA"
+        d = max(d, 0)
+        return d, ("ACTUAL" if d <= 7 else "RECIENTE" if d <= 30 else "HISTÓRICO")
+
+    @staticmethod
     def _eur(x, d=2):
         return ("%.*f" % (d, x)).replace(".", ",") + " €"
 
@@ -88,15 +98,17 @@ class EUDirector:
         for c in K.DOMAINS:
             recs = self.svc.scoped_records(c)
             if not recs: continue
+            raw = {r.get("asin"): r for r in recs}
             for e in E.benchmark(recs, reg.get(c, {}), include_suggested=True, norm=self.svc.norm)["rows"]:
+                asof = (raw.get(e["asin"]) or {}).get("price_as_of"); age, pcls = self.price_freshness(asof)
                 usable = e["comparability_status"] in E.USABLE_ST
                 lvl = (e["comparability"] if usable else e["comparability_suggested"]) or "BAJA"
                 conf = e["comparability_status"] == "CONFIRMADA"
                 rows.append({"country": c, "brand": D.sanitize(e.get("brand") or "", 40), "title": D.sanitize(e.get("title") or "", 90), "asin": e["asin"], "price": e.get("price"), "price_norm": e.get("price_norm"), "bsr": e.get("bsr"),
                              "level": lvl, "confirmed": conf, "state": "CONFIRMADO" if conf else "CANDIDATO " + ("AUTOMÁTICO" if e["comparability_status"] == "AUTOMATICA" else "SIN CONFIRMAR"),
-                             "reason": D.sanitize(e.get("comparability_reason") or "", 320), "vs_own_pct": round((e["price_norm"] / own100 - 1) * 100) if own100 and e.get("price_norm") else None, "price_as_of": e.get("price_as_of"), "source": D.sanitize(e.get("source") or "", 80)})
+                             "reason": D.sanitize(e.get("comparability_reason") or "", 320), "vs_own_pct": round((e["price_norm"] / own100 - 1) * 100) if own100 and e.get("price_norm") else None, "price_as_of": str(asof)[:10] if asof else None, "price_age_days": age, "price_class": pcls, "source": D.sanitize(e.get("source") or "", 80)})
         order = {"ALTA": 0, "MEDIA": 1, "BAJA": 2}
-        rows.sort(key=lambda r: (order[r["level"]], r["price_norm"] is None, r["price_norm"] or 0, r["bsr"] is None, r["bsr"] or 0, r["asin"]))
+        rows.sort(key=lambda r: (order[r["level"]], r["price_class"] in ("HISTÓRICO", "FECHA DESCONOCIDA"), r["price_norm"] is None, r["price_norm"] or 0, r["bsr"] is None, r["bsr"] or 0, r["asin"]))
         return rows, own100
 
     def _answer_competidores(self):
@@ -105,13 +117,16 @@ class EUDirector:
             return ["[DATO NO DISPONIBLE] Sin ASIN de competidores en la base: importa los ya obtenidos o autoriza una consulta Keepa. No se puede identificar competidores peligrosos todavía."]
         rel = [r for r in rows if r["level"] in ("ALTA", "MEDIA")]; low = [r for r in rows if r["level"] == "BAJA"]; conf = [r for r in rows if r["confirmed"]]
         L.append("[COMPETIDORES] %d ASIN analizados: %d confirmados por una persona y %d candidatos sin confirmar; %d relevantes (comparabilidad ALTA/MEDIA) y %d excluidos (BAJA)." % (len(rows), len(conf), len(rows) - len(conf), len(rel), len(low)))
-        L.append("[CRITERIO] Orden: 1) comparabilidad (ALTA antes que MEDIA), 2) precio por 100 mL ascendente (más presión de precio), 3) BSR ascendente (ranking de categoría, NO ventas). Sin ventas estimadas: no hay metodología validada.")
+        L.append("[CRITERIO] Orden: 1) comparabilidad (ALTA antes que MEDIA), 2) precio por 100 mL ascendente (más presión de precio; los precios HISTÓRICOS o sin fecha van después), 3) BSR ascendente (ranking de categoría, NO ventas). Sin ventas estimadas: no hay metodología validada.")
         if own100: L.append("[REFERENCIA] PVP de referencia de la ficha (puede ser PROPUESTO, no aprobado): %s por 100 mL; los %% «vs el propio» se calculan contra él." % self._eur(own100))
+        fc = {}
+        for r in rel: fc[r["price_class"]] = fc.get(r["price_class"], 0) + 1
+        if rel: L.append("[FRESCURA DE PRECIOS] " + ", ".join("%d %s" % (n, k) for k, n in sorted(fc.items())) + " (ACTUAL ≤7 d · RECIENTE ≤30 d · HISTÓRICO >30 d). " + ("ADVERTENCIA: los precios HISTÓRICOS son del pasado y no demuestran la competitividad actual; verifica el precio vigente antes de decidir." if fc.get("HISTÓRICO") or fc.get("FECHA DESCONOCIDA") else "Todos los precios son recientes."))
         if not rel:
             L.append("[SIN RELEVANTES] Ningún ASIN alcanza comparabilidad ALTA/MEDIA: no hay competidores directos identificables todavía.")
         for i, r in enumerate(rel[:10], 1):
             pn = ("%s/100 mL" % self._eur(r["price_norm"])) + (" (%+d %% vs el propio)" % r["vs_own_pct"] if r["vs_own_pct"] is not None else "") if r["price_norm"] is not None else "precio/100 mL NO DISPONIBLE (formato desconocido)"
-            L.append("%d. %s · %s · ASIN %s · %s · %s · %s · %s%s · Motivo: %s" % (i, r["brand"] or "marca n/d", r["title"] or "producto n/d", r["asin"], self._eur(r["price"]) if r["price"] is not None else "precio n/d", pn, r["level"], r["state"],
+            L.append("%d. %s · %s · ASIN %s · %s · %s · %s · %s%s · Motivo: %s" % (i, r["brand"] or "marca n/d", r["title"] or "producto n/d", r["asin"], (self._eur(r["price"]) + " (%s%s)" % (r["price_class"], (", " + r["price_as_of"] + ", hace %d d" % r["price_age_days"]) if r["price_age_days"] is not None else "")) if r["price"] is not None else "precio n/d", pn, r["level"], r["state"],
                      " · BSR %d (ranking, no ventas)" % r["bsr"] if r["bsr"] else " · BSR n/d", r["reason"] or "comparabilidad calculada por reglas"))
         if len(rel) > 10: L.append("… y %d relevantes más (exporta la caché desde Keepa → CSV)." % (len(rel) - 10))
         L.append("[LÍMITES] %s Los precios son el último dato observado (puede ser antiguo); títulos de Amazon/Keepa tratados como datos no fiables; nada de esto es una conclusión de ventas ni de cuota de mercado." % ("Todos son CANDIDATOS: la comparabilidad es automática y revisable; ninguno está confirmado." if not conf else "Los marcados CANDIDATO siguen sin confirmar."))
@@ -126,13 +141,17 @@ class EUDirector:
             e = E.unit_economics(pv, a[c], s["acos_target"])
             L.append(("[CÁLCULO%s] %s: contribución %s, margen antes de publicidad %.1f %%, ACoS de equilibrio %.1f %%." % (" · HIPÓTESIS" if e["hypothetical"] else "", E.NAMES[c], self._eur(e["contribution_before_ads"]), e["margin_before_ads"] * 100, e["breakeven_acos_ex_vat"] * 100)) if e.get("complete")
                      else "[DATO NO DISPONIBLE] %s: contribución no calculable; faltan %s." % (E.NAMES[c], ", ".join(E.LABEL[k] for k in e["missing"])))
-        rows, _ = self.competitor_rows(); rel = [r for r in rows if r["level"] in ("ALTA", "MEDIA") and r["price_norm"] is not None]
+        rows, _ = self.competitor_rows(); relall = [r for r in rows if r["level"] in ("ALTA", "MEDIA") and r["price_norm"] is not None]
+        rel = [r for r in relall if r["price_class"] in ("ACTUAL", "RECIENTE")]; hist = [r for r in relall if r not in rel]
         if self.svc.content and self.svc.norm == "ml" and rel:
             mine = pv / self.svc.content * 100; xs = sorted(r["price_norm"] for r in rel); cheaper = sum(1 for x in xs if x < mine); mid = E.quantiles(xs)
-            L.append("[POSICIÓN DE PRECIO] %s por 100 mL frente a %d %s relevantes: %d más baratos y %d más caros; mediana %s, rango %s–%s por 100 mL. %s" % (self._eur(mine), len(xs), "competidores" if all(r["confirmed"] for r in rel) else "candidatos (no confirmados)", cheaper, len(xs) - cheaper,
-                     self._eur(mid["median"]), self._eur(xs[0]), self._eur(xs[-1]), "Orientativo: los precios son el último dato observado y la comparabilidad es automática." if not all(r["confirmed"] for r in rel) else ""))
+            L.append("[POSICIÓN DE PRECIO · SOLO PRECIOS VIGENTES (≤30 d)] %s por 100 mL frente a %d %s relevantes: %d más baratos y %d más caros; mediana %s, rango %s–%s por 100 mL. %s" % (self._eur(mine), len(xs), "competidores" if all(r["confirmed"] for r in rel) else "candidatos (no confirmados)", cheaper, len(xs) - cheaper,
+                     self._eur(mid["median"]), self._eur(xs[0]), self._eur(xs[-1]), "Orientativo: la comparabilidad es automática." if not all(r["confirmed"] for r in rel) else ""))
         else:
-            L.append("[DATO NO DISPONIBLE] Sin competidores relevantes con precio por 100 mL: no se puede situar este precio frente al mercado.")
+            L.append("[DATO NO DISPONIBLE] Ningún competidor relevante tiene un precio vigente (≤30 días) con precio por 100 mL: no se puede situar este precio frente al mercado actual.")
+        if hist:
+            hs = sorted(r["price_norm"] for r in hist)
+            L.append("[PRECIOS HISTÓRICOS · SOLO REFERENCIA] %d relevante(s) con precio de hace más de 30 días o sin fecha (rango %s–%s por 100 mL). NO se usan para concluir competitividad presente: pueden haber cambiado." % (len(hist), self._eur(hs[0]), self._eur(hs[-1])))
         L.append("[NO CONCLUYENTE] Sin ventas, conversión ni CPC reales no se puede afirmar que el precio sea «competitivo» en demanda; solo margen y posición relativa de precio.")
         return L
 

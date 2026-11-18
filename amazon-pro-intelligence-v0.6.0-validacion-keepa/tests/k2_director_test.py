@@ -51,8 +51,22 @@ j2 = ask(CHIPS[4]); t2 = j2["answer"]; r2 = {r["asin"]: r for r in j2["competito
 check("tras confirmar 1: ese ASIN sale CONFIRMADO y el resto sigue CANDIDATO", st == 200 and r2[top["asin"]]["confirmed"] and r2[top["asin"]]["state"] == "CONFIRMADO" and any(not r["confirmed"] for r in r2.values()) and "1 confirmados" in t2)
 # --- precio
 jp = ask(CHIPS[1])["answer"]
-check("PRECIO 49,90 €: economía por país + posición frente a candidatos (no confirmados) + límite de conclusión", "49,90 €" in jp and all(n in jp for n in ("Alemania", "Francia", "Italia", "España")) and "[POSICIÓN DE PRECIO]" in jp and "[NO CONCLUYENTE]" in jp and "competidores" not in ask(CHIPS[1])["intent"])
+check("PRECIO 49,90 €: economía por país + posición frente a candidatos (no confirmados) + límite de conclusión", "49,90 €" in jp and all(n in jp for n in ("Alemania", "Francia", "Italia", "España")) and "[POSICIÓN DE PRECIO" in jp and "[NO CONCLUYENTE]" in jp and "competidores" not in ask(CHIPS[1])["intent"])
 check("precio sin importe usa el PVP de referencia y no rompe", "[PRECIO ANALIZADO]" in ask("¿Qué precio tengo?")["answer"])
+# --- precios históricos frente a actuales (K2 cierre)
+import time as _t
+F = ED.EUDirector.price_freshness; NOW = _t.mktime(_t.strptime("2026-11-18", "%Y-%m-%d"))
+check("frescura: 0-7 d ACTUAL, 8-30 d RECIENTE, >30 d HISTÓRICO, sin fecha/ilegible DESCONOCIDA", [F(d, NOW)[1] for d in ("2026-11-18", "2026-11-11", "2026-11-10", "2026-10-19", "2026-10-18", "2026-05-22", None, "xx")] == ["ACTUAL", "ACTUAL", "RECIENTE", "RECIENTE", "HISTÓRICO", "HISTÓRICO", "FECHA DESCONOCIDA", "FECHA DESCONOCIDA"])
+relx = [r for r in ask(CHIPS[4])["competitors"]]
+check("competidores: cada precio lleva fecha, antigüedad y etiqueta (ACTUAL/RECIENTE/HISTÓRICO) y la clase coincide con la edad", all(r["price_class"] == F(r["price_as_of"])[1] and (r["price_as_of"] is None or r["price_age_days"] is not None) for r in relx) and "[FRESCURA DE PRECIOS]" in ask(CHIPS[4])["answer"] and any(k in ask(CHIPS[4])["answer"] for k in ("(ACTUAL", "(RECIENTE", "(HISTÓRICO")))
+hist_n = sum(1 for r in relx if r["price_class"] in ("HISTÓRICO", "FECHA DESCONOCIDA"))
+tc = ask(CHIPS[4])["answer"]; check("con precios históricos entre los relevantes: ADVERTENCIA explícita de que no demuestran competitividad actual", hist_n == 0 or "ADVERTENCIA: los precios HISTÓRICOS" in tc)
+ords = [(r["price_class"] in ("HISTÓRICO", "FECHA DESCONOCIDA")) for r in relx if r["level"] == "ALTA"]
+check("el orden por presión de precio pone los históricos DESPUÉS de los vigentes (dentro del mismo nivel)", ords == sorted(ords))
+fresh = [r for r in relx if r["price_class"] in ("ACTUAL", "RECIENTE") and r["price_norm"] is not None]
+m = re.search(r"frente a (\d+) ", jp)
+check("PRECIO: la posición usa SOLO precios vigentes (el nº de comparados = vigentes) y los históricos van aparte «solo referencia»", (m and int(m.group(1)) == len(fresh)) or (not fresh and "Ningún competidor relevante tiene un precio vigente" in jp))
+check("PRECIO: los históricos con precio/100 mL se listan como «SOLO REFERENCIA», sin usarse para concluir", sum(1 for r in relx if r["price_class"] not in ("ACTUAL", "RECIENTE") and r["price_norm"] is not None) == 0 or "[PRECIOS HISTÓRICOS · SOLO REFERENCIA]" in jp)
 # --- país, faltan, riesgos
 jc = ask(CHIPS[0])["answer"]; check("PAÍS: sin ranking dice que no recomienda país y muestra ASIN por país (ES con datos)", ("SIN RECOMENDACIÓN" in jc or "Ranking provisional" in jc) and "España: " in jc and "NL, PL, SE" in jc)
 jf = ask(CHIPS[2])["answer"]; check("DATOS FALTANTES: lista deduplicada y estado de competidores/ventas", "[DATOS QUE FALTAN]" in jf and "Ventas, conversión y CPC reales: SIN DATOS" in jf and "20 ASIN en base" in jf and len(jf.split("\n")) == len(set(jf.split("\n"))))

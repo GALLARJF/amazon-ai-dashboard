@@ -13,6 +13,8 @@
 - La respuesta incluye `intent` y `competitors` estructurados. La IA externa y Keepa de pago siguen apagados (no se tocó la ruta de IA).
 - Arreglo previo no relacionado: `ops.py` calculaba el límite diario N2 con fecha local y los registros están en UTC → fallaba entre 00:00 y 01:00 (Madrid). Ahora UTC.
 
+- **Precios históricos frente a actuales (cierre K2):** cada precio lleva fecha, antigüedad y etiqueta ACTUAL (≤7 d) / RECIENTE (≤30 d) / HISTÓRICO (>30 d) / FECHA DESCONOCIDA. El orden y la «posición de precio» usan solo precios vigentes; los históricos se listan aparte como solo referencia, con advertencia.
+
 ## Resultado (todo simulado, 0 red, 0 tokens)
 | Prueba | Resultado |
 |---|---|

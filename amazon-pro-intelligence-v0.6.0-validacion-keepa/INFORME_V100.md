@@ -59,7 +59,7 @@ Detalle en `MATRIZ_ACEPTACION_V100.md`.
 | v0.7-expediente | MOCK | PASA | 41/41 OK |
 | v0.7-director | MOCK | PASA | 29/29 OK |
 | v0.7-seguridad | MOCK | PASA | 23/23 OK |
-| UI-v0.7 | MOCK+NAVEGADOR | PASA | 31/31 OK |
+| UI-v0.7 | MOCK+NAVEGADOR | FALLA |     at UtilityScript.<anonymous> (<anonymous>:1:44) |
 | desarrollo | LOCAL | PASA | 9/9 OK |
 | relevo | LOCAL | PASA | 14/14 OK |
 | v1.0-matriz | LOCAL | PASA | 6/6 OK |
@@ -79,11 +79,11 @@ Detalle en `MATRIZ_ACEPTACION_V100.md`.
 | v1.0-respaldo-cloud | MOCK | PASA | 20/20 OK |
 | k1-keepa | MOCK | PASA | 29/29 OK |
 | k1-http | MOCK | PASA | 12/12 OK |
-| k2-director | MOCK | PASA | 27/27 OK |
+| k2-director | MOCK | PASA | 33/33 OK |
 | v0.7-registro | LOCAL | PASA | 85/85 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 35 pasan · 0 intermitentes · 1 fallan · 36 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 34 pasan · 0 intermitentes · 2 fallan · 36 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 
