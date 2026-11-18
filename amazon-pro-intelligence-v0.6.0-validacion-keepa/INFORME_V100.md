@@ -80,14 +80,16 @@ Detalle en `MATRIZ_ACEPTACION_V100.md`.
 | k1-keepa | MOCK | PASA | 29/29 OK |
 | k1-http | MOCK | PASA | 12/12 OK |
 | k2-director | MOCK | PASA | 33/33 OK |
-| v0.7-registro | LOCAL | PASA | 85/85 OK |
+| k3-segmentacion | MOCK | PASA | 90/90 OK |
+| UI-k3 | MOCK+NAVEGADOR | PASA | 37/37 OK |
+| v0.7-registro | LOCAL | PASA | 87/87 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 36 pasan · 0 intermitentes · 0 fallan · 36 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 38 pasan · 0 intermitentes · 0 fallan · 38 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 
-- Fecha: 2026-11-18T01:17:59Z · Resultado: **CON FALLOS**
+- Fecha: 2026-11-18T21:49:05Z · Resultado: **OK**
 - **Auditoría independiente: NO hubo.** No se dispuso de un segundo modelo autorizado y sin coste; la revisión fue determinista (regresión, escaneo de secretos, integridad del registro, pruebas negativas).
 
 ## Qué NO está verificado

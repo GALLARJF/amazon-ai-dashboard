@@ -1,0 +1,102 @@
+{
+ "calibracion_20_asin_mas_5_infografia": {
+  "n": 24,
+  "aciertos": 24,
+  "acuerdo": 1.0,
+  "ambiguos": 6,
+  "falsos_positivos_relevante": 0,
+  "falsos_negativos_relevante": 0,
+  "falsos_positivos_premium": 0,
+  "falsos_negativos_premium": 0,
+  "matriz": {
+   "premium": {
+    "premium": 4
+   },
+   "no_comparable": {
+    "no_comparable": 2,
+    "pendiente": 1
+   },
+   "pendiente": {
+    "pendiente": 2
+   },
+   "funcional": {
+    "funcional": 9
+   },
+   "economica": {
+    "economica": 5,
+    "pendiente": 1
+   }
+  },
+  "errores": []
+ },
+ "heldout_32": {
+  "n": 32,
+  "aciertos": 27,
+  "acuerdo": 0.844,
+  "ambiguos": 6,
+  "falsos_positivos_relevante": 0,
+  "falsos_negativos_relevante": 4,
+  "falsos_positivos_premium": 0,
+  "falsos_negativos_premium": 1,
+  "matriz": {
+   "premium": {
+    "premium": 5,
+    "pendiente": 1,
+    "funcional": 1
+   },
+   "funcional": {
+    "economica": 1,
+    "funcional": 5,
+    "pendiente": 2
+   },
+   "economica": {
+    "economica": 2,
+    "no_comparable": 1
+   },
+   "no_comparable": {
+    "no_comparable": 10,
+    "pendiente": 3
+   },
+   "pendiente": {
+    "pendiente": 1
+   }
+  },
+  "errores": [
+   {
+    "id": "H05",
+    "pred": "pendiente",
+    "aceptables": [
+     "premium"
+    ]
+   },
+   {
+    "id": "H07",
+    "pred": "economica",
+    "aceptables": [
+     "funcional"
+    ]
+   },
+   {
+    "id": "H12",
+    "pred": "no_comparable",
+    "aceptables": [
+     "economica"
+    ]
+   },
+   {
+    "id": "H24",
+    "pred": "pendiente",
+    "aceptables": [
+     "funcional"
+    ]
+   },
+   {
+    "id": "H29",
+    "pred": "pendiente",
+    "aceptables": [
+     "funcional"
+    ]
+   }
+  ]
+ }
+}

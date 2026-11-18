@@ -1,0 +1,299 @@
+{
+ "autoria": "Casos sintéticos independientes del conjunto de calibración (redactados por Claude; etiquetas = juicio razonado sobre título/marca). Mezcla positivos, negativos y ambiguos en ES/DE/FR/IT. Revisión humana pendiente.",
+ "casos": [
+  {
+   "id": "H01",
+   "title": "Vichy Dercos Neogenic Sérum Redensificante Anticaída Cuero Cabelludo 90ml",
+   "brand": "Vichy",
+   "volume_ml": 90,
+   "aceptables": [
+    "premium"
+   ]
+  },
+  {
+   "id": "H02",
+   "title": "Rene Furterer Triphasic Sérum Anticaída Tratamiento Cuero Cabelludo 100 ml",
+   "brand": "Rene Furterer",
+   "volume_ml": 100,
+   "aceptables": [
+    "premium"
+   ]
+  },
+  {
+   "id": "H03",
+   "title": "Nioxin Intensive Therapy Hair Booster Serum Haarausfall Kopfhaut 70ml",
+   "brand": "Nioxin",
+   "volume_ml": 70,
+   "aceptables": [
+    "premium"
+   ]
+  },
+  {
+   "id": "H04",
+   "title": "Kérastase Densifique Sérum Cuir Chevelu Anti-Chute 90ml",
+   "brand": "Kérastase",
+   "volume_ml": 90,
+   "aceptables": [
+    "premium"
+   ]
+  },
+  {
+   "id": "H05",
+   "title": "Davines Energizing Siero Anticaduta Cuoio Capelluto 100ml",
+   "brand": "Davines",
+   "volume_ml": 100,
+   "aceptables": [
+    "premium"
+   ]
+  },
+  {
+   "id": "H06",
+   "title": "Phyto Phytocyane Sérum Densificador Anticaída 12 ampollas 7,5 ml",
+   "brand": "Phyto",
+   "volume_ml": 7.5,
+   "aceptables": [
+    "premium",
+    "funcional"
+   ]
+  },
+  {
+   "id": "H07",
+   "title": "Maria Nila Scalp Calming Sérum Cuero Cabelludo Sensible 50ml",
+   "brand": "Maria Nila",
+   "volume_ml": 50,
+   "aceptables": [
+    "funcional"
+   ]
+  },
+  {
+   "id": "H08",
+   "title": "Tónico capilar anticaída con cafeína y niacinamida 100ml",
+   "brand": "Nutravita",
+   "volume_ml": 100,
+   "aceptables": [
+    "funcional"
+   ]
+  },
+  {
+   "id": "H09",
+   "title": "Mielle Rosemary Mint Scalp Tonic Spray Anti Hair Loss 100ml",
+   "brand": "Mielle",
+   "volume_ml": 100,
+   "aceptables": [
+    "funcional"
+   ]
+  },
+  {
+   "id": "H10",
+   "title": "Ampollas Anticaída Cuero Cabelludo 10 x 6 ml",
+   "brand": "Labo",
+   "volume_ml": 60,
+   "aceptables": [
+    "funcional",
+    "economica"
+   ]
+  },
+  {
+   "id": "H11",
+   "title": "Garnier Fructis Sérum Anticaída Grow Strong 100ml",
+   "brand": "Garnier",
+   "volume_ml": 100,
+   "aceptables": [
+    "economica"
+   ]
+  },
+  {
+   "id": "H12",
+   "title": "Pantene Pro-V Sérum Leave-in Crecimiento y Densidad 75ml",
+   "brand": "Pantene",
+   "volume_ml": 75,
+   "aceptables": [
+    "economica"
+   ]
+  },
+  {
+   "id": "H13",
+   "title": "Schwarzkopf Gliss Sérum Reparador Puntas Abiertas 50ml",
+   "brand": "Schwarzkopf",
+   "volume_ml": 50,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H14",
+   "title": "Dove Nutritive Solutions Champú Anticaída 400ml",
+   "brand": "Dove",
+   "volume_ml": 400,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H15",
+   "title": "Aceite de Argán puro 100ml para el cabello",
+   "brand": "Argania",
+   "volume_ml": 100,
+   "aceptables": [
+    "no_comparable",
+    "pendiente"
+   ]
+  },
+  {
+   "id": "H16",
+   "title": "Minoxidil 5% solución capilar 60ml",
+   "brand": "Regaxidil",
+   "volume_ml": 60,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H17",
+   "title": "Biotina gominolas cabello piel uñas 60 gominolas",
+   "brand": "Vitaly",
+   "volume_ml": null,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H18",
+   "title": "Crema facial antiedad con retinol 50ml",
+   "brand": "Nivea",
+   "volume_ml": 50,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H19",
+   "title": "Acondicionador sin aclarado leave-in cabello seco 150ml",
+   "brand": "Elvive",
+   "volume_ml": 150,
+   "aceptables": [
+    "no_comparable",
+    "pendiente"
+   ]
+  },
+  {
+   "id": "H20",
+   "title": "Mascarilla capilar nutritiva 250ml",
+   "brand": "Fructis",
+   "volume_ml": 250,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H21",
+   "title": "Pro Foot Care crema reparadora para pies 100ml",
+   "brand": "AHT",
+   "volume_ml": 100,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H22",
+   "title": "Sérum capilar 50ml",
+   "brand": "MarcaX",
+   "volume_ml": 50,
+   "aceptables": [
+    "pendiente"
+   ]
+  },
+  {
+   "id": "H23",
+   "title": "Shampoo anticaduta rinforzante 250ml",
+   "brand": "Bionsen",
+   "volume_ml": 250,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H24",
+   "title": "Haarserum Wachstum Kopfhaut ohne Ausspülen Koffein 50ml",
+   "brand": "Plantur",
+   "volume_ml": 50,
+   "aceptables": [
+    "funcional"
+   ]
+  },
+  {
+   "id": "H25",
+   "title": "Sérum capillaire fortifiant anti-chute cuir chevelu sans rinçage caféine 75ml",
+   "brand": "Klorane",
+   "volume_ml": 75,
+   "aceptables": [
+    "premium"
+   ]
+  },
+  {
+   "id": "H26",
+   "title": "L'Oréal Paris Elvive Dream Lengths Sérum Puntas 50ml",
+   "brand": "L'Oreal Paris",
+   "volume_ml": 50,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H27",
+   "title": "Head & Shoulders Sérum Anticaspa Cuero Cabelludo 70ml",
+   "brand": "Head & Shoulders",
+   "volume_ml": 70,
+   "aceptables": [
+    "economica",
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H28",
+   "title": "Olaplex No.7 Bonding Oil aceite para el cabello 30ml",
+   "brand": "Olaplex",
+   "volume_ml": 30,
+   "aceptables": [
+    "no_comparable",
+    "pendiente"
+   ]
+  },
+  {
+   "id": "H29",
+   "title": "Suero Anticaída Cuero Cabelludo Redensyl Capixyl 60ml",
+   "brand": "Hairlab",
+   "volume_ml": 60,
+   "aceptables": [
+    "funcional"
+   ]
+  },
+  {
+   "id": "H30",
+   "title": "Tabletas de colágeno y biotina para el cabello 90 cápsulas",
+   "brand": "Solgar",
+   "volume_ml": null,
+   "aceptables": [
+    "no_comparable"
+   ]
+  },
+  {
+   "id": "H31",
+   "title": "Sérum de crecimiento capilar con romero y cafeína sin aclarado 100ml",
+   "brand": "Mielle",
+   "volume_ml": 100,
+   "aceptables": [
+    "funcional"
+   ]
+  },
+  {
+   "id": "H32",
+   "title": "Kérastase Specifique Sérum Cuero Cabelludo Anticaspa 90ml",
+   "brand": "Kérastase",
+   "volume_ml": 90,
+   "aceptables": [
+    "funcional"
+   ]
+  }
+ ]
+}

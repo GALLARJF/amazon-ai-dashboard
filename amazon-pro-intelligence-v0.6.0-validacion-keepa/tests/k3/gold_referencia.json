@@ -1,0 +1,162 @@
+{
+ "autoria": "Clasificación de referencia redactada por Claude ANTES de ejecutar el motor, a partir del título/marca/formato y de la maqueta. NO es una clasificación humana independiente: debe revisarla y corregirla José/AHT (campo revisor). Los casos con dos etiquetas son AMBIGUOS (se acepta cualquiera).",
+ "revisor": "PENDIENTE (José Gallardo / AHT)",
+ "casos": {
+  "B0G59MCQT6": {
+   "aceptables": [
+    "premium"
+   ],
+   "motivo": "Marca profesional, sérum anticaída de 100 mL; la zona no se explicita pero es un sérum capilar de crecimiento."
+  },
+  "B0G6KTWQ8N": {
+   "aceptables": [
+    "no_comparable"
+   ],
+   "motivo": "Champú clarificante exfoliante: con aclarado."
+  },
+  "B00CGPLQY6": {
+   "aceptables": [
+    "pendiente"
+   ],
+   "motivo": "El título no dice qué producto es ni qué función cumple."
+  },
+  "B0HG1D9G3D": {
+   "aceptables": [
+    "funcional",
+    "economica"
+   ],
+   "motivo": "Sérum de crecimiento sin marca conocida: función similar; el posicionamiento no es verificable sin precio ni marca."
+  },
+  "B0HC63QWN9": {
+   "aceptables": [
+    "funcional",
+    "economica"
+   ],
+   "motivo": "Sérum con PDRN y cepillo; marca no conocida: función similar, posicionamiento no verificable."
+  },
+  "B0HHFQGZ5V": {
+   "aceptables": [
+    "economica"
+   ],
+   "motivo": "Aceite de romero genérico: no es sérum especializado."
+  },
+  "B0H4X4RVNH": {
+   "aceptables": [
+    "no_comparable",
+    "pendiente"
+   ],
+   "motivo": "Aceite/sérum «prelavado»: aplicación previa al lavado, no es leave-on confirmado."
+  },
+  "B0C6NMCXQR": {
+   "aceptables": [
+    "economica",
+    "pendiente"
+   ],
+   "motivo": "Aceite de romero con biotina: aceite genérico; el título no declara la necesidad."
+  },
+  "B099ZTJKDL": {
+   "aceptables": [
+    "no_comparable"
+   ],
+   "motivo": "Uso en tratamiento oncológico (picor): necesidad y regulación distintas."
+  },
+  "B0BZZK7GJB": {
+   "aceptables": [
+    "funcional"
+   ],
+   "motivo": "Marca premium y sérum de cuero cabelludo, pero para cuero seco/nutrición, no para caída/densidad."
+  },
+  "B083JKPCFB": {
+   "aceptables": [
+    "premium"
+   ],
+   "motivo": "Marca premium, sérum anticaída."
+  },
+  "B0HH6H6FHC": {
+   "aceptables": [
+    "funcional",
+    "economica"
+   ],
+   "motivo": "Sérum anticaída de 60 mL sin marca conocida."
+  },
+  "B07DJK7R2B": {
+   "aceptables": [
+    "economica",
+    "funcional"
+   ],
+   "motivo": "Sérum hidratante de cuero cabelludo con árbol de té, marca de gran consumo."
+  },
+  "B01MU9AUX7": {
+   "aceptables": [
+    "funcional"
+   ],
+   "motivo": "Spray para raíz con romero, posicionamiento natural/K-beauty; función cercana."
+  },
+  "B09GBBFYF7": {
+   "aceptables": [
+    "pendiente"
+   ],
+   "motivo": "El título no declara la necesidad (la línea Specifique es conocida por otras funciones, dato general no verificado aquí)."
+  },
+  "B0FPLQR5XW": {
+   "aceptables": [
+    "economica"
+   ],
+   "motivo": "Marca de gran consumo, sérum anticaída."
+  },
+  "B0GGQMYLXM": {
+   "aceptables": [
+    "funcional"
+   ],
+   "motivo": "Sérum de cuero cabelludo con PDRN y cepillo; función cercana."
+  },
+  "B0DWFSJ9Y4": {
+   "aceptables": [
+    "economica"
+   ],
+   "motivo": "Marca de gran consumo, sérum anticaída."
+  },
+  "B0D5HTCRW6": {
+   "aceptables": [
+    "funcional"
+   ],
+   "motivo": "Tratamiento sérum de cuero cabelludo (calmante): leave-on especializado de otra necesidad."
+  },
+  "B0BDZY6ZDN": {
+   "aceptables": [
+    "economica"
+   ],
+   "motivo": "Marca de gran consumo anticaspa; sérum hidratante de cuero seco."
+  },
+  "INF:kerastase-genesis": {
+   "aceptables": [
+    "premium"
+   ],
+   "motivo": "Marca premium; aminexil+cafeína"
+  },
+  "INF:nioxin-night-density-rescue": {
+   "aceptables": [
+    "premium"
+   ],
+   "motivo": "Marca profesional; niacinamida+cafeína, densidad"
+  },
+  "INF:redken-aminexil-advanced": {
+   "aceptables": [
+    "premium"
+   ],
+   "motivo": "Marca profesional; aminexil"
+  },
+  "INF:the-ordinary-multi-peptide": {
+   "aceptables": [
+    "funcional"
+   ],
+   "motivo": "Función muy cercana (péptidos, densidad) pero posicionamiento de valor, no premium"
+  },
+  "INF:bio-pilixin": {
+   "aceptables": [
+    "funcional"
+   ],
+   "motivo": "Capixyl+Redensyl, anticaída avanzada; marca sin clasificar"
+  }
+ }
+}
