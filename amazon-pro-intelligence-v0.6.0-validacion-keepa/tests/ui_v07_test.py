@@ -81,7 +81,8 @@ with sync_playwright() as p:
         c2 = b.new_context(viewport={"width": w, "height": h}); q = c2.new_page(); q.on("pageerror", lambda e: errs.append(str(e)))
         q.goto(f"http://localhost:{port}/"); q.wait_for_selector("#tabs"); q.click("#lgOpen"); q.fill("#lgU", "admin"); q.fill("#lgP", "admin-password-123"); q.click("#lgGo"); q.wait_for_selector(".sessu")
         q.click("#tabs button[data-tab=lanz]"); q.wait_for_selector("#v6Prod-lanz"); q.select_option("#v6Prod-lanz", AC); q.wait_for_selector('section.v7[data-space="lanz"] .v7-keepa tbody tr'); q.wait_for_timeout(300)
-        ov = q.evaluate("(()=>{const s=document.querySelector('section.v7');const bad=[...s.querySelectorAll('*')].filter(e=>!e.closest('.v7-scroll')&&e.getBoundingClientRect().right>window.innerWidth+2).length;return [bad, window.innerWidth, s.getBoundingClientRect().right]})()")
+        q.wait_for_selector('section.v7 .v7-keepa tbody tr'); q.wait_for_timeout(600)
+        ov = q.evaluate("(()=>{const s=document.querySelector('section.v7');if(!s)return [999,0,0];const bad=[...s.querySelectorAll('*')].filter(e=>!e.closest('.v7-scroll')&&e.getBoundingClientRect().right>window.innerWidth+2).length;return [bad, window.innerWidth, s.getBoundingClientRect().right]})()")
         check("%s %dpx: el panel V0.7 cabe (ningún elemento fuera de su zona con scroll propio)" % (name, w), ov[0] == 0 and ov[2] <= ov[1] + 2)
         shot(q, "%d_v07_lanzamientos_%s" % (idx, name), full_page=True); q.click("#tabs button[data-tab=dir]"); q.wait_for_selector('section.v7[data-space="dir"] .v7-brief'); q.wait_for_timeout(200); shot(q, "%d_v07_director_%s" % (idx + 2, name), full_page=True); c2.close()
     # capturas de detalle (secciones) para evidencia

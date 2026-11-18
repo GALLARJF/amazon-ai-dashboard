@@ -38,7 +38,7 @@ Generado desde el estado del coordinador (AUTONOMIA/estado.json). Candidata: NO 
 | v0.7-expediente | MOCK | PASA | 41/41 OK |
 | v0.7-director | MOCK | PASA | 29/29 OK |
 | v0.7-seguridad | MOCK | PASA | 23/23 OK |
-| UI-v0.7 | MOCK+NAVEGADOR | FALLA |     at UtilityScript.<anonymous> (<anonymous>:1:44) |
+| UI-v0.7 | MOCK+NAVEGADOR | PASA | 31/31 OK |
 | desarrollo | LOCAL | PASA | 9/9 OK |
 | relevo | LOCAL | PASA | 14/14 OK |
 | v1.0-matriz | LOCAL | PASA | 6/6 OK |
@@ -52,7 +52,7 @@ Generado desde el estado del coordinador (AUTONOMIA/estado.json). Candidata: NO 
 | v1.0-plan | MOCK | PASA | 14/14 OK |
 | v1.0-conectores | MOCK | PASA | 16/16 OK |
 | v1.0-docs | MOCK | PASA | 10/10 OK |
-| v1.0-entrega | LOCAL | FALLA | 15/16 OK |
+| v1.0-entrega | LOCAL | PASA | 16/16 OK |
 | v1.0-cloud | MOCK | PASA | 29/29 OK |
 | v1.0-ui-cloud | MOCK+NAVEGADOR | PASA | 37/37 OK |
 | v1.0-respaldo-cloud | MOCK | PASA | 20/20 OK |
@@ -62,12 +62,12 @@ Generado desde el estado del coordinador (AUTONOMIA/estado.json). Candidata: NO 
 | v0.7-registro | LOCAL | PASA | 85/85 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 34 pasan · 0 intermitentes · 2 fallan · 36 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 36 pasan · 0 intermitentes · 0 fallan · 36 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 
-- Fecha: 2026-11-17T23:20:30Z · Resultado: **CON FALLOS**
-- Detalle: `{"suites": {"pasan": 33, "intermitentes": 1, "fallan": 2, "total": 36}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
+- Fecha: 2026-11-18T01:17:59Z · Resultado: **CON FALLOS**
+- Detalle: `{"suites": {"pasan": 34, "intermitentes": 1, "fallan": 1, "total": 36}, "escaneo_secretos": 0, "registro_integro": true, "archivos_v060_borrados": [], "pruebas_v07_sin_registrar": []}`
 
 ## Qué NO está verificado
 
