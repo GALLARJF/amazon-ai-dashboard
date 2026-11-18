@@ -1,0 +1,408 @@
+{
+ "categoria": "capilar_cuero_cabelludo",
+ "version": "k3.0",
+ "descripcion": "Perfil de categoría: sérum/tratamiento capilar sin aclarado para el cuero cabelludo. Otras categorías (cosmética facial, magnesio, omega-3...) se añaden como otro JSON con la MISMA estructura y criterios propios.",
+ "aviso": "Léxicos y listas de marcas son criterio editorial configurable de AHT (no evidencia de ventas ni de eficacia). Deben calibrarse con ejemplos positivos y negativos.",
+ "pesos": {
+  "necesidad": 25,
+  "tipo_aplicacion": 20,
+  "posicionamiento": 20,
+  "activos": 15,
+  "canal": 10,
+  "formato": 10
+ },
+ "umbrales": {
+  "premium": 70,
+  "funcional": 55,
+  "economica": 35,
+  "cobertura_min": 0.6,
+  "muestra_min_precio": 3,
+  "frescura_actual_dias": 7,
+  "frescura_reciente_dias": 30
+ },
+ "esenciales": [
+  "necesidad",
+  "tipo_aplicacion"
+ ],
+ "referencia": {
+  "id": "activcore_v2",
+  "nombre": "ACTIVCORE V2",
+  "marca": "ACTIVCORE by AHT",
+  "categoria_real": "cosmética capilar",
+  "necesidad_principal": "caida_densidad",
+  "zona": "cuero_cabelludo",
+  "tipo_tratamiento": "serum",
+  "aclarado": "leave_on",
+  "regulacion": "cosmético",
+  "formato_ml": 100,
+  "dosis_ml_dia": 2,
+  "duracion_dias_teorica": 50,
+  "dosis_estado": "PROPUESTO (depende de la dispensación confirmada)",
+  "publico": "personas con caída o pérdida de densidad capilar, uso diario",
+  "evidencia": "ficha interna + infografía de maqueta; sin estudio clínico",
+  "activos": [
+   "cafeina",
+   "luteolina",
+   "urea",
+   "mentol"
+  ],
+  "posicionamiento": "sérum especializado, fórmula multi-activo sin CoQ10, premium propuesto",
+  "canal": "Amazon (marketplace) con marca propia",
+  "pvp_propuesto_eur": 49.9
+ },
+ "lexico": {
+  "leave_on_explicito": [
+   "sin aclarado",
+   "sin enjuague",
+   "sin aclarar",
+   "no aclarado",
+   "leave-in",
+   "leave in",
+   "leave-on",
+   "leave on",
+   "ohne ausspulen",
+   "sans rincage",
+   "senza risciacquo"
+  ],
+  "rinse_off": [
+   "champu\\w*",
+   "shampoo\\w*",
+   "shampooing",
+   "haarshampoo",
+   "acondicionador\\w*",
+   "conditioner",
+   "apres-shampooing",
+   "revitalisant",
+   "spulung",
+   "mascarilla\\w*",
+   "masque",
+   "maske",
+   "exfoliante\\w*",
+   "clarificante",
+   "gel de ducha",
+   "jabon\\w*"
+  ],
+  "pre_lavado": [
+   "prelavado",
+   "pre-lavado",
+   "pre-shampoo",
+   "pre shampoo",
+   "antes del lavado",
+   "vor der wasche"
+  ],
+  "tipo_serum": [
+   "\\w*serum\\w*",
+   "siero\\w*",
+   "suero\\w*",
+   "ampolla\\w*",
+   "ampoule\\w*",
+   "fiale",
+   "concentrado",
+   "booster",
+   "essence"
+  ],
+  "tipo_locion": [
+   "tonico\\w*",
+   "tonic",
+   "locion\\w*",
+   "lotion",
+   "spray",
+   "vaporizador\\w*",
+   "pulverizador\\w*",
+   "potenciador"
+  ],
+  "tipo_aceite": [
+   "aceite\\w*",
+   "oil",
+   "huile\\w*",
+   "ol\\b"
+  ],
+  "medicamento": [
+   "minoxidil\\w*",
+   "finasterid\\w*",
+   "dutasterid\\w*",
+   "oncolog\\w*",
+   "quimioterapia",
+   "medicament\\w*",
+   "farmaco\\w*",
+   "receta"
+  ],
+  "suplemento": [
+   "capsula\\w*",
+   "comprimid\\w*",
+   "gummies",
+   "gominola\\w*",
+   "complemento alimenticio",
+   "supplement\\w*",
+   "tableta\\w*",
+   "nahrungserganzung"
+  ],
+  "categoria_capilar": [
+   "pelo",
+   "cabello\\w*",
+   "capilar\\w*",
+   "cuero cabelludo",
+   "scalp",
+   "hair",
+   "haar\\w*",
+   "kopfhaut",
+   "cheveux",
+   "cuir chevelu",
+   "capelli",
+   "cuoio capelluto",
+   "raiz",
+   "raices",
+   "anticaida",
+   "anti-chute",
+   "chute",
+   "growth",
+   "grow",
+   "caduta",
+   "puntas abiertas",
+   "puntas",
+   "split ends",
+   "spliss",
+   "pointes"
+  ],
+  "zona_cuero": [
+   "cuero cabelludo",
+   "scalp",
+   "kopfhaut",
+   "cuir chevelu",
+   "cuoio capelluto",
+   "raiz",
+   "raices",
+   "root\\w*",
+   "racines"
+  ],
+  "zona_longitud": [
+   "puntas",
+   "largos",
+   "medios y puntas",
+   "split ends",
+   "spliss",
+   "pointes",
+   "doppie punte"
+  ],
+  "pista_cuero": [
+   "masaj\\w*",
+   "cepillo",
+   "brush"
+  ],
+  "necesidades": {
+   "caida_densidad": [
+    "anticaida",
+    "anti-caida",
+    "anti caida",
+    "caida",
+    "anti-chute",
+    "chute",
+    "hair loss",
+    "hairloss",
+    "haarausfall",
+    "anticaduta",
+    "caduta",
+    "crecimiento",
+    "growth",
+    "grow",
+    "densidad",
+    "density",
+    "densifi\\w*",
+    "dichte",
+    "densite",
+    "wachstum",
+    "haarwuchs",
+    "pousse",
+    "crescita",
+    "repoblac\\w*"
+   ],
+   "caspa_seborrea": [
+    "caspa",
+    "anticaspa",
+    "dandruff",
+    "schuppen",
+    "pellicul\\w*",
+    "seborre\\w*",
+    "forfora"
+   ],
+   "confort_cuero": [
+    "calm\\w*",
+    "picor",
+    "irrit\\w*",
+    "sensible",
+    "refresc\\w*",
+    "soothing",
+    "apais\\w*",
+    "tirante"
+   ],
+   "hidratacion_cuero": [
+    "hidrat\\w*",
+    "moistur\\w*",
+    "nutri\\w*",
+    "seco",
+    "dry",
+    "feucht\\w*",
+    "reseco"
+   ],
+   "pelo_estetico": [
+    "brillo",
+    "shine",
+    "frizz",
+    "reparador\\w*",
+    "puntas abiertas",
+    "alisado",
+    "color"
+   ]
+  },
+  "valor_necesidad": {
+   "caida_densidad": 1.0,
+   "hidratacion_cuero": 0.4,
+   "confort_cuero": 0.35,
+   "caspa_seborrea": 0.2,
+   "pelo_estetico": 0.1
+  },
+  "activos": {
+   "directo": {
+    "valor": 1.0,
+    "patrones": [
+     "cafeina",
+     "caffeine",
+     "koffein",
+     "luteolina",
+     "luteolin",
+     "urea",
+     "mentol",
+     "menthol"
+    ]
+   },
+   "funcional": {
+    "valor": 0.8,
+    "patrones": [
+     "aminexil",
+     "niacinamid\\w*",
+     "peptid\\w*",
+     "capixyl",
+     "redensyl",
+     "procapil",
+     "pdrn",
+     "anagain",
+     "saw palmetto",
+     "adenosin\\w*"
+    ]
+   },
+   "botanico": {
+    "valor": 0.4,
+    "patrones": [
+     "romero",
+     "rosemary",
+     "biotin\\w*",
+     "aloe",
+     "tea tree",
+     "arbol de te",
+     "ricino",
+     "castor"
+    ]
+   }
+  }
+ },
+ "marcas": {
+  "premium_profesional": {
+   "valor": 1.0,
+   "canal": 1.0,
+   "nombres": [
+    "kerastase",
+    "redken",
+    "nioxin",
+    "olaplex",
+    "moroccanoil",
+    "aveda",
+    "sebastian",
+    "schwarzkopf professional",
+    "kevin murphy",
+    "davines",
+    "alterna",
+    "wella professionals",
+    "l'oreal professionnel",
+    "loreal professionnel",
+    "k18",
+    "living proof",
+    "philip kingsley"
+   ]
+  },
+  "farmacia_dermocosmetica": {
+   "valor": 0.9,
+   "canal": 0.9,
+   "nombres": [
+    "vichy",
+    "la roche-posay",
+    "la roche posay",
+    "rene furterer",
+    "phyto",
+    "ducray",
+    "klorane",
+    "sana-t",
+    "sana t"
+   ]
+  },
+  "profesional_media": {
+   "valor": 0.7,
+   "canal": 0.7,
+   "nombres": [
+    "fanola",
+    "biolage",
+    "matrix",
+    "alfaparf",
+    "kaaral"
+   ]
+  },
+  "funcional_valor": {
+   "valor": 0.6,
+   "canal": 0.6,
+   "nombres": [
+    "the ordinary",
+    "deciem",
+    "aromatica",
+    "transparent lab",
+    "vt cosmetics",
+    "vt"
+   ]
+  },
+  "masivo": {
+   "valor": 0.2,
+   "canal": 0.3,
+   "nombres": [
+    "l'oreal paris",
+    "loreal paris",
+    "elvive",
+    "pantene",
+    "head & shoulders",
+    "head and shoulders",
+    "h&s",
+    "ogx",
+    "garnier",
+    "fructis",
+    "herbal essences",
+    "dove",
+    "tresemme",
+    "syoss",
+    "australian bodycare"
+   ]
+  }
+ },
+ "marca_no_clasificada": {
+  "valor": 0.3,
+  "canal": 0.3,
+  "aviso": "Marca sin posicionamiento documentado: puntuación prudente; NUNCA puede ser premium."
+ },
+ "premium_marca_tiers": [
+  "premium_profesional",
+  "farmacia_dermocosmetica"
+ ],
+ "segmentos": [
+  "COMPETIDOR DIRECTO PREMIUM",
+  "COMPETIDOR FUNCIONAL",
+  "ALTERNATIVA ECONÓMICA / MERCADO MASIVO",
+  "NO COMPARABLE",
+  "PENDIENTE DE EVIDENCIA"
+ ]
+}

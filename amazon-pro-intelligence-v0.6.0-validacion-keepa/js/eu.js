@@ -64,7 +64,7 @@
     const view = (v, t) => `<button class="euview ${E.view === v ? 'on' : ''}" data-view="${v}">${t}</button>`;
     return `<article class="card c-violet wide euhead"><div class="eubar"><h3>${esc(p.name)} <small>${esc(p.brand)} · ${esc(E.cats.find((c) => c.id === p.category).name)} · v${p.version}</small></h3>
       <button class="btn" id="euAnalyze" ${E.denied ? 'disabled' : ''}>ANALIZAR EUROPA</button></div>
-      <div class="euviews">${view('europa', 'Europa')}${view('expediente', 'Expediente')}${view('director', 'Director IA')}${view('ficha', 'Ficha y versiones')}</div></article>`;
+      <div class="euviews">${view('europa', 'Europa')}${view('segmentos', 'Segmentos K3')}${view('expediente', 'Expediente')}${view('director', 'Director IA')}${view('ficha', 'Ficha y versiones')}</div></article>`;
   }
 
   function kpis() {
@@ -238,7 +238,7 @@
     const el = $('#euRoot'); if (!el) return; let h = nav();
     if (E.edit && E.edit.isNew) h += formProduct(E.edit.product, true);
     else if (E.pid && E.denied) h += `<article class="card c-amber wide"><p class="muted">${esc(E.denied)} — tu usuario necesita acceso a la cuenta de este producto.</p></article>` + header() + (E.view === 'ficha' ? viewFicha() : '');
-    else if (E.pid && E.ov) h += header() + (E.view === 'europa' ? viewEuropa() : E.view === 'expediente' ? viewExpediente() : E.view === 'director' ? viewDirector() : viewFicha());
+    else if (E.pid && E.ov) h += header() + (E.view === 'europa' ? viewEuropa() : E.view === 'segmentos' ? (root.K3UI ? root.K3UI.html() : '') : E.view === 'expediente' ? viewExpediente() : E.view === 'director' ? viewDirector() : viewFicha());
     else h += '<article class="card c-cyan wide"><p class="muted">Selecciona un producto para cargar su inteligencia de mercado europea.</p></article>';
     el.innerHTML = h; bind();
   }
@@ -250,7 +250,8 @@
     $('#euArch') && ($('#euArch').onchange = (e) => { E.archived = e.target.checked; load(); });
     $('#euNewProd') && ($('#euNewProd').onclick = () => { E.edit = { isNew: true, product: { category: E.cat, format: { unit: (E.cats.find((c) => c.id === E.cat) || {}).normalization === 'unit' ? 'unidades' : 'ml' }, target_markets: ['DE', 'FR', 'IT', 'ES'] } }; render(); });
     $('#euNewCat') && ($('#euNewCat').onclick = async () => { const name = prompt('Nombre de la nueva categoría'); if (!name) return; const unit = confirm('¿Se compara por UNIDADES (cápsulas, piezas)? Aceptar = unidades · Cancelar = mililitros') ? 'unit' : 'ml'; const r = await api('POST', '/api/catalog/category', { name, normalization: unit, checklist: 'GENERICA', subcategories: [] }); if (!r.ok) alert(r.j.error || 'Error'); else { E.cat = r.j.category.id; load(); } });
-    $$('[data-view]').forEach((b) => (b.onclick = async () => { E.view = b.dataset.view; E.edit = null; if (E.view === 'ficha') await loadVersions(); render(); }));
+    $$('[data-view]').forEach((b) => (b.onclick = async () => { E.view = b.dataset.view; E.edit = null; if (E.view === 'ficha') await loadVersions(); if (E.view === 'segmentos' && root.K3UI) { root.K3UI.state.data = null; root.K3UI.state.sel = null; render(); await root.K3UI.load(); } render(); }));
+    if (root.K3UI) root.K3UI.bind();
     $('#euAnalyze') && ($('#euAnalyze').onclick = async () => { E.view = 'europa'; E.run = null; const r = await api('GET', q('/api/discovery/plan' + (E.dsCs === 'all' ? '' : '?countries=' + E.country))); E.plan = r.ok ? r.j : null; E.msg = r.ok ? '' : r.j.error; render(); const d = $('#euDisc'); d && d.scrollIntoView({ block: 'start' }); });
     $('#dsNo') && ($('#dsNo').onclick = () => { E.plan = null; render(); });
     const dsC = () => { E.dsCs = ($('#dsCs') || {}).value || E.dsCs || 'one'; return E.dsCs === 'all' ? '' : '&countries=' + E.country; };
@@ -298,6 +299,7 @@
     const s = j.ai_summary; E.chat[pid].push({ text: j.answer || j.error || 'Error', mode: j.ai && j.ai.mode === 'REAL' ? 'IA REAL' : 'SIN IA', meta: (j.ai && j.ai.reason_text ? j.ai.reason_text + ' ' : '') + (s ? `Modelo ${s.model} · ${s.tokens_in}/${s.tokens_out} tokens · ${s.duration_ms} ms · coste estimado ${s.cost_estimate} ${s.currency}${s.origin_verified ? ' · procedencia OpenAI verificada' : ''}` : '') + (j.facts ? ` · ${j.facts.length} hechos de apoyo` : '') });
     E.busy = false; render(); const c = $('#euChat'); if (c) c.scrollTop = 1e6;
   }
+  if (root.K3UI) root.K3UI.init({ E, api, q, canEdit, render });
   root.EU = { load, state: E };
   document.addEventListener('click', (e) => { const b = e.target.closest('#tabs button'); if (b && b.dataset.tab === 'europa') load(); });
 })(self);

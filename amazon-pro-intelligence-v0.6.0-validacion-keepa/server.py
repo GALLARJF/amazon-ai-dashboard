@@ -15,7 +15,7 @@ Uso: python3 server.py [puerto]
 import csv, hashlib, hmac, io, json, os, re, secrets, sys, threading, time, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from backend import api6 as API6, api7 as API7, ai as AI, coworkers as COW, engine as ENG, pilot as PILOT, synthetic as SY, envfile as ENVF, keepa as KP, activcore as AC, eu as EU, eu_director as EUD, catalog as CT, discovery as DSC
+from backend import api6 as API6, api7 as API7, ai as AI, coworkers as COW, engine as ENG, pilot as PILOT, synthetic as SY, envfile as ENVF, keepa as KP, activcore as AC, eu as EU, eu_director as EUD, catalog as CT, discovery as DSC, k3 as K3M, k3_service as K3S
 from backend.director import Director
 from backend.store import Store, Forbidden
 
@@ -370,6 +370,19 @@ class H(BaseHTTPRequestHandler):
             c = (g("country") or "DE").upper(); s_ = svc.settings(); recs = svc.scoped_records(c)
             return self._json({"country": c, "keepa_supported": c in KP.DOMAINS, "benchmark": EU.benchmark(recs, svc.registry().get(c, {}), include_suggested=s_["include_suggested"], norm=svc.norm) if recs else None,
                                "note": None if c in KP.DOMAINS else "Keepa no cubre este marketplace: NO EVALUABLE por esta vía"})
+        if path.startswith("/api/eu/k3"):
+            if not K3S.disponible(svc):
+                return self._json({"disponible": False, "motivo": "Este producto no tiene perfil de segmentación K3 (hoy: cosmética capilar / cuero cabelludo)."})
+            k3s = K3S.K3Service(APP["store"], svc)
+            if path == "/api/eu/k3":
+                return self._json(k3s.resumen({k: g(k) for k in ("segmento", "country", "activo", "min_ml", "max_ml", "aplicacion")}))
+            if path == "/api/eu/k3/explicar":
+                key = str(g("key") or "").upper() if not str(g("key") or "").startswith("INF:") else g("key")
+                row = next((r for r in k3s.rows()[0] if r["key"] == key), None)
+                return self._json({"key": key, "explicacion": K3M.explain(row), "fila": row} if row else {"error": "producto no encontrado"}, 200 if row else 404)
+            if path == "/api/eu/k3/consultas":
+                return self._json(K3M.plan_consultas(k3s.seg.cfg))
+            return self._json({"error": "no encontrado"}, 404)
         if path == "/api/eu/export":
             what = g("what"); fn = {"benchmark": svc.csv_benchmark, "economics": svc.csv_economics, "ranking": svc.csv_ranking}.get(what)
             if not fn:
@@ -430,6 +443,13 @@ class H(BaseHTTPRequestHandler):
             svc.load_hypotheses(cs, vals, actor); return self._json({"ok": True, "label": "Valores cargados como HIPÓTESIS (no verificadas)"})
         if path == "/api/eu/settings":
             return self._json({"ok": True, "settings": svc.set_settings(b, actor)})
+        if path == "/api/eu/k3/revision":
+            if not K3S.disponible(svc):
+                return self._json({"error": "producto sin perfil K3"}, 400)
+            try:
+                return self._json({"ok": True, "revision": K3S.K3Service(APP["store"], svc).review(b.get("key"), b.get("decision"), b.get("segmento"), b.get("motivo"), actor)})
+            except ValueError as e:
+                return self._json({"error": str(e)}, 400)
         if path == "/api/eu/competitor":
             return self._json({"ok": True, "competitor": svc.set_competitor(b.get("country"), b.get("asin"), b.get("comparability"), actor, b.get("note") or "")})
         if path == "/api/eu/compliance":

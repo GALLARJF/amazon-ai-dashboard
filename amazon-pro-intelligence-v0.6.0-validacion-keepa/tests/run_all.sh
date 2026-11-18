@@ -56,6 +56,8 @@ run "V1.0: respaldo fuera del disco, restauración y rotación de contraseñas" 
 run "K1: Keepa seguro (modos, aprobación, tope, duplicados, concurrencia, comparabilidad) — simulado" python3 tests/k1_keepa_test.py
 run "K1: capa HTTP de Keepa y descubrimiento — simulado" python3 tests/k1_http_test.py
 run "K2: Director Amazon IA por intención (competidores, precio, país, faltantes, riesgos) — simulado" python3 tests/k2_director_test.py
+run "K3: segmentación competitiva (motor, validación vs referencia, API, revisión, Director, persistencia, cloud) — simulado" python3 tests/k3_segmentacion_test.py
+run "K3: interfaz NEON de segmentos (navegador real, escritorio/tablet/móvil)" python3 tests/ui_k3_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }

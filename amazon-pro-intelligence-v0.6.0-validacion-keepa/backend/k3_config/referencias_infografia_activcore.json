@@ -1,0 +1,145 @@
+{
+ "fuente": "Infografía ACTIVCORE (maqueta de AHT aportada por el usuario, 2026-11-18)",
+ "aviso": "REFERENCIA DE POSICIONAMIENTO, NO evidencia de precios, ventas ni valoraciones actuales. Los precios, ventas estimadas y valoraciones de la maqueta no tienen fuente verificable ni fecha (la propia infografía indica «precios de la maqueta»). Se usan solo para identificar la propuesta funcional y el posicionamiento declarados.",
+ "referencias": [
+  {
+   "slug": "kerastase-genesis",
+   "marca": "Kérastase",
+   "producto": "Genesis Sérum (Anticaída)",
+   "volumen_ml": 90,
+   "activos_doc": [
+    "aminexil",
+    "cafeina"
+   ],
+   "concentracion": "1,5 % Aminexil",
+   "aplicaciones_dia": 1,
+   "dosis": "4 pipetas (hasta marca)",
+   "duracion_dias": null,
+   "pvp_maqueta_eur": 44.4,
+   "posicionamiento_maqueta": "Anticaída premium",
+   "ventas_maqueta": "11.200/mes (sin fuente)",
+   "paises_maqueta": [
+    "ES",
+    "FR",
+    "IT"
+   ],
+   "asin_hint": "B083JKPCFB",
+   "asin_hint_metodo": "coincidencia marca + línea + 90 mL con el ASIN de la caché Keepa (a confirmar)",
+   "necesidad": "caida_densidad",
+   "tipo": "serum",
+   "zona": "cuero_cabelludo",
+   "leave_on": true
+  },
+  {
+   "slug": "nioxin-night-density-rescue",
+   "marca": "Nioxin",
+   "producto": "Night Density Rescue",
+   "volumen_ml": 70,
+   "activos_doc": [
+    "niacinamida",
+    "cafeina"
+   ],
+   "concentracion": "2 % Niacinamida",
+   "aplicaciones_dia": 1,
+   "dosis": "2–4 pipetas (US) / 2–4 gotas (ES)",
+   "duracion_dias": null,
+   "pvp_maqueta_eur": 48.7,
+   "posicionamiento_maqueta": "Densidad capilar",
+   "ventas_maqueta": "8.000+/mes (sin fuente)",
+   "paises_maqueta": [
+    "ES",
+    "DE",
+    "FR",
+    "IT"
+   ],
+   "asin_hint": null,
+   "necesidad": "caida_densidad",
+   "tipo": "serum",
+   "zona": "cuero_cabelludo",
+   "leave_on": true
+  },
+  {
+   "slug": "redken-aminexil-advanced",
+   "marca": "Redken",
+   "producto": "Aminexil Advanced",
+   "volumen_ml": 90,
+   "activos_doc": [
+    "aminexil"
+   ],
+   "concentracion": "1,5 % Aminexil",
+   "aplicaciones_dia": 1,
+   "dosis": "20 pulverizaciones (5 x 4 secciones)",
+   "duracion_dias": null,
+   "pvp_maqueta_eur": 42.9,
+   "posicionamiento_maqueta": "Anticaída profesional",
+   "ventas_maqueta": "6.000+/mes (sin fuente)",
+   "paises_maqueta": [
+    "ES",
+    "DE",
+    "FR",
+    "IT"
+   ],
+   "asin_hint": null,
+   "nota": "Volumen (90 mL) según el apartado «Competidores relevantes» de la maqueta; la tabla solo da 20 pulverizaciones. NO es el Redken Acidic Grow de la caché Keepa (otro producto).",
+   "necesidad": "caida_densidad",
+   "tipo": "serum",
+   "zona": "cuero_cabelludo",
+   "leave_on": true
+  },
+  {
+   "slug": "the-ordinary-multi-peptide",
+   "marca": "The Ordinary",
+   "producto": "Multi-Peptide Serum for Hair Density",
+   "volumen_ml": 60,
+   "activos_doc": [
+    "peptidos"
+   ],
+   "concentracion": "multi-péptidos (no especificado)",
+   "aplicaciones_dia": 1,
+   "dosis": "unas gotas",
+   "duracion_dias": null,
+   "pvp_maqueta_eur": 21.9,
+   "posicionamiento_maqueta": "Básico funcional",
+   "ventas_maqueta": "10.000+/mes (sin fuente)",
+   "paises_maqueta": [
+    "ES",
+    "DE",
+    "FR",
+    "IT"
+   ],
+   "asin_hint": null,
+   "necesidad": "caida_densidad",
+   "tipo": "serum",
+   "zona": "cuero_cabelludo",
+   "leave_on": true
+  },
+  {
+   "slug": "bio-pilixin",
+   "marca": "Bio-Pilixin",
+   "producto": "Bio-Pilixin Serum",
+   "volumen_ml": 100,
+   "activos_doc": [
+    "capixyl",
+    "redensyl"
+   ],
+   "concentracion": "3 % Capixyl",
+   "aplicaciones_dia": 1,
+   "dosis": "2 pipetas completas",
+   "duracion_dias": 30,
+   "duracion_fuente": "según fabricante (maqueta)",
+   "pvp_maqueta_eur": 54.3,
+   "posicionamiento_maqueta": "Anticaída avanzada",
+   "ventas_maqueta": "5.000+/mes (sin fuente)",
+   "paises_maqueta": [
+    "ES",
+    "DE",
+    "FR"
+   ],
+   "asin_hint": null,
+   "necesidad": "caida_densidad",
+   "tipo": "serum",
+   "zona": "cuero_cabelludo",
+   "leave_on": true
+  }
+ ]
+}
