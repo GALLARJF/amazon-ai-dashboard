@@ -258,3 +258,8 @@ section.v7{margin:14px 0;max-width:100%;min-width:0}.v7-title{font-size:16px;col
 @media (max-width:480px){#k4Root .k4sub button{flex:1 1 100%}#k4Root table.k4cmp th,#k4Root table.k4cmp td{padding:6px}}
 @media (prefers-reduced-motion:reduce){#k4Root *{scroll-behavior:auto!important;transition:none!important}}
 #k4Root .k4dl{display:block;margin-bottom:4px}
+
+/* STAGING / viewer (solo lectura) */
+.envbanner{position:sticky;top:0;z-index:9999;background:#ffb000;color:#111;font:700 13px/1 system-ui,sans-serif;letter-spacing:.06em;text-align:center;padding:8px 10px;border-bottom:2px solid #111}
+body.viewer button:disabled,body.viewer input:disabled,body.viewer textarea:disabled,body.viewer select:disabled{opacity:.45;cursor:not-allowed}
+body.viewer .vro{outline:1px dashed #ffb000}

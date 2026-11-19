@@ -1,0 +1,35 @@
+# STAGING de auditoría — Blueprint INDEPENDIENTE del de producción (render.yaml). NO se ha desplegado ni contratado nada.
+# Servicio, URL, disco y base de datos propios. Sin claves de Keepa/OpenAI/Anthropic/SP-API/Ads: el arranque se ABORTA si existe alguna.
+# Coste estimado si algún día se despliega: web starter 7 USD/mes + disco 1 GB 0,25 USD/mes (requiere aprobación expresa del propietario).
+services:
+  - type: web
+    name: amazon-pro-intelligence-staging
+    runtime: docker
+    plan: starter
+    branch: aht-staging-viewer
+    healthCheckPath: /healthz
+    disk:
+      name: datos-staging
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: AMAZON_PRO_STAGING
+        value: "1"
+      - key: AMAZON_PRO_BIND
+        value: 0.0.0.0
+      - key: AMAZON_PRO_DB
+        value: /data/amazon_pro_staging.db
+      - key: AMAZON_PRO_BACKUP_DIR
+        value: /data/backups
+      - key: AMAZON_PRO_AI_ENABLE
+        value: "0"
+      - key: AMAZON_PRO_KEEPA_ENABLE
+        value: "0"
+      - key: AMAZON_PRO_NO_WORKER
+        value: "1"
+      - key: AMAZON_PRO_SEED_VIEWERS
+        value: "auditor"
+      - key: AMAZON_PRO_ADMIN_PASSWORD      # PROPIA de staging (≥12); la escribe el propietario en el panel. NO es la de producción
+        sync: false
+      - key: AMAZON_PRO_PASSWORD_AUDITOR    # contraseña del viewer (≥12); la escribe el propietario en el panel; nunca en chat ni en GitHub
+        sync: false

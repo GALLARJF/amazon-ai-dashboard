@@ -23,6 +23,23 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 HOST = os.environ.get("AMAZON_PRO_BIND", "127.0.0.1")   # V1.0 cloud: 0.0.0.0 detrás del proxy HTTPS del proveedor
 PUBLIC_HOST = (os.environ.get("AMAZON_PRO_PUBLIC_HOST") or os.environ.get("RENDER_EXTERNAL_HOSTNAME") or "").strip().lower()   # p. ej. mi-app.onrender.com (sin esquema)
 CLOUD = bool(PUBLIC_HOST)
+STAGING = os.environ.get("AMAZON_PRO_STAGING") == "1"   # entorno de auditoría: datos sintéticos, SOLO LECTURA, sin servicios de pago
+STAGING_LABEL = "STAGING — DATOS SINTÉTICOS — SOLO LECTURA"
+FORBIDDEN_ENV = ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "SPAPI_CLIENT_ID", "SPAPI_CLIENT_SECRET", "SPAPI_REFRESH_TOKEN",
+                 "ADS_CLIENT_ID", "ADS_CLIENT_SECRET", "ADS_REFRESH_TOKEN", "H10_API_KEY")
+
+
+def staging_guard():
+    """STAGING no arranca si hay claves de servicios de pago, y fuerza IA/Keepa/trabajador desactivados. Devuelve las variables prohibidas encontradas (solo nombres)."""
+    bad = [k for k in FORBIDDEN_ENV if os.environ.get(k)]
+    if bad:
+        return bad
+    os.environ["AMAZON_PRO_AI_ENABLE"] = "0"; os.environ["AMAZON_PRO_KEEPA_ENABLE"] = "0"; os.environ["AMAZON_PRO_NO_WORKER"] = "1"
+    return []
+
+
+if STAGING and staging_guard():
+    sys.exit("STAGING: variables de servicios de pago presentes (" + ", ".join(staging_guard()) + "). No se arranca. Elimínalas del entorno de staging.")
 
 CONNECTORS = {
     "sp-api": {"label": "Amazon SP-API", "env": ["SPAPI_CLIENT_ID", "SPAPI_CLIENT_SECRET", "SPAPI_REFRESH_TOKEN"],
@@ -96,6 +113,7 @@ STATE = {"admin_token": None, "recent": [], "cool": {}}
 
 
 def enabled_connectors():
+    if STAGING: return set()   # staging: ningún conector activo, pase lo que pase con las variables
     return {x.strip() for x in os.environ.get("AMAZON_PRO_CONNECTORS", "").split(",") if x.strip()} & set(CONNECTORS)
 
 
@@ -159,6 +177,7 @@ def parse_competitors_csv(text):
 
 # ---- HTTP ----------------------------------------------------------------------------------------
 STATIC_OK = re.compile(r"^/(js/[a-z0-9_\-]+\.js)$")
+if STAGING: READ_ONLY_ALLOW = []   # staging: ninguna salida a Internet
 TYPES = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "application/javascript; charset=utf-8"}
 CSP = ("default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; "
        "base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
@@ -175,7 +194,7 @@ class H(BaseHTTPRequestHandler):
     def _send(self, code, body=b"", ctype="application/json", extra=None):
         self.send_response(code)
         self.send_header("Content-Type", ctype); self.send_header("Content-Length", str(len(body)))
-        for k, v in {**SEC, **(extra or {})}.items():
+        for k, v in {**SEC, **({"X-Env": "staging"} if STAGING else {}), **(extra or {})}.items():
             self.send_header(k, v)
         self.end_headers()
         if self.command != "HEAD":
@@ -204,13 +223,27 @@ class H(BaseHTTPRequestHandler):
                 return v
         return None
 
-    def _sess(self, write=False):
+    def _sess(self, write=False, logout=False):
         s = APP["store"].session(self._token())
         if not s:
             self._json({"error": "sesión requerida"}, 401); return None
+        if s["role"] == "viewer":   # SOLO LECTURA: nunca escribe; para leer se comporta como administrador (sin secretos: el admin tampoco los ve)
+            if write and not logout:
+                return self._viewer_denied()
+            if write:   # cerrar su propia sesión: permitido, con CSRF
+                if not hmac.compare_digest(self.headers.get("X-CSRF-Token") or "", s["csrf"]):
+                    self._json({"error": "CSRF inválido"}, 403); return None
+                return s
+            s = {**s, "role": "admin", "viewer": True}
+            return s
         if write and not hmac.compare_digest(self.headers.get("X-CSRF-Token") or "", s["csrf"]):
             self._json({"error": "CSRF inválido"}, 403); return None
         return s
+
+    def _viewer_denied(self):
+        try: APP["store"].audit(None, "viewer", "viewer.write_blocked", {"method": self.command, "path": urllib.parse.urlparse(self.path).path[:120]})
+        except Exception: pass
+        return self._json({"error": "solo lectura: el rol viewer no puede modificar ni ejecutar nada"}, 403) and None
 
     def _body(self):
         if (self.headers.get("Content-Type") or "").split(";")[0].strip() != "application/json":
@@ -254,11 +287,16 @@ class H(BaseHTTPRequestHandler):
         if not f or not os.path.isfile(os.path.join(ROOT, f)):
             return self._json({"error": "no encontrado"}, 404)
         with open(os.path.join(ROOT, f), "rb") as fh:
-            self._send(200, fh.read(), TYPES[os.path.splitext(f)[1]])
+            body = fh.read()
+        if STAGING and f == "index.html":   # etiqueta permanente, incrustada en el HTML (visible incluso antes de iniciar sesión)
+            body = body.replace(b"<!--ENV-BANNER-->", ('<div id="envBanner" class="envbanner" role="status">' + STAGING_LABEL + '</div>').encode()).replace(b"<body>", b'<body class="staging">', 1)
+        self._send(200, body, TYPES[os.path.splitext(f)[1]])
 
     do_HEAD = do_GET
 
     def _v06(self, method, path, q, b, s):
+        if s.get("viewer") and method != "GET":   # segunda barrera
+            return self._json({"error": "solo lectura"}, 403)
         try:
             r = (API7 if path.startswith("/api/v07/") else API4K if path.startswith("/api/k4/") else API6).handle(APP, s, method, path, q, b)
         except PermissionError as e:
@@ -518,6 +556,12 @@ class H(BaseHTTPRequestHandler):
         path = urllib.parse.urlparse(self.path).path
         if not self._local_origin_ok():
             return self._json({"error": "origen no permitido"}, 403)
+        if STAGING and path == "/api/connectors/test":   # staging: no existen conectores que probar
+            return self._json({"error": "staging: conectores deshabilitados"}, 403)
+        if path not in ("/api/login", "/api/logout"):   # BLOQUEO CENTRAL (denegación por defecto): cualquier POST de un viewer, sea cual sea la ruta
+            _v = APP["store"].session(self._token())
+            if _v and _v["role"] == "viewer":
+                return self._viewer_denied()
         if path == "/api/connectors/test":
             return self._connector_test()
         if path == "/api/login":
@@ -536,7 +580,7 @@ class H(BaseHTTPRequestHandler):
             return self._json({"user": s["username"], "role": s["role"], "csrf": r["csrf"]}, extra={"Set-Cookie": f"{COOKIE}={r['token']}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800" + ("; Secure" if CLOUD else "")})
         if not path.startswith("/api/"):
             return self._json({"error": "no encontrado"}, 404)
-        s = self._sess(write=True)
+        s = self._sess(write=True, logout=(path == "/api/logout"))
         if not s:
             return
         if path == "/api/logout":
@@ -702,7 +746,11 @@ class H(BaseHTTPRequestHandler):
         LAST[name] = {"ok": ok, "detail": code, "at": time.strftime("%Y-%m-%d %H:%M:%S")}
         self._json(LAST[name])
 
-    def do_PUT(self): self._json({"error": "método no permitido"}, 405)
+    def do_PUT(self):
+        v = APP["store"].session(self._token()) if self._local_origin_ok() else None
+        if v and v["role"] == "viewer": return self._viewer_denied()
+        self._json({"error": "método no permitido"}, 405)
+    do_DELETE = do_PATCH = do_PUT
     do_DELETE = do_PATCH = do_PUT
 
     def log_message(self, fmt, *a):
@@ -734,6 +782,18 @@ def seed_users(store):
         pw = os.environ.get("AMAZON_PRO_PASSWORD_" + name.upper()) or ""
         if len(pw) < 12: continue   # sin contraseña segura no se crea
         store.create_user(name, pw, role, [_AID]); out.append(name)
+    return out
+
+
+def seed_viewers(store):
+    """Usuarios SOLO LECTURA: AMAZON_PRO_SEED_VIEWERS="auditor"; la contraseña va en el secreto AMAZON_PRO_PASSWORD_<NOMBRE> (≥12). Idempotente; nunca sobrescribe."""
+    out = []
+    for name in [x.strip() for x in (os.environ.get("AMAZON_PRO_SEED_VIEWERS") or "").split(",")]:
+        if not name or not name.isidentifier(): continue
+        if store.db.execute("SELECT 1 FROM users WHERE username=?", (name,)).fetchone(): continue
+        pw = os.environ.get("AMAZON_PRO_PASSWORD_" + name.upper()) or ""
+        if len(pw) < 12: continue
+        store.create_user(name, pw, "viewer", []); out.append(name)
     return out
 
 
@@ -795,7 +855,7 @@ def make_server(port=8765, admin_token=None, db_path=None, cfg_fn=None, admin_pa
     APP["login_fail"] = {}
     srv = ThreadingHTTPServer((HOST, port), H)
     srv.initial_admin_password = bootstrap(APP["store"], admin_password)
-    srv.seeded_users = seed_users(APP["store"])
+    srv.seeded_users = seed_users(APP["store"]) + seed_viewers(APP["store"])
     srv.rotated_users = rotate_credentials(APP["store"])
     return srv
 

@@ -4,8 +4,10 @@ from .catalog import ACCOUNT_ID
 
 
 def handle(APP, s, method, path, q, b):
+    if s.get("viewer") and method != "GET": raise PermissionError("solo lectura (viewer)")
     g = lambda k: (q.get(k) or [None])[0]
     p = path[len("/api/v07/"):]
+    if p.startswith("respaldo") and s.get("viewer"): raise PermissionError("el viewer no descarga respaldos (contienen credenciales y sesiones)")
     if p.startswith("respaldo"):   # V1.0 cloud: exportar/subir respaldos FUERA del disco del servidor (solo administrador)
         if s["role"] != "admin": raise PermissionError("solo el administrador gestiona respaldos")
         st = APP["store"]

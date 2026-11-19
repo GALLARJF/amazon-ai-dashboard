@@ -8,6 +8,7 @@
   const CW = { mercado: 'Analiza competidores importados, precio normalizado y banda', precios: 'Economía determinista, escenarios de PVP y ACoS de equilibrio', seo: 'Keywords vigentes y cobertura del listing', ppc: 'Colchón de ACoS y CPC máximo (con CVR aportada)', creatividad: 'Activos de contenido pendientes y briefs', inventario: 'Cobertura de stock y reposición', cumplimiento: 'Checklist regulatorio, claims y términos de riesgo' };
 
   async function api(method, path, body) {
+    if (V.viewer && method !== 'GET' && path !== '/api/login' && path !== '/api/logout') return { ok: false, status: 403, j: { error: 'Solo lectura: el usuario viewer no puede modificar ni ejecutar nada' } };
     const h = {}; if (body !== undefined) h['Content-Type'] = 'application/json'; if (method === 'POST' && V.csrf) h['X-CSRF-Token'] = V.csrf;
     try { const r = await fetch(path, { method, headers: h, credentials: 'same-origin', body: body !== undefined ? JSON.stringify(body) : undefined }); let j = null; try { j = await r.json(); } catch (e) { /* sin cuerpo */ } return { ok: r.ok, status: r.status, j: j || {} }; }
     catch (e) { return { ok: false, status: 0, j: { error: 'servidor no disponible' } }; }
@@ -19,7 +20,15 @@
     root.APP.openModal(`<h3>Acceso <small>sesión local · solo 127.0.0.1</small></h3>${msg ? `<div class="f warn">${esc(msg)}</div>` : ''}
       <form id="lgForm"><label class="fld">Usuario<input id="lgU" autocomplete="username" value="${esc(u0 || '')}"></label><label class="fld">Contraseña<input id="lgP" type="password" autocomplete="current-password"></label>
       <p style="margin-top:8px"><button class="btn" id="lgGo">Entrar</button></p></form><p class="muted">El primer arranque muestra la contraseña del usuario «admin» en la consola del servidor.</p>`);
-    $('#lgForm').onsubmit = async (e) => { e.preventDefault(); const r = await api('POST', '/api/login', { username: $('#lgU').value, password: $('#lgP').value }); if (!r.ok) return loginForm(r.j.error || 'Error de acceso', $('#lgU').value); $('#modal').hidden = true; V.user = r.j.user; V.role = r.j.role; V.csrf = r.j.csrf; await boot(); };
+    $('#lgForm').onsubmit = async (e) => { e.preventDefault(); const r = await api('POST', '/api/login', { username: $('#lgU').value, password: $('#lgP').value }); if (!r.ok) return loginForm(r.j.error || 'Error de acceso', $('#lgU').value); $('#modal').hidden = true; setRole(r.j.role); V.user = r.j.user; V.csrf = r.j.csrf; await boot(); };
+  }
+  function setRole(r) { V.roleReal = r; V.viewer = r === 'viewer'; V.role = V.viewer ? 'admin' : r; document.body.classList.toggle('viewer', V.viewer); if (V.viewer) lockUi(); }
+  /* viewer: la interfaz bloquea además lo que ya bloquea el backend (403) */
+  function lockUi() {
+    const W = /(guardar|crear|nuevo|nueva|aprobar|rechazar|lanzar|ejecutar|analizar|importar|publicar|activar|archivar|añadir|editar|enviar|proponer|investigar|reanudar|probar|confirmar|eliminar|borrar|registrar|validar|generar|iniciar|aplicar|actualizar|solicitar|reconciliar|fijar|cancelar plan|descartar|marcar|verificar|(?:^|\s)subir|(?:^|\s)cargar|restaurar|respaldo|preguntar|consultar al|enviar)/i;
+    const apply = () => document.querySelectorAll('button, textarea, input[type=submit], form input[type=text]').forEach((el) => { if (el.closest('#tabs') || el.closest('#lgForm') || el.matches('#lgOut,#lgOpen,.ro-ok,[data-tab]')) return; const w = el.tagName !== 'BUTTON' || el.type === 'submit' || el.hasAttribute('data-test') || W.test(el.textContent || ''); if (w && !el.disabled) { el.disabled = true; el.title = 'Solo lectura (viewer)'; el.classList.add('vro'); } });
+    if (!lockUi.mo) { lockUi.mo = new MutationObserver(() => { clearTimeout(lockUi.t); lockUi.t = setTimeout(apply, 30); }); lockUi.mo.observe(document.body, { childList: true, subtree: true }); }
+    apply();
   }
   async function boot() {
     const a = await api('GET', '/api/accounts'); V.accounts = a.j.accounts || []; V.account = (V.accounts.find((x) => x.id === V.account) || V.accounts.find((x) => !['activcore-eu', 'catalogo-aht', 'sintetico-primera-llamada'].includes(x.id)) || V.accounts[0] || {}).id || null;
@@ -35,9 +44,9 @@
   function renderSession() {
     const el = $('#sess'); if (!el) return;
     if (!V.user) { el.innerHTML = '<button class="btn sm" id="lgOpen">Iniciar sesión</button>'; $('#lgOpen').onclick = () => loginForm(); return; }
-    el.innerHTML = `<span class="sessu">${esc(V.user)} · ${esc(V.role)}</span><select id="acSel" title="Cuenta (titular legal y Seller Central)">${V.accounts.map((a) => `<option value="${esc(a.id)}" ${a.id === V.account ? 'selected' : ''}>${esc(a.name)} · ${esc(a.legal_entity)} · ${esc(a.marketplaces.join(','))}</option>`).join('')}</select><button class="btn ghost sm" id="lgOut">Salir</button>`;
+    el.innerHTML = `<span class="sessu">${esc(V.user)} · ${esc(V.roleReal || V.role)}</span><select id="acSel" title="Cuenta (titular legal y Seller Central)">${V.accounts.map((a) => `<option value="${esc(a.id)}" ${a.id === V.account ? 'selected' : ''}>${esc(a.name)} · ${esc(a.legal_entity)} · ${esc(a.marketplaces.join(','))}</option>`).join('')}</select><button class="btn ghost sm" id="lgOut">Salir</button>`;
     $('#acSel').onchange = async (e) => { V.account = e.target.value; V.dossierId = null; V.chat = []; await refreshAll(); };
-    $('#lgOut').onclick = async () => { await api('POST', '/api/logout', {}); Object.assign(V, { user: null, role: null, csrf: null, account: null, dossiers: [], P: null, cw: null }); renderSession(); renderAll(); };
+    $('#lgOut').onclick = async () => { await api('POST', '/api/logout', {}); Object.assign(V, { viewer: false, roleReal: null, user: null, role: null, csrf: null, account: null, dossiers: [], P: null, cw: null }); renderSession(); renderAll(); };
   }
 
   /* ---------- Director ---------- */
@@ -190,6 +199,6 @@
     $('#chips').innerHTML = ['Resumen general', 'Precio y margen', 'Competencia', 'Keywords', 'Stock', 'Cumplimiento'].map((c) => `<button type="button">${c}</button>`).join(''); $$('#chips button').forEach((b) => (b.onclick = () => ask(b.textContent)));
     $('#cwGrid').addEventListener('click', (e) => { const b = e.target.closest('[data-cw]'); if (b) openCw(b.dataset.cw); });
     document.addEventListener('click', (e) => { const b = e.target.closest('#tabs button'); if (!b) return; if (b.dataset.tab === 'hist') renderHist(); if (b.dataset.tab === 'piloto') renderPilot(); });
-    const me = await api('GET', '/api/me'); if (me.j.user) { V.user = me.j.user; V.role = me.j.role; V.csrf = me.j.csrf; await boot(); } else { renderSession(); renderAll(); }
+    const me = await api('GET', '/api/me'); if (me.j.user) { setRole(me.j.role); V.user = me.j.user; V.csrf = me.j.csrf; await boot(); } else { renderSession(); renderAll(); }
   });
 })(self);

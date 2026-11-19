@@ -104,6 +104,7 @@ def _need(s, *roles):
 
 
 def handle(APP, s, method, path, q, b):
+    if s.get("viewer") and method != "GET": raise PermissionError("solo lectura (viewer)")
     g = lambda k: (q.get(k) or [None])[0]; ops = APP["ops"]; actor = s["username"]; role = s["role"]
     if not APP["store"].can_access(s, ACCOUNT_ID):
         raise PermissionError("sin acceso al catálogo")

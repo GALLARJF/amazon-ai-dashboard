@@ -60,6 +60,7 @@ run "K3: segmentación competitiva (motor, validación vs referencia, API, revis
 run "K3: interfaz NEON de segmentos (navegador real, escritorio/tablet/móvil)" python3 tests/ui_k3_test.py
 run "K4: contratos, costes, medios con derechos, datos, pricing de 5 dictámenes y Director" python3 tests/k4_unit_test.py
 run "K4 Consejero F1–F2: proveedores, libro de evidencias, verificador, motor y pruebas anti-plantilla (SIMULADO)" python3 tests/k4c_test.py
+run "STAGING: rol viewer SOLO LECTURA (403 en toda escritura, lectura como admin, sin servicios de pago)" python3 tests/viewer_test.py
 run "K4: planificador robusto (ejecución única, reintentos, recuperación, tope de gasto, parada)" python3 tests/k4_planner_test.py
 run "K4 it.2: selección, umbrales, conciliación, informe, explorador, planificador (API)" python3 tests/k4_iter2_test.py
 run "K4: API (roles, CSRF, aislamiento demo/producción, derechos de imagen, export, persistencia)" python3 tests/k4_api_test.py

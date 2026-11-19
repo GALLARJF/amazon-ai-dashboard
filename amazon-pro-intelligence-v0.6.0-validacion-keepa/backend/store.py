@@ -4,7 +4,7 @@ Sin secretos: contraseñas con scrypt+sal; sesiones guardadas como hash SHA-256 
 import hashlib, hmac, json, os, secrets, sqlite3, threading, time
 
 KINDS = {"brand", "product", "dossier", "dataset", "evidence", "task", "ai_run", "query", "approval", "news", "cost_doc", "plan"}
-ROLES = {"analyst": 1, "approver": 2, "admin": 3}
+ROLES = {"viewer": 0, "analyst": 1, "approver": 2, "admin": 3}   # viewer: SOLO LECTURA (lee como admin; nunca escribe)
 SESSION_TTL = 8 * 3600
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY, name TEXT NOT NULL, legal_entity TEXT NOT NULL, seller_central_ref TEXT, marketplaces TEXT NOT NULL DEFAULT '[]', created_at TEXT NOT NULL);

@@ -100,6 +100,7 @@ def contexto(APP, K, f, entorno="PRODUCCION", pvp=None):
 
 
 def handle(APP, s, method, path, q, b):
+    if s.get("viewer") and method != "GET": raise PermissionError("solo lectura (viewer)")
     g = lambda k: (q.get(k) or [None])[0]
     p = path[len("/api/k4/"):].strip("/")
     if not APP["store"].can_access(s, ACCOUNT_ID): raise PermissionError("sin acceso al catálogo")
