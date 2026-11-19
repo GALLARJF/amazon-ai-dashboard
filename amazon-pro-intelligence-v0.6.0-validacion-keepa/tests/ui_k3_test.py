@@ -18,7 +18,7 @@ def wait(pg, js, timeout=20):
         pg.wait_for_timeout(150)
     return False
 def login(pg):
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu")
+    pg.goto(f"http://localhost:{port}/?legacy=1"); pg.wait_for_selector("#tabs"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu")
 def open_k3(pg):
     pg.click('#tabs button[data-tab="europa"]'); pg.wait_for_selector(".eucard", timeout=15000); pg.click(".euchip[data-cat]:has-text('Cosm')"); pg.click(f".eucard[data-pid='{ACT}']"); wait(pg, "document.querySelectorAll('#euRoot .euview').length>=4")
     pg.click(".euview[data-view=segmentos]"); return wait(pg, "document.querySelectorAll('#euRoot .k3row').length>0")

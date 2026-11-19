@@ -34,7 +34,11 @@ jobs:
           python tests/k4c_test.py
           python tests/viewer_test.py
       - name: K4 interfaz
-        run: python tests/ui_k4_test.py
+        run: |
+          python tests/ui_k4_test.py
+          python tests/ui_viewer_test.py
+          python tests/ui_nav_test.py
+          python tests/ui_nav_modo_test.py
       - name: Regresión K2/K3
         run: |
           python tests/k2_director_test.py

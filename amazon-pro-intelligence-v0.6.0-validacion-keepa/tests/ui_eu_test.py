@@ -54,7 +54,7 @@ def wait(pg, js, timeout=20):
         pg.wait_for_timeout(150)
     return False
 def login(pg):
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs"); pg.click("#tabs button[data-tab=panel]"); pg.wait_for_selector("#kpis .kpi"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(500)
+    pg.goto(f"http://localhost:{port}/?legacy=1"); pg.wait_for_selector("#tabs"); pg.click("#tabs button[data-tab=panel]"); pg.wait_for_selector("#kpis .kpi"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(500)
 with sync_playwright() as p:
     b = p.chromium.launch(); ctx = b.new_context(viewport={"width": 1600, "height": 840}); pg = ctx.new_page(); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))

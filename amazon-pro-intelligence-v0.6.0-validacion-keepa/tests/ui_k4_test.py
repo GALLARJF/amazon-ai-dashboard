@@ -18,7 +18,7 @@ def wait(pg, js, timeout=20):
         pg.wait_for_timeout(150)
     return False
 def login(pg):
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu")
+    pg.goto(f"http://localhost:{port}/?legacy=1"); pg.wait_for_selector("#tabs"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu")
 with sync_playwright() as p:
     b = p.chromium.launch(); ctx = b.new_context(viewport={"width": 1600, "height": 900}); pg = ctx.new_page(); errs = []; ext = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
@@ -101,7 +101,7 @@ with sync_playwright() as p:
     check("exportar PNG (renderizado en el navegador)", open(dl3.value.path(), "rb").read(4) == b"\x89PNG")
     # responsive
     for w, h, nm, fn in ((820, 1100, "tablet", "81_k4_comparativa_tablet"), (390, 844, "movil", "81_k4_comparativa_movil")):
-        c2 = b.new_context(viewport={"width": w, "height": h}); p2 = c2.new_page(); login2 = lambda q: (q.goto(f"http://localhost:{port}/"), q.wait_for_selector("#tabs"), q.click("#lgOpen"), q.fill("#lgU", "admin"), q.fill("#lgP", "admin-password-123"), q.click("#lgGo"), q.wait_for_selector(".sessu"))
+        c2 = b.new_context(viewport={"width": w, "height": h}); p2 = c2.new_page(); login2 = lambda q: (q.goto(f"http://localhost:{port}/?legacy=1"), q.wait_for_selector("#tabs"), q.click("#lgOpen"), q.fill("#lgU", "admin"), q.fill("#lgP", "admin-password-123"), q.click("#lgGo"), q.wait_for_selector(".sessu"))
         login2(p2); p2.click('#tabs button[data-tab="k4"]'); wait(p2, "document.querySelectorAll('#k4Root .k4kpi').length>=8"); p2.click('[data-k4v=bench]'); wait(p2, "document.querySelectorAll('#k4Root table.k4cmp thead th').length===7")
         check(f"{nm}: la página no se desborda (la tabla se desplaza dentro de su región)", p2.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 4"))
         if nm == "movil":

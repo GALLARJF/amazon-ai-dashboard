@@ -54,7 +54,7 @@ def sesion(b, w, h):
     ctx = b.new_context(viewport={"width": w, "height": h}, ignore_https_errors=True); pg = ctx.new_page(); errs = []; ext = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
     pg.on("request", lambda r: not r.url.startswith((f"https://127.0.0.1:{pp}/", "data:", "blob:")) and ext.append(r.url))
-    pg.goto(URL); pg.wait_for_selector("#tabs"); return ctx, pg, errs, ext
+    pg.goto(URL + "?legacy=1"); pg.wait_for_selector("#tabs"); return ctx, pg, errs, ext
 def entrar(pg):
     pg.click("#lgOpen"); pg.fill("#lgU", "sergio"); pg.fill("#lgP", SERGPW); pg.click("#lgGo"); pg.wait_for_selector(".sessu")
 with sync_playwright() as p:
