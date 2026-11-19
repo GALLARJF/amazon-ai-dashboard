@@ -92,7 +92,7 @@ with sync_playwright() as p:
     # nuevo producto
     pg.fill("#k4npt", "Sérum facial X"); pg.fill("#k4npn", "piel sensible"); pg.click("#k4np button[type=submit]"); check("nuevo producto: dossier NO_EVALUADO con faltantes", wait(pg, "document.querySelector('#k4Root .k4dossier') && document.querySelector('#k4Root .k4dossier').textContent.indexOf('Sin necesidad')>=0"))
     # exportaciones
-    pg.click('[data-k4v=bench]'); pg.click('[data-k4bv=comp]'); wait(pg, "document.querySelector('[data-k4exp=pdf]')"); pg.locator("details.k4adv", has_text="Evidencia, exportación").locator("summary").click()
+    pg.click('[data-k4v=bench]'); pg.click('[data-k4bv=comp]'); wait(pg, "document.querySelector('table.k4cmp') && !document.querySelector('.k4load') && document.querySelector('[data-k4exp=pdf]')"); pg.wait_for_timeout(500); pg.locator("details.k4adv", has_text="Evidencia, exportación").evaluate("d => { d.open = true; }"); wait(pg, "document.querySelector('[data-k4exp=pdf]').offsetParent !== null")
     with pg.expect_download() as dl: pg.click("[data-k4exp=pdf]")
     path = dl.value.path(); check("exportar PDF desde la interfaz", open(path, "rb").read(8).startswith(b"%PDF-1.4"))
     with pg.expect_download() as dl2: pg.click("[data-k4exp=svg]")
