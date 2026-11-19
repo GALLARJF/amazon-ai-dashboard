@@ -59,6 +59,8 @@ run "K2: Director Amazon IA por intención (competidores, precio, país, faltant
 run "K3: segmentación competitiva (motor, validación vs referencia, API, revisión, Director, persistencia, cloud) — simulado" python3 tests/k3_segmentacion_test.py
 run "K3: interfaz NEON de segmentos (navegador real, escritorio/tablet/móvil)" python3 tests/ui_k3_test.py
 run "K4: contratos, costes, medios con derechos, datos, pricing de 5 dictámenes y Director" python3 tests/k4_unit_test.py
+run "K4: planificador robusto (ejecución única, reintentos, recuperación, tope de gasto, parada)" python3 tests/k4_planner_test.py
+run "K4 it.2: selección, umbrales, conciliación, informe, explorador, planificador (API)" python3 tests/k4_iter2_test.py
 run "K4: API (roles, CSRF, aislamiento demo/producción, derechos de imagen, export, persistencia)" python3 tests/k4_api_test.py
 run "K4: centro de mando NEON (navegador real, escritorio/tablet/móvil)" python3 tests/ui_k4_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py

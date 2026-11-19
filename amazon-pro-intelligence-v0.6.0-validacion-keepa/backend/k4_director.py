@@ -13,21 +13,6 @@ def capacidades(ai_cfg=None, planner=None):
             "aviso": "Un informe periódico NO es dirección comercial autónoma: el Director detecta, investiga, propone y mide con los datos disponibles; las acciones externas exigen aprobación humana y siguen bloqueadas."}
 
 
-def _hipotesis_alt(d):
-    t = d["tipo"]; h = []
-    if t == 5:
-        h = ["El precio puede no ser el problema (tráfico, contenido, stock o publicidad)", "El precio propuesto puede estar bien posicionado pero no hay costes ni ventas para comprobarlo", "La equivalencia con premium es estimada y puede sobrevalorar la comparabilidad"]
-    elif t == 4:
-        h = ["Una subida o bajada de precio no corregiría la causa detectada", "La causa detectada puede ser temporal (campaña, ruptura de stock)"]
-    elif t == 1:
-        h = ["El precio actual puede ser bajo por posicionamiento deliberado de lanzamiento", "Una subida puede reducir conversión más de lo que gana en margen (elasticidad no observada)"]
-    elif t == 3:
-        h = ["La baja conversión puede deberse a contenido o reseñas, no a precio", "Una promoción temporal puede atraer compradores de baja retención"]
-    else:
-        h = ["Mantener puede dejar margen sin capturar", "El mercado vigente puede cambiar antes de los 14 días"]
-    return [C.afirmacion("HIPOTESIS", x) for x in h]
-
-
 def construir(dict_, ctx, medios=None):
     d = dict_; falt = d.get("faltantes", [])
     inv = [{"paso": "Leer panel premium K3", "resultado": ("n vigente = %s" % (ctx.get("panel_premium") or {}).get("n_precio_vigente", "n/d"))},
@@ -36,7 +21,7 @@ def construir(dict_, ctx, medios=None):
            {"paso": "Comprobar imagen verificada del propio producto", "resultado": (medios or {}).get("estado", "n/d")}]
     problema = {5: "No hay evidencia suficiente para decidir el precio de %s en %s", 4: "El problema de %s en %s no se corrige con el precio", 1: "%s en %s: precio por debajo de premium con margen disponible", 3: "%s en %s: precio alto frente a premium con señal de baja conversión", 2: "%s en %s: precio coherente con el mercado"}[d["tipo"]] % (d["producto"], d["pais"])
     exp = [{"experimento": f["como"], "para": f["dato"]} for f in falt]
-    dos = {"id": "DOS-" + uuid.uuid4().hex[:8], "tipo": "precio", "producto": d["producto"], "pais": d["pais"], "entorno": d["entorno"], "problema_detectado": problema, "evidencias": d["trazabilidad"], "hipotesis_alternativas": [h for h in _hipotesis_alt(d)],
+    dos = {"id": "DOS-" + uuid.uuid4().hex[:8], "tipo": "precio", "producto": d["producto"], "pais": d["pais"], "entorno": d["entorno"], "problema_detectado": problema, "evidencias": d["trazabilidad"], "hipotesis_alternativas": [h for h in P.hipotesis_alt(d)],
            "investigacion_realizada": inv, "dictamen": {"tipo": d["tipo"], "nombre": d["tipo_nombre"], "justificacion": d["justificacion"], "intervalo_recomendado": d.get("intervalo_recomendado")}, "confianza": d["confianza"],
            "escenarios": d["escenarios"], "accion_recomendada": d["proxima_accion"], "responsable": "Dirección comercial AHT (aprobador)", "criterio_exito": _exito(d), "revision_posterior": d["criterio_revision"],
            "datos_faltantes": falt, "como_obtenerlos": exp, "riesgos": d["riesgos"], "imagen_propia": medios, "capacidad": "DETERMINISTA · IA externa desactivada", "generado": now()}

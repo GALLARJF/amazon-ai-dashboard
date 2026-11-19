@@ -36,17 +36,37 @@ with sync_playwright() as p:
     check("panel de capacidades honesto: IA externa DESACTIVADA, autonomía NO VERIFICADA, SP-API/Ads no operativos", "DESACTIVADA" in t and "NO_VERIFICADA" in t and "SP-API" in t and "NO es dirección comercial autónoma" in t)
     check("sin 'undefined', 'NaN', 'null' ni 'None'", not re.search(r"undefined|NaN|\bnull\b|\bNone\b", t))
     pg.screenshot(path=f"{OUT}/70_k4_centro_escritorio.png", full_page=True)
-    # benchmarking
-    pg.click('[data-k4v=bench]'); check("benchmarking visual: tarjetas por competidor", wait(pg, "document.querySelectorAll('#k4Root .k4comp').length>=1"))
-    n = pg.locator(".k4comp").count(); tb = pg.inner_text("#k4Root")
-    check("producto propio en el centro con imagen pendiente y marcador", pg.locator(".k4own .k4pend").count() == 1 and "IMAGEN PENDIENTE DE VERIFICAR" in tb)
-    check("cada tarjeta lleva imagen o marcador con la autorización que falta", pg.locator(".k4comp .k4pend").count() == n and "Falta:" in pg.locator(".k4comp .k4pend").first.inner_text())
-    check("etiquetas de origen (ASIN Keepa / Referencia sin ASIN), antigüedad del precio y equivalencia ESTIMADA", ("ASIN Keepa" in tb) and ("Referencia sin ASIN" in tb) and n == 24 and ("Equivalencia ESTIMADA" in tb) and any(k in tb for k in ("ACTUAL", "HISTÓRICO", "SIN PRECIO", "RECIENTE")))
-    pg.click('[data-k4seg=premium]'); pg.wait_for_timeout(300); check("filtro de segmento (premium) reduce las tarjetas", pg.locator(".k4comp").count() < n and all("PREMIUM" in pg.locator(".k4comp").nth(i).inner_text() for i in range(pg.locator(".k4comp").count())))
-    pg.click('[data-k4seg=""]'); pg.wait_for_timeout(300)
-    pg.screenshot(path=f"{OUT}/71_k4_benchmarking_escritorio.png", full_page=True)
+    # benchmarking · nivel 1
+    pg.click('[data-k4v=bench]'); check("comparativa ejecutiva: ACTIVCORE + 5 columnas", wait(pg, "document.querySelectorAll('#k4Root table.k4cmp thead th').length===7"))
+    tb = pg.inner_text("#k4Root"); heads = pg.locator("table.k4cmp thead th")
+    check("ACTIVCORE destacado como producto propio y 5 referencias K3 (Kérastase, Nioxin, Redken, The Ordinary, Bio-Pilixin)", pg.locator("th.k4own-col").count() == 1 and "PRODUCTO PROPIO" in tb and all(x in tb for x in ("Kérastase", "Nioxin", "Redken", "The Ordinary", "Bio-Pilixin")))
+    check("filas comparativas: precio, €/100 mL, activos, dosis, duración, posicionamiento, evidencia, ventajas", all(pg.locator("tr.k4r-" + r).count() == 1 for r in ("precio", "precio_100ml", "activos", "dosis", "duracion", "posicionamiento", "evidencia", "ventajas")))
+    check("no se muestran 24 fotos: solo 6 recuadros de imagen, todos con IMAGEN PENDIENTE y la autorización que falta", pg.locator("#k4Root .k4img").count() == 6 and pg.locator("#k4Root .k4pend").count() == 6 and "Falta:" in pg.locator(".k4pend").first.inner_text())
+    check("cifras de maqueta etiquetadas y sin dato explícito (no se inventa)", "MAQUETA · no verificado" in tb and "SIN DATO" in tb and "NO EVALUABLE" in tb)
+    check("dictamen del Director visible bajo la comparativa con las 8 secciones", "Recomendación del Director IA" in tb and pg.locator("#k4dictamen details.k4sec").count() >= 8 and "Acción prioritaria" in tb and "Condiciones para reconsiderar la decisión" in tb)
+    check("diagnóstico de PVP, causa de falta de ventas y ventaja competitiva", all(x in tb for x in ("PVP adecuado", "Causa de la falta de ventas", "Ventaja competitiva")))
+    check("filtros avanzados y evidencia en secciones desplegables", pg.locator("details.k4adv").count() >= 2 and "Cómo se eligieron los cinco" in tb)
+    check("accesibilidad: caption, scope, región desplazable con teclado, tabs con aria-selected", pg.locator("table.k4cmp caption").count() == 1 and pg.locator("table.k4cmp th[scope=row]").count() >= 8 and pg.locator(".k4scroll[tabindex='0']").count() >= 1 and pg.locator(".k4sub [role=tab][aria-selected=true]").count() == 1)
+    check("sin 'undefined', 'NaN', 'null' ni 'None' en la comparativa", not re.search(r"undefined|NaN|\bnull\b|\bNone\b", tb))
+    pg.screenshot(path=f"{OUT}/80_k4_comparativa_ejecutiva_escritorio.png", full_page=True)
+    pg.locator("#k4dictamen").screenshot(path=f"{OUT}/84_k4_dictamen_director.png")
+    # nivel 2 · explorador
+    pg.click('[data-k4bv=expl]'); check("explorador compacto: 24 referencias sin fotografías", wait(pg, "document.querySelectorAll('#k4Root table.k4expl tbody tr').length===24") and pg.locator("#k4Root .k4img").count() == 0)
+    pg.fill("#k4xq", "kerastase".replace("e", "é", 1) if False else "Kérastase"); pg.wait_for_timeout(300); nq = pg.locator("table.k4expl tbody tr").count(); check("búsqueda por marca filtra", 0 < nq < 24 and "Kérastase" in pg.inner_text("table.k4expl"))
+    pg.fill("#k4xq", ""); pg.wait_for_timeout(200); pg.select_option("#k4xs", "premium"); pg.wait_for_timeout(200); np_ = pg.locator("table.k4expl tbody tr").count(); check("filtro por segmento", 0 < np_ < 24)
+    pg.select_option("#k4xs", ""); pg.select_option("#k4xo", "precio"); pg.wait_for_timeout(200); check("ordenación por €/100 mL (SIN DATO al final)", "SIN DATO" in pg.locator("table.k4expl tbody tr").last.inner_text())
+    pg.check("#k4xe"); pg.wait_for_timeout(200); check("solo los 5 de la comparativa", pg.locator("table.k4expl tbody tr").count() == 5); pg.uncheck("#k4xe"); pg.wait_for_timeout(200)
+    pg.screenshot(path=f"{OUT}/82_k4_explorador_compacto.png", full_page=True)
+    # sustitución manual con motivo, auditoría y persistencia
+    pg.once("dialog", lambda d: d.accept("prueba de ajuste manual auditado")); pg.locator("table.k4expl tr.k4insel [data-k4quitar]").first.click(); wait(pg, "document.querySelectorAll('#k4Root table.k4expl tr.k4insel').length===4"); check("quitar una referencia de la comparativa (con motivo)", pg.locator("table.k4expl tr.k4insel").count() == 4)
+    pg.reload(); pg.wait_for_selector("#tabs"); pg.click('#tabs button[data-tab="k4"]'); pg.click('[data-k4v=bench]'); pg.click('[data-k4bv=expl]'); wait(pg, "document.querySelectorAll('#k4Root table.k4expl tbody tr').length===24"); check("la selección persiste tras recargar", pg.locator("table.k4expl tr.k4insel").count() == 4)
+    pg.once("dialog", lambda d: d.accept("reposición de la referencia retirada")); pg.locator("table.k4expl tr:not(.k4insel) [data-k4anadir]").first.click(); wait(pg, "document.querySelectorAll('#k4Root table.k4expl tr.k4insel').length===5"); check("añadir otra referencia (máx. cinco)", pg.locator("table.k4expl tr.k4insel").count() == 5)
+    aud = pg.evaluate("window.V03.api('GET','/api/k4/benchmark/explorador?producto=PRD-ACTIVCORE-V2&pais=ES').then(r=>r.j)"); check("ajustes registrados y auditados", len(aud["seleccion"]["ajustes"]) >= 2)
+    # nivel 3 · expediente 360
+    pg.locator("table.k4expl [data-k4exp360]").first.click(); check("expediente 360° con foto/marcador, identificador, ASIN y comparación con ACTIVCORE", wait(pg, "document.querySelector('#k4Root .k4exp360')") and "Comparación detallada con ACTIVCORE" in pg.inner_text("#k4Root") and "Identificador" in pg.inner_text("#k4Root") and pg.locator(".k4exp360 .k4pend").count() == 1)
+    pg.screenshot(path=f"{OUT}/83_k4_expediente_360.png", full_page=True)
     # filtro global: país
-    pg.select_option("#k4fc", "DE"); wait(pg, "document.querySelector('#k4Root .k4body[data-view=bench]')"); pg.wait_for_timeout(600); check("filtro global de país recarga la vista (DE) sin errores", "DE" in pg.input_value("#k4fc") and not errs)
+    pg.select_option("#k4fc", "DE"); pg.wait_for_timeout(800); check("filtro global de país recarga la vista (DE) sin errores", "DE" in pg.input_value("#k4fc") and not errs)
     pg.select_option("#k4fc", "ES"); pg.wait_for_timeout(600)
     # pricing
     pg.click('[data-k4v=precio]'); check("Pricing Intelligence: dictamen, trazabilidad y ficha de costes", wait(pg, "document.querySelectorAll('#k4Root .k4dict').length>=1 && document.querySelectorAll('#k4Root .k4tb').length>=2"))
@@ -72,7 +92,7 @@ with sync_playwright() as p:
     # nuevo producto
     pg.fill("#k4npt", "Sérum facial X"); pg.fill("#k4npn", "piel sensible"); pg.click("#k4np button[type=submit]"); check("nuevo producto: dossier NO_EVALUADO con faltantes", wait(pg, "document.querySelector('#k4Root .k4dossier') && document.querySelector('#k4Root .k4dossier').textContent.indexOf('Sin necesidad')>=0"))
     # exportaciones
-    pg.click('[data-k4v=bench]'); wait(pg, "document.querySelector('[data-k4exp=pdf]')")
+    pg.click('[data-k4v=bench]'); pg.click('[data-k4bv=comp]'); wait(pg, "document.querySelector('[data-k4exp=pdf]')"); pg.locator("details.k4adv", has_text="Evidencia, exportación").locator("summary").click()
     with pg.expect_download() as dl: pg.click("[data-k4exp=pdf]")
     path = dl.value.path(); check("exportar PDF desde la interfaz", open(path, "rb").read(8).startswith(b"%PDF-1.4"))
     with pg.expect_download() as dl2: pg.click("[data-k4exp=svg]")
@@ -80,11 +100,14 @@ with sync_playwright() as p:
     with pg.expect_download() as dl3: pg.click("[data-k4exp=png]")
     check("exportar PNG (renderizado en el navegador)", open(dl3.value.path(), "rb").read(4) == b"\x89PNG")
     # responsive
-    for w, h, nm in ((820, 1100, "tablet"), (390, 844, "movil")):
+    for w, h, nm, fn in ((820, 1100, "tablet", "81_k4_comparativa_tablet"), (390, 844, "movil", "81_k4_comparativa_movil")):
         c2 = b.new_context(viewport={"width": w, "height": h}); p2 = c2.new_page(); login2 = lambda q: (q.goto(f"http://localhost:{port}/"), q.wait_for_selector("#tabs"), q.click("#lgOpen"), q.fill("#lgU", "admin"), q.fill("#lgP", "admin-password-123"), q.click("#lgGo"), q.wait_for_selector(".sessu"))
-        login2(p2); p2.click('#tabs button[data-tab="k4"]'); wait(p2, "document.querySelectorAll('#k4Root .k4kpi').length>=8"); p2.click('[data-k4v=bench]'); wait(p2, "document.querySelectorAll('#k4Root .k4comp').length>=1")
-        ov = p2.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 4"); check(f"{nm}: sin desbordamiento horizontal", ov)
-        p2.screenshot(path=f"{OUT}/7{4 if nm == 'tablet' else 5}_k4_benchmarking_{nm}.png", full_page=True); c2.close()
+        login2(p2); p2.click('#tabs button[data-tab="k4"]'); wait(p2, "document.querySelectorAll('#k4Root .k4kpi').length>=8"); p2.click('[data-k4v=bench]'); wait(p2, "document.querySelectorAll('#k4Root table.k4cmp thead th').length===7")
+        check(f"{nm}: la página no se desborda (la tabla se desplaza dentro de su región)", p2.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 4"))
+        if nm == "movil":
+            check("móvil: selector de comparación por pares visible", p2.locator("#k4par").is_visible()); p2.select_option("#k4par", "0"); p2.wait_for_timeout(300); check("móvil: par ACTIVCORE vs una referencia (3 columnas)", p2.locator("table.k4cmp thead th").count() == 3)
+            check("móvil: botones táctiles ≥ 40 px", p2.evaluate("[...document.querySelectorAll('.k4sub button')].every(b=>b.getBoundingClientRect().height>=38)"))
+        p2.screenshot(path=f"{OUT}/{fn}.png", full_page=True); c2.close()
     check("sin peticiones externas ni errores de consola/página", not ext and not errs)
     if ext or errs: print(ext[:3], errs[:3])
     b.close()

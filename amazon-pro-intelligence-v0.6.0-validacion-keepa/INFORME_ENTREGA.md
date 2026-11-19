@@ -1,6 +1,6 @@
 # INFORME DE ENTREGA — Amazon Pro Intelligence (coordinador autónomo)
 
-Generado: 2026-11-18T23:27:12Z · Registro íntegro: **SÍ** (229 líneas)
+Generado: 2026-11-19T00:02:09Z · Registro íntegro: **SÍ** (150 líneas)
 
 ## 1. Pruebas
 
@@ -43,12 +43,14 @@ Generado: 2026-11-18T23:27:12Z · Registro íntegro: **SÍ** (229 líneas)
 | k3-segmentacion | MOCK | PASA | 1 | 90/90 OK |
 | UI-k3 | MOCK+NAVEGADOR | PASA | 1 | 37/37 OK |
 | k4-unidad | MOCK | PASA | 1 | 46/46 OK |
+| k4-planificador | MOCK | PASA | 1 | 14/14 |
+| k4-iter2 | MOCK | PASA | 1 | 27/27 |
 | k4-api | MOCK | PASA | 1 | 43/43 OK |
-| UI-k4 | MOCK+NAVEGADOR | PASA | 1 | 34/34 OK |
-| v0.7-registro | LOCAL | PASA | 1 | 90/90 OK |
+| UI-k4 | MOCK+NAVEGADOR | PASA | 1 | 52/52 OK |
+| v0.7-registro | LOCAL | PASA | 1 | 92/92 OK |
 | v0.7-entrega | LOCAL | PASA | 1 | 15/15 OK |
 
-Resumen: 41 pasan · 0 intermitentes · 0 fallan · 41 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 43 pasan · 0 intermitentes · 0 fallan · 43 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## 2. Conexiones (solo cuenta como verificada la que tiene llamada real y evidencia)
 
@@ -68,13 +70,6 @@ Resumen: 41 pasan · 0 intermitentes · 0 fallan · 41 total. **MOCK = proveedor
 - INC-004 · v1.0-entrega · RESUELTA · 3 intentos · tipo PERSISTENTE
 - INC-005 · v1.0-ficha · RESUELTA · 3 intentos · tipo PERSISTENTE
 - INC-006 · v1.0-entrega · RESUELTA · 3 intentos · tipo PERSISTENTE
-- INC-007 · UI-k3 · RESUELTA · 6 intentos · tipo PERSISTENTE
-- INC-008 · v1.0-entrega · RESUELTA · 6 intentos · tipo PERSISTENTE
-- INC-009 · UI-v0.7 · RESUELTA · 2 intentos · tipo INTERMITENTE
-- INC-010 · UI-k3 · RESUELTA · 2 intentos · tipo INTERMITENTE
-- INC-011 · v1.0-entrega · RESUELTA · 3 intentos · tipo PERSISTENTE
-- INC-012 · UI-v0.6 · RESUELTA · 6 intentos · tipo PERSISTENTE
-- INC-013 · v1.0-entrega · RESUELTA · 6 intentos · tipo PERSISTENTE
 
 ## 4. Objetivos
 

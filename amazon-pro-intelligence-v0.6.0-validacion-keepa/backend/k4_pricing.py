@@ -22,7 +22,10 @@ def elasticidad(niveles):
 
 def dictamen(ctx, cfg=None):
     """ctx: producto, pais, entorno, own{pvp,ml,pvp_estado}, panel_premium (k3.panels['premium']) , costes (assumptions eu), kpis (Data.kpis), niveles (Data.niveles_precio), fecha."""
-    cfg = dict(CFG, **(cfg or {})); pais = ctx["pais"]; own = ctx["own"]; pvp, ml = own.get("pvp"), own.get("ml"); fecha = ctx["fecha"]; ent = ctx.get("entorno", "PRODUCCION")
+    um = ctx.get("umbrales") or {"cfg": None, "estado": "ILUSTRATIVO_SINTETICO", "aviso": "Sin contexto de umbrales: se usan los valores ILUSTRATIVOS (solo pruebas)"} if "umbrales" not in ctx else ctx["umbrales"]
+    if um["cfg"] is None and "umbrales" not in ctx: um = dict(um, cfg=dict(CFG))
+    um_ok = um.get("cfg") is not None
+    cfg = dict(CFG, **(cfg or {}), **(um["cfg"] or {})); pais = ctx["pais"]; own = ctx["own"]; pvp, ml = own.get("pvp"), own.get("ml"); fecha = ctx["fecha"]; ent = ctx.get("entorno", "PRODUCCION")
     kp = ctx["kpis"]; pan = ctx.get("panel_premium") or {}; st = pan.get("estadisticos")
     tr, faltan, just, riesgos = [], [], [], []
     # --- evidencia de mercado
@@ -52,7 +55,9 @@ def dictamen(ctx, cfg=None):
     base = {"precio_actual": {"pvp_propuesto": pvp, "estado": own.get("pvp_estado"), "nota": "El PVP es una PROPUESTA de AHT, no un precio vigente en Amazon"}, "producto": ctx["producto"], "pais": pais, "entorno": ent, "fuentes": sorted({t["fuente"] for t in tr}),
             "escenarios": [], "riesgos": riesgos, "trazabilidad": tr, "faltantes": faltan, "umbrales": cfg, "fecha": fecha, "margen_estimado": ({"antes_ads": eco.get("margin_before_ads"), "hipotetico": hip} if comp else None)}
     # --- Tipo 5: evidencia insuficiente
-    insuf = (not st) or (not comp and not ventas_ok) or not pvp
+    if not um_ok: faltan.append({"dato": "Umbrales comerciales APROBADOS (margen mínimo, banda de precio, conversión baja, cobertura, días de ventas)", "como": "Proponer umbrales por producto/categoría/país/etapa y aprobarlos por una persona distinta del proponente (pestaña Pricing → Umbrales)"})
+    base["umbrales"] = {"estado": um["estado"], "aviso": um.get("aviso"), "alcance": um.get("alcance")}
+    insuf = (not st) or (not comp and not ventas_ok) or not pvp or not um_ok
     if insuf:
         riesgos.append("Fijar precio con esta evidencia sería adivinar.")
         base.update(tipo=5, justificacion=just + [C.afirmacion("HECHO", "Faltan: " + "; ".join(f["dato"] for f in faltan), [])], confianza=_min_conf(*conf_in), proxima_accion="Obtener los datos de «faltantes»; no modificar precio mientras tanto.",
@@ -110,6 +115,56 @@ def dictamen(ctx, cfg=None):
     if hip: riesgos.append("Margen calculado con datos no verificados (HIPÓTESIS/histórico).")
     base.update(tipo=t, justificacion=just, confianza=_min_conf(*conf_in), proxima_accion=acc, criterio_revision="Revisar tras %d días con ≥%d días de ventas observadas y costes validados" % (14, cfg["dias_ventas_min"]))
     return _fin(base)
+
+
+PLAN = [("precios vigentes", "Obtener ≥3 precios premium vigentes", "Refrescar Keepa SOLO tras tu autorización (ver propuesta de activación: ASIN, frecuencia, tokens) o cargar precios documentados con fecha", "Dirección comercial", "1–2 días", "Habilita posición de precio y rango de mercado"),
+        ("costes obligatorios", "Cerrar la ficha de costes", "Declarar qué incluye el 10,03 €/ud y aportar comisión/logística/almacenaje/devoluciones con fuente y fecha; validar cada partida", "Finanzas + operaciones", "3–5 días", "Habilita margen real y economía por unidad"),
+        ("ventas, sesiones", "Cargar ventas, sesiones y conversión reales", "Descargar el informe de negocio por ASIN (Seller Central) de los últimos 28+ días e importarlo; después activar SP-API tras autorización", "Operaciones Amazon", "1 día", "Permite separar problema de tráfico, conversión y precio"),
+        ("elasticidad", "Medir elasticidad con un experimento", "2 semanas a un precio y 2 semanas a otro (≥3 días por nivel), con Ads y stock constantes; medir unidades/día y conversión", "Dirección comercial (aprobación N3)", "4 semanas", "Permite proyectar unidades con elasticidad OBSERVADA"),
+        ("umbrales", "Aprobar umbrales comerciales", "Proponer valores por producto/categoría/país/etapa con su motivo y aprobarlos por una persona distinta", "Dirección comercial", "1 día", "Sin umbrales aprobados no se emiten recomendaciones numéricas")]
+
+
+def plan_investigacion(faltantes):
+    out = []
+    for f in faltantes:
+        txt = f["dato"].lower()
+        for key, obj, met, resp, plazo, desbloquea in PLAN:
+            if key.split(" ")[0] in txt or key in txt:
+                out.append({"objetivo": obj, "metodo": met, "datos_necesarios": f["dato"], "responsable": resp, "plazo": plazo, "coste_eur": 0, "desbloquea": desbloquea, "nota_coste": "0 € salvo refresco de Keepa de pago, que requiere autorización expresa y estimación previa de tokens" if key == "precios vigentes" else None}); break
+    return out
+
+
+def hipotesis_alt(d):
+    t = d["tipo"]; h = []
+    if t == 5:
+        h = ["El precio puede no ser el problema (tráfico, contenido, stock o publicidad)", "El precio propuesto puede estar bien posicionado pero no hay costes ni ventas para comprobarlo", "La equivalencia con premium es estimada y puede sobrevalorar la comparabilidad"]
+    elif t == 4:
+        h = ["Una subida o bajada de precio no corregiría la causa detectada", "La causa detectada puede ser temporal (campaña, ruptura de stock)"]
+    elif t == 1:
+        h = ["El precio actual puede ser bajo por posicionamiento deliberado de lanzamiento", "Una subida puede reducir conversión más de lo que gana en margen (elasticidad no observada)"]
+    elif t == 3:
+        h = ["La baja conversión puede deberse a contenido o reseñas, no a precio", "Una promoción temporal puede atraer compradores de baja retención"]
+    else:
+        h = ["Mantener puede dejar margen sin capturar", "El mercado vigente puede cambiar antes de los 14 días"]
+    return [C.afirmacion("HIPOTESIS", x) for x in h]
+
+
+
+def informe(d, ventajas=None):
+    """Formato ejecutivo de 8 secciones + diagnóstico comercial + plan de investigación. No inventa cifras: con datos insuficientes propone investigación."""
+    t = d["tipo"]; ins = t == 5; ev = [a["texto"] for a in d["justificacion"] if a["clase"] == "HECHO"]
+    iv = d.get("intervalo_recomendado"); esc = d.get("escenarios") or []
+    concl = {5: "No hay evidencia suficiente para decidir el PVP de forma fundamentada.", 4: "El precio no es la palanca principal: hay otra causa que corregir antes.", 1: "Hay margen para subir el precio dentro del rango de mercado.", 2: "El PVP es coherente con el mercado y el margen; mantener y medir.", 3: "El precio parece alto frente al mercado: conviene ensayar una promoción o bajarlo."}[t]
+    adec = "NO EVALUABLE: " + "; ".join(f["dato"] for f in d["faltantes"][:3]) if ins else ("Dentro de banda" if t == 2 else "Fuera de banda (ver dictamen)" if t in (1, 3) else "No es el problema principal")
+    ventas = next((tr for tr in d["trazabilidad"] if tr["input"] == "unidades observadas"), None)
+    causa = "NO EVALUABLE sin ventas/sesiones reales: no se puede separar tráfico, conversión y precio" if not ventas else ("Ver causa en la acción propuesta" if t == 4 else "Sin señal de que el precio sea la causa; confirmar con experimento de elasticidad")
+    reconsiderar = {5: ["Costes obligatorios validados", "Días de ventas suficientes según los umbrales aprobados", "≥3 precios premium vigentes", "Umbrales aprobados"], 4: ["La causa detectada desaparece durante la ventana de medición", "Cambia el coste, la comisión o el precio premium vigente"],
+                    1: ["Caída de unidades/día fuera del rango previsto", "Cambia el precio premium vigente"], 2: ["Cambia el precio premium, el coste o la conversión"], 3: ["La conversión no mejora tras la promoción", "Cambia el coste o el precio premium"]}[t]
+    d["informe"] = {"conclusion": concl, "evidencia": ev + ["%s: %s (%s)" % (x["input"], x["valor"], x["estado"]) for x in d["trazabilidad"]], "hipotesis_alternativas": [h["texto"] for h in hipotesis_alt(d)], "escenarios_economicos": esc if esc else "Sin escenarios: faltan " + ", ".join(f["dato"] for f in d["faltantes"][:2]),
+                    "riesgos": d["riesgos"], "recomendacion": d["proxima_accion"] if not ins else "No fijar ni cambiar el PVP. Ejecutar la investigación propuesta.", "accion_prioritaria": (plan_investigacion(d["faltantes"]) or [{"objetivo": d["proxima_accion"]}])[0]["objetivo"] if ins else d["proxima_accion"], "condiciones_para_reconsiderar": reconsiderar}
+    d["diagnostico"] = {"pvp_adecuado": adec, "subir_o_bajar": "NO DECIDIBLE con la evidencia actual" if ins else d["tipo_nombre"], "causa_falta_de_ventas": causa, "ventaja_competitiva": ventajas or ["SIN DATO: requiere ficha verificada y competidores con datos"],
+                        "prioridades": [x["objetivo"] for x in plan_investigacion(d["faltantes"])][:5]}
+    d["investigacion"] = plan_investigacion(d["faltantes"]); return d
 
 
 def _fin(d):

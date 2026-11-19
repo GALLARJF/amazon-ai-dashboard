@@ -19,7 +19,7 @@ class Data:
     def __init__(self, k4):
         self.k = k4
 
-    def import_csv(self, tipo, texto, entorno, origen, nombre, actor):
+    def import_csv(self, tipo, texto, entorno, origen, nombre, actor, reemplazar=False):
         if tipo not in TIPOS: raise ValueError("tipo de importación desconocido")
         if entorno not in C.ENTORNOS: raise ValueError("entorno inválido")
         if origen not in ORIGENES_IMPORT: raise ValueError("origen de importación no permitido")
@@ -48,14 +48,26 @@ class Data:
                 ok.append((r["producto"], r["pais"].upper(), r["fecha"][:10], v))
             except ValueError as e:
                 rech.append({"fila": i, "motivo": str(e)})
-        iid = "IMP-" + uuid.uuid4().hex[:8]
-        self.k.x("INSERT INTO k4_import VALUES(?,?,?,?,?,?,?,?,?,?,?)", (iid, tipo, entorno, origen, nombre, sha, len(ok), self.k.j(rech[:50]), "CSV documentado", actor, now()))
-        cols_t = spec["num"] + spec["txt"]
+        iid = "IMP-" + uuid.uuid4().hex[:8]; cols_t = spec["num"] + spec["txt"]; tabla = spec["tabla"]; claves = ["producto", "pais", "fecha"] + (["canal"] if tipo == "sales" else [])
+        nuevas, dup, conf, repl, vistas = [], 0, [], 0, set()
         for p, pais, f, v in ok:
+            kv = [p, pais, f] + ([v.get("canal")] if tipo == "sales" else [])
+            if tuple(kv) in vistas: conf.append({"clave": kv, "motivo": "clave repetida dentro del mismo archivo"}); continue
+            vistas.add(tuple(kv))
+            w = " AND ".join("COALESCE(%s,'')=COALESCE(?,'')" % c for c in claves) + " AND entorno=?"
+            ex = self.k.q("SELECT * FROM %s WHERE %s" % (tabla, w), kv + [entorno])
+            if not ex: nuevas.append((p, pais, f, v)); continue
+            same = all((ex[0][c] is None and v.get(c) is None) or (ex[0][c] is not None and v.get(c) is not None and (abs(float(ex[0][c]) - float(v[c])) < 1e-9 if isinstance(v[c], float) else ex[0][c] == v[c])) for c in cols_t)
+            if same: dup += 1
+            elif reemplazar:
+                self.k.x("UPDATE %s SET %s, import_id=?, origen=? WHERE id=?" % (tabla, ",".join(c + "=?" for c in cols_t)), [v.get(c) for c in cols_t] + [iid, origen, ex[0]["id"]]); repl += 1
+            else: conf.append({"clave": kv, "motivo": "ya existe con valores distintos (usa reemplazar=true con aprobación para sustituir)"})
+        self.k.x("INSERT INTO k4_import VALUES(?,?,?,?,?,?,?,?,?,?,?)", (iid, tipo, entorno, origen, nombre, sha, len(nuevas) + repl, self.k.j(rech[:50]), "CSV documentado", actor, now()))
+        for p, pais, f, v in nuevas:
             names = ["import_id", "producto", "pais", "fecha"] + cols_t + ["entorno", "origen"]
-            self.k.x("INSERT INTO %s(%s) VALUES(%s)" % (spec["tabla"], ",".join(names), ",".join("?" * len(names))), [iid, p, pais, f] + [v.get(c) for c in cols_t] + [entorno, origen])
-        self.k.audit(actor, "k4.import", {"id": iid, "tipo": tipo, "entorno": entorno, "filas": len(ok), "rechazadas": len(rech)})
-        return {"id": iid, "filas": len(ok), "rechazadas": rech[:20], "n_rechazadas": len(rech)}
+            self.k.x("INSERT INTO %s(%s) VALUES(%s)" % (tabla, ",".join(names), ",".join("?" * len(names))), [iid, p, pais, f] + [v.get(c) for c in cols_t] + [entorno, origen])
+        self.k.audit(actor, "k4.import", {"id": iid, "tipo": tipo, "entorno": entorno, "filas": len(nuevas), "duplicadas": dup, "conflictos": len(conf), "reemplazadas": repl, "rechazadas": len(rech)})
+        return {"id": iid, "filas": len(nuevas) + repl, "nuevas": len(nuevas), "duplicadas_omitidas": dup, "conflictos": conf[:20], "n_conflictos": len(conf), "reemplazadas": repl, "rechazadas": rech[:20], "n_rechazadas": len(rech)}
 
     @staticmethod
     def _where(f, tabla, entorno):
@@ -97,6 +109,27 @@ class Data:
         i = self.k.q("SELECT stock, fecha, origen FROM k4_inventory WHERE " + w + " ORDER BY fecha DESC LIMIT 1", a)
         out["stock"] = M(i[0]["stock"], "uds", i[0]["origen"], i[0]["fecha"], confianza="MEDIA") if i and i[0]["stock"] is not None else M(None, "uds", None, None)
         return out
+
+    def conciliar(self, f, entorno="PRODUCCION"):
+        """Conciliación de lo importado: huecos de fechas, coherencias internas y cruce ventas/Ads. Los avisos son INDICATIVOS (la base de IVA y atribución depende del informe de origen)."""
+        av = []; w, a = self._where(f, "k4_sales", entorno)
+        rows = self.k.q("SELECT fecha, unidades, ventas_netas, sesiones, pedidos, devoluciones_uds, precio_medio, producto, pais FROM k4_sales WHERE " + w + " ORDER BY fecha", a)
+        fechas = sorted({r["fecha"] for r in rows})
+        if fechas:
+            d0, d1 = C.iso_date(fechas[0]), C.iso_date(fechas[-1]); esp = (d1 - d0).days + 1
+            if esp > len(fechas): av.append({"nivel": "AVISO", "codigo": "HUECOS", "texto": "Faltan %d días entre %s y %s (hay %d de %d)" % (esp - len(fechas), fechas[0], fechas[-1], len(fechas), esp)})
+        for r in rows:
+            if r["devoluciones_uds"] is not None and r["unidades"] is not None and r["devoluciones_uds"] > r["unidades"]: av.append({"nivel": "ERROR", "codigo": "DEV>UDS", "texto": "%s %s: devoluciones superiores a unidades" % (r["producto"], r["fecha"])})
+            if r["pedidos"] is not None and r["sesiones"] is not None and r["pedidos"] > r["sesiones"]: av.append({"nivel": "ERROR", "codigo": "PED>SES", "texto": "%s %s: pedidos superiores a sesiones" % (r["producto"], r["fecha"])})
+            if r["unidades"] is not None and r["pedidos"] is not None and r["unidades"] < r["pedidos"]: av.append({"nivel": "ERROR", "codigo": "UDS<PED", "texto": "%s %s: unidades inferiores a pedidos" % (r["producto"], r["fecha"])})
+            if r["ventas_netas"] is not None and r["unidades"] and r["precio_medio"]:
+                esp_v = r["unidades"] * r["precio_medio"]
+                if not (0.5 * esp_v <= r["ventas_netas"] <= 1.05 * esp_v): av.append({"nivel": "AVISO", "codigo": "IMPORTE", "texto": "%s %s: ventas netas %.2f no cuadran con unidades×precio %.2f (¿IVA o promociones?)" % (r["producto"], r["fecha"], r["ventas_netas"], esp_v)})
+        w, a = self._where(f, "k4_ads", entorno)
+        ads = self.k.q("SELECT SUM(ventas_ads) v, SUM(gasto) g FROM k4_ads WHERE " + w, a)[0]; vt = self.k.q("SELECT SUM(ventas_netas) v FROM k4_sales WHERE " + self._where(f, "k4_sales", entorno)[0], self._where(f, "k4_sales", entorno)[1])[0]["v"]
+        if ads["v"] and vt and ads["v"] > vt * 1.2: av.append({"nivel": "AVISO", "codigo": "ADS>TOTAL", "texto": "Ventas atribuidas a Ads (%.2f) superan en >20 %% las ventas netas (%.2f): revisar base de IVA/ventana de atribución" % (ads["v"], vt)})
+        if ads["g"] and not rows: av.append({"nivel": "AVISO", "codigo": "ADS_SIN_VENTAS", "texto": "Hay gasto de Ads pero no hay ventas importadas para el mismo filtro"})
+        return {"dias_con_datos": len(fechas), "desde": fechas[0] if fechas else None, "hasta": fechas[-1] if fechas else None, "avisos": av[:100], "n_avisos": len(av), "estado": "SIN_DATO" if not rows else ("CON_ERRORES" if any(x["nivel"] == "ERROR" for x in av) else "CON_AVISOS" if av else "CONCILIADO_INDICATIVO")}
 
     def dias_observados(self, f, entorno="PRODUCCION"):
         w, a = self._where(f, "k4_sales", entorno)

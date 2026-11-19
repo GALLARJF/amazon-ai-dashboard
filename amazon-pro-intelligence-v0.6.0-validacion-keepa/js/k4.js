@@ -5,7 +5,7 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = (x, d) => (x == null || typeof x !== 'number' || !isFinite(x) ? null : x.toLocaleString('es-ES', { minimumFractionDigits: d == null ? 2 : d, maximumFractionDigits: d == null ? 2 : d }));
   const SEGC = { premium: 'k3-premium', funcional: 'k3-func', economica: 'k3-eco', pendiente: 'k3-pend', nocomparable: 'k3-nocomp' };
-  const S = { view: 'centro', f: { producto: 'PRD-ACTIVCORE-V2', pais: 'ES', periodo: 'todo', canal: 'TODOS' }, est: null, d: {}, seg: '', msg: '', busy: false, dos: null, sel: null };
+  const S = { view: 'centro', f: { producto: 'PRD-ACTIVCORE-V2', pais: 'ES', periodo: 'todo', canal: 'TODOS' }, est: null, d: {}, seg: '', msg: '', busy: false, dos: null, sel: null, bv: 'comp', par: null, x: { q: '', seg: '', pc: '', ord: 'equiv', sel: false } };
   const api = (m, p, b) => root.V03.api(m, p, b);
   const qs = () => { const f = S.f, o = { producto: f.producto, pais: f.pais, canal: f.canal }; if (f.periodo !== 'todo') { const d = new Date(); d.setDate(d.getDate() - Number(f.periodo)); o.desde = d.toISOString().slice(0, 10); } return Object.entries(o).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&'); };
   const roleOk = (r) => ({ analyst: 1, approver: 2, admin: 3 }[(root.V03 && root.V03.V && root.V03.V.role) || ''] || 0) >= { analyst: 1, approver: 2, admin: 3 }[r];
@@ -52,7 +52,7 @@
     if (!S.est) { const r = await api('GET', '/api/k4/estado'); S.est = r.ok ? r.j : null; }
     const q = qs();
     if (S.view === 'centro') { const r = await api('GET', '/api/k4/centro?' + q); S.d.centro = r.ok ? r.j : { error: (r.j && r.j.error) || 'No disponible' }; }
-    if (S.view === 'bench') { const r = await api('GET', '/api/k4/benchmark?' + q); S.d.bench = r.ok ? r.j : { error: (r.j && r.j.error) || 'No disponible' }; }
+    if (S.view === 'bench') { const [a, e] = await Promise.all([api('GET', '/api/k4/benchmark/ejecutivo?' + q), api('GET', '/api/k4/benchmark/explorador?' + q)]); S.d.ej = a.ok ? a.j : { error: (a.j && a.j.error) || 'No disponible' }; S.d.expl = e.ok ? e.j : { error: (e.j && e.j.error) || 'No disponible' }; }
     if (S.view === 'precio') { const [a, b] = await Promise.all([api('GET', '/api/k4/dictamen?' + q), api('GET', '/api/k4/costes?producto=' + encodeURIComponent(S.f.producto))]); S.d.precio = a.ok ? a.j : { error: (a.j && a.j.error) || 'No disponible' }; S.d.costes = b.ok ? b.j : null; }
     if (S.view === 'dir') { const [a, b, c] = await Promise.all([api('GET', '/api/k4/dossiers'), api('GET', '/api/k4/seguimientos'), api('GET', '/api/k4/medios')]); S.d.dos = a.ok ? a.j.dossiers : []; S.d.seg = b.ok ? b.j.seguimientos : []; S.d.med = c.ok ? c.j.registro : []; }
     S.busy = false; draw();
@@ -67,18 +67,68 @@
       <article class="card c-lime"><h3>Qué falta <small>${d.faltantes.length} datos · ${d.costes_pendientes} costes pendientes</small></h3><ul class="k4falt">${d.faltantes.map((f) => `<li><b>${esc(f.dato)}</b><br><small>${esc(f.como)}</small></li>`).join('') || '<li>Nada crítico.</li>'}</ul></article>
       <article class="card c-violet"><h3>Decisiones pendientes de una persona <small>${d.decisiones.length}</small></h3><ul>${d.decisiones.map((x) => `<li>${esc(x.title)} <small class="muted">${esc(x.level)}</small></li>`).join('') || '<li class="muted">Ninguna. Las acciones externas están bloqueadas.</li>'}</ul></article></div>${capsHtml(d.capacidades)}`;
   }
+  const ESTC = { OBSERVADO: 'OBSERVADO', HISTORICO: 'HISTÓRICO', MAQUETA: 'MAQUETA · no verificado', DECLARADO: 'DECLARADO', DERIVADO: 'DERIVADO', ESTIMADO: 'ESTIMADO', SIN_DATO: 'SIN DATO' };
+  const cell = (c) => c ? `<div class="k4cell k4cs-${esc(c.estado)}"><span>${esc(c.texto)}</span><em class="k4st k4st-${esc(c.estado)}">${esc(ESTC[c.estado] || c.estado)}</em>${c.nota ? `<small>${esc(c.nota)}</small>` : ''}</div>` : '';
+  const DCL = { 1: 'up', 2: 'keep', 3: 'down', 4: 'other', 5: 'insuf' };
+  const list = (a) => (Array.isArray(a) ? a : [a]).filter(Boolean).map((x) => `<li>${esc(typeof x === 'object' ? (x.texto || x.dato || x.nombre || JSON.stringify(x)) : x)}</li>`).join('');
+  function dictEjec(d) {
+    if (!d) return ''; const i = d.informe || {}, dg = d.diagnostico || {};
+    const sec = (n, t, body) => `<details class="k4sec" ${n === 1 || n === 7 ? 'open' : ''}><summary>${n}. ${t}</summary><div>${body}</div></details>`;
+    const par = (x) => (Array.isArray(x) ? `<ul>${list(x)}</ul>` : `<p>${esc(x == null ? 'SIN DATO' : typeof x === 'object' ? JSON.stringify(x) : x)}</p>`);
+    return `<article class="card k4dict k4d-${DCL[d.tipo]}" id="k4dictamen" aria-labelledby="k4dh"><h3 id="k4dh">Recomendación del Director IA <small>${esc(d.producto)} · ${esc(d.pais)}</small></h3>
+      <p class="k4verdict"><b>${d.tipo}. ${esc(d.tipo_nombre)}</b> <span class="k4conf">confianza ${esc(d.confianza)}</span></p><p class="k4acc"><b>Acción prioritaria:</b> ${esc(i.accion_prioritaria || d.proxima_accion)}</p>
+      <div class="k4diag">${Object.entries({ 'PVP adecuado': dg.pvp_adecuado, '¿Subir o bajar?': dg.subir_o_bajar, 'Causa de la falta de ventas': dg.causa_falta_de_ventas, 'Ventaja competitiva': dg.ventaja_competitiva }).map(([k, v]) => `<div><small>${esc(k)}</small><span>${Array.isArray(v) ? v.map((x) => `<span class="k4dl">${esc(x)}</span>`).join('') : esc(typeof v === 'object' && v ? JSON.stringify(v) : v == null ? 'SIN DATO' : v)}</span></div>`).join('')}</div>
+      ${sec(1, 'Conclusión', par(i.conclusion))}${sec(2, 'Evidencia', par(i.evidencia))}${sec(3, 'Hipótesis alternativas', par(i.hipotesis_alternativas))}${sec(4, 'Escenarios económicos', par(i.escenarios_economicos))}${sec(5, 'Riesgos', par(i.riesgos))}${sec(6, 'Recomendación', par(i.recomendacion))}${sec(7, 'Acción prioritaria', par(i.accion_prioritaria))}${sec(8, 'Condiciones para reconsiderar la decisión', par(i.condiciones_para_reconsiderar))}
+      ${(d.investigacion || []).length ? `<details class="k4sec"><summary>Investigación propuesta (datos que faltan y cómo obtenerlos)</summary><ol>${d.investigacion.map((x) => `<li>${esc(typeof x === 'object' ? (x.paso || x.dato || '') + (x.como ? ' — ' + x.como : '') : x)}</li>`).join('')}</ol></details>` : ''}</article>`;
+  }
+  function matriz(d) {
+    const cols = [d.propio].concat(d.competidores); const par = S.par != null && d.competidores[S.par] ? [d.propio, d.competidores[S.par]] : cols;
+    const head = (c, own) => `<th scope="col" class="${own ? 'k4own-col' : ''}">${imgBox(c.imagen)}<b>${esc(own ? c.nombre : (c.marca || 'marca n/d'))}</b>${own ? '<span class="tagst">PRODUCTO PROPIO</span>' : `<small class="k4t">${esc((c.titulo || '').slice(0, 70))}</small><span class="tagst k3chip ${SEGC[c.codigo] || ''}">${esc(c.segmento)}</span>${c.seleccion && c.seleccion.origen_seleccion ? `<small class="muted">${esc(c.seleccion.origen_seleccion)}</small>` : ''}<button class="chip" data-k4exp360="${esc(c.key)}">Expediente 360°</button>`}</th>`;
+    return `<div class="k4pair" role="group" aria-label="Comparación por pares (móvil)"><label>Comparar ACTIVCORE con <select id="k4par"><option value="">Los cinco a la vez</option>${d.competidores.map((c, i) => `<option value="${i}" ${S.par === i ? 'selected' : ''}>${esc(c.marca)}</option>`).join('')}</select></label></div>
+      <div class="k4scroll" tabindex="0" role="region" aria-label="Comparativa ejecutiva; desplaza horizontalmente en pantallas pequeñas"><table class="k4cmp"><caption>ACTIVCORE frente a ${d.competidores.length} competidores de referencia (selección K3 con ajustes auditados)</caption>
+      <thead><tr><th scope="col"><span class="sr">Concepto</span></th>${par.map((c, i) => head(c, c === d.propio)).join('')}</tr></thead>
+      <tbody>${d.filas.map((f) => `<tr class="k4r-${esc(f.id)}"><th scope="row">${esc(f.etiqueta)}</th>${par.map((c) => `<td class="${c === d.propio ? 'k4own-col' : ''}">${cell(c.celdas[f.id])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  }
+  function ajustes(d) {
+    const ap = roleOk('approver'); const ex = S.d.expl; const sel = d.competidores.map((c) => c.key);
+    return `<details class="k4adv"><summary>Cómo se eligieron los cinco y ajustes manuales (auditados)</summary><p class="muted">${esc(d.seleccion.regla)}</p><ul>${d.competidores.map((c) => `<li><b>${esc(c.marca)}</b> — ${esc((c.seleccion && c.seleccion.justificacion) || '')} ${ap ? `<button class="chip" data-k4quitar="${esc(c.key)}">Quitar</button>` : ''}</li>`).join('')}</ul>
+      ${d.seleccion.ajustes.length ? `<h4>Ajustes registrados</h4><ul>${d.seleccion.ajustes.map((a) => `<li>${esc(a.accion)} ${esc(a.key)} — ${esc(a.motivo)} <small class="muted">${esc(a.actor)} · ${esc(String(a.creado).slice(0, 10))}</small></li>`).join('')}</ul>` : ''}
+      <p class="muted">Para añadir otra referencia usa «Añadir a la comparativa» en el explorador (máximo cinco; hay que indicar un motivo).</p></details>`;
+  }
   function viewBench() {
-    const d = S.d.bench; if (!d) return '<p class="muted">Cargando…</p>'; if (d.error) return `<p class="k4err">${esc(d.error)}</p>`;
-    const segs = [['', 'Todos'], ['premium', 'Premium'], ['funcional', 'Funcional'], ['economica', 'Económico'], ['pendiente', 'Pendiente'], ['nocomparable', 'No comparable']];
-    const items = d.items.filter((i) => !S.seg || i.codigo === S.seg); const mx = Math.max(1, ...items.map((i) => i.precio_100ml || 0), (d.propio.pvp && d.propio.ml ? d.propio.pvp / d.propio.ml * 100 : 0));
-    const own = d.propio.pvp && d.propio.ml ? d.propio.pvp / d.propio.ml * 100 : null;
-    return `<article class="card c-amber k4own"><h3>${esc(d.propio.nombre)} <small>producto propio · centro de la comparativa</small></h3><div class="k4ownrow">${imgBox(d.propio.imagen)}<div><p>PVP propuesto <b>${fmt(d.propio.pvp) || 'SIN DATO'} €</b> <small class="muted">${esc(d.propio.pvp_estado)}</small></p><p>${own ? 'Precio/100 ml: <b>' + fmt(own) + ' €</b>' : 'Precio/100 ml: SIN DATO'}</p></div></div></article>
-      <div class="k3segs" role="group" aria-label="Segmento">${segs.map(([k, l]) => `<button class="euchip ${S.seg === k ? 'on' : ''}" data-k4seg="${k}">${l}</button>`).join('')}</div>
-      <div class="k4cards">${items.map((i) => `<article class="card k4comp"><div class="k4comphead"><span class="tagst k3chip ${SEGC[i.codigo] || ''}">${esc(i.segmento)}</span> <span class="tagst">${i.origen === 'keepa' ? 'ASIN Keepa' : 'Referencia sin ASIN'}</span></div>${imgBox(i.imagen)}<b>${esc(i.marca || 'marca n/d')}</b><small class="k4t">${esc((i.titulo || '').slice(0, 90))}</small>
-        <div class="k4bar"><i style="width:${Math.max(2, ((i.precio_100ml || 0) / mx) * 100)}%"></i></div><p>${i.precio_100ml == null ? 'SIN PRECIO VIGENTE' : fmt(i.precio_100ml) + ' €/100 ml'} <small class="muted">${i.precio_100ml == null && i.clase_precio === 'SIN PRECIO' ? '' : esc(i.clase_precio)}${i.fecha_precio ? ' · ' + esc(String(i.fecha_precio).slice(0, 10)) : ''}</small></p>
-        <p><small>Equivalencia ESTIMADA ${esc(i.equivalencia)}/100 · confianza ${esc(i.confianza)}</small></p>${i.asin ? `<small class="muted">ASIN ${esc(i.asin)} · ${esc(i.pais)}</small>` : ''}</article>`).join('') || '<p class="muted">Sin referencias para este filtro.</p>'}</div>
-      <p class="muted">${esc(d.nota)} La equivalencia es una estimación de K3 y no una validación comercial independiente.</p>
-      <div class="k4exp"><button class="btn" data-k4exp="pdf">Exportar PDF</button> <button class="btn" data-k4exp="svg">Exportar SVG</button> <button class="btn" data-k4exp="png">Exportar PNG</button> <small class="muted">Las imágenes solo salen con derecho de exportación verificado; cada exportación queda auditada.</small></div>`;
+    const bv = S.bv || 'comp';
+    const sub = `<div class="k4sub" role="tablist" aria-label="Niveles de benchmarking">${[['comp', '1 · Comparativa ejecutiva'], ['expl', '2 · Explorador (24)'], ['exp', '3 · Expediente 360°']].map(([k, l]) => `<button role="tab" data-k4bv="${k}" class="${bv === k ? 'on' : ''}" aria-selected="${bv === k}">${l}</button>`).join('')}</div>`;
+    if (bv === 'expl') return sub + viewExpl();
+    if (bv === 'exp') return sub + viewExp();
+    const d = S.d.ej; if (!d) return sub + '<p class="muted">Cargando…</p>'; if (d.error) return sub + `<p class="k4err">${esc(d.error)}</p>`;
+    if (d.disponible === false) return sub + `<p class="muted">${esc(d.motivo)}</p>`;
+    return sub + `<p class="k4q">¿Cómo estamos posicionados? ¿Quiénes son los competidores relevantes, qué precio tienen y qué recomienda el Director?</p>${matriz(d)}<p class="muted k4pn">${esc(d.pvp_nota)} Las cifras de maqueta (infografía) se muestran etiquetadas «MAQUETA · no verificado» y no entran en ningún estadístico.</p>${dictEjec(d.dictamen)}${ajustes(d)}
+      <details class="k4adv"><summary>Evidencia, exportación y procedencia de las imágenes</summary><p class="muted">Las imágenes solo se muestran si están VERIFICADAS con derecho de visualización; sin autorización aparece IMAGEN PENDIENTE DE VERIFICAR y qué permiso falta. La equivalencia K3 es una estimación, no una validación comercial.</p><div class="k4exp"><button class="btn" data-k4exp="pdf">Exportar PDF</button> <button class="btn" data-k4exp="svg">Exportar SVG</button> <button class="btn" data-k4exp="png">Exportar PNG</button></div></details>`;
+  }
+  function viewExpl() {
+    const d = S.d.expl; if (!d) return '<p class="muted">Cargando…</p>'; if (d.error || d.disponible === false) return `<p class="k4err">${esc(d.error || 'Sin perfil K3')}</p>`;
+    const X = S.x; const q = (X.q || '').toLowerCase(); const ap = roleOk('approver');
+    let it = d.items.filter((i) => (!X.seg || i.codigo === X.seg) && (!X.pc || (X.pc === 'vigente' ? ['ACTUAL', 'RECIENTE'].includes(i.clase_precio) : !['ACTUAL', 'RECIENTE'].includes(i.clase_precio))) && (!X.sel || i.en_comparativa) && (!q || ((i.marca || '') + ' ' + (i.titulo || '') + ' ' + (i.asin || '')).toLowerCase().includes(q)));
+    const key = { equiv: (i) => -(i.equivalencia || 0), precio: (i) => (i.precio_100ml == null ? 1e9 : i.precio_100ml), marca: (i) => (i.marca || 'zzz').toLowerCase() }[X.ord] || ((i) => -(i.equivalencia || 0));
+    it = it.slice().sort((a, b) => (key(a) > key(b) ? 1 : key(a) < key(b) ? -1 : 0));
+    return `<section aria-label="Explorador de competidores"><div class="k4xf"><label>Buscar <input id="k4xq" type="search" value="${esc(X.q || '')}" placeholder="marca, título o ASIN"></label>
+      <label>Segmento <select id="k4xs">${[['', 'Todos'], ['premium', 'Premium'], ['funcional', 'Funcional'], ['economica', 'Económico'], ['pendiente', 'Pendiente'], ['nocomparable', 'No comparable']].map(([v, l]) => `<option value="${v}" ${X.seg === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <label>Precio <select id="k4xp">${[['', 'Todos'], ['vigente', 'Con precio vigente'], ['sin', 'Sin precio vigente']].map(([v, l]) => `<option value="${v}" ${X.pc === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <label>Ordenar <select id="k4xo">${[['equiv', 'Equivalencia K3'], ['precio', '€/100 mL'], ['marca', 'Marca']].map(([v, l]) => `<option value="${v}" ${X.ord === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <label class="k4chk"><input type="checkbox" id="k4xe" ${X.sel ? 'checked' : ''}> Solo los de la comparativa</label></div>
+      <p class="muted" role="status" aria-live="polite">${it.length} de ${d.total} referencias · sin fotografías en esta vista · ${esc(d.nota)} ${esc(S.msg)}</p>
+      <div class="k4scroll" tabindex="0" role="region" aria-label="Tabla de competidores"><table class="k4tb k4expl"><caption class="sr">24 referencias con filtros</caption><thead><tr><th scope="col">Marca / producto</th><th scope="col">Segmento</th><th scope="col">€/100 mL</th><th scope="col">Estado precio</th><th scope="col">Equiv. K3</th><th scope="col">Confianza</th><th scope="col">En comparativa</th><th scope="col">Acciones</th></tr></thead><tbody>
+      ${it.map((i) => `<tr class="${i.en_comparativa ? 'k4insel' : ''}"><th scope="row"><b>${esc(i.marca || 'marca n/d')}</b><br><small class="muted">${esc((i.titulo || '').slice(0, 60))}${i.asin ? ' · ' + esc(i.asin) : ' · sin ASIN'}</small></th><td><span class="tagst k3chip ${SEGC[i.codigo] || ''}">${esc(i.segmento)}</span></td><td>${i.precio_100ml == null ? 'SIN DATO' : fmt(i.precio_100ml) + ' €'}</td><td>${esc(i.clase_precio)}</td><td>${esc(i.equivalencia)}</td><td>${esc(i.confianza)}</td><td>${i.en_comparativa ? '✔ ' + esc(i.motivo_seleccion || '') : '—'}</td>
+      <td><button class="chip" data-k4exp360="${esc(i.key)}">Expediente</button> ${ap ? (i.en_comparativa ? `<button class="chip" data-k4quitar="${esc(i.key)}">Quitar</button>` : `<button class="chip" data-k4anadir="${esc(i.key)}">Añadir a la comparativa</button>`) : ''}</td></tr>`).join('') || '<tr><td colspan="8" class="muted">Ninguna referencia cumple los filtros.</td></tr>'}</tbody></table></div></section>`;
+  }
+  function viewExp() {
+    const d = S.d.exp; if (!d) return '<p class="muted">Elige una referencia en la comparativa o en el explorador para abrir su expediente 360°.</p>'; if (d.error) return `<p class="k4err">${esc(d.error)}</p>`;
+    const rows = [['precio', 'Precio'], ['volumen', 'Volumen'], ['precio_100ml', '€/100 mL'], ['activos', 'Activos documentados'], ['dosis', 'Dosis'], ['duracion', 'Duración'], ['posicionamiento', 'Posicionamiento'], ['evidencia', 'Evidencia'], ['equivalencia', 'Equivalencia'], ['ventajas', 'Diferencias frente a ACTIVCORE']];
+    const p = d.propio || {};
+    return `<article class="card c-cyan k4exp360"><h3>${esc(d.marca || 'marca n/d')} <small>${esc(d.segmento)} · ${esc(d.pais)}</small></h3><div class="k4ownrow">${imgBox(d.imagen)}<div><p>${esc(d.titulo)}</p><p><small class="muted">Identificador ${esc(d.key)} · ASIN ${esc(d.asin || 'sin ASIN (referencia manual)')}</small></p>
+      <p>Precio vigente: <b>${d.precio.vigente == null ? 'SIN PRECIO VIGENTE' : fmt(d.precio.vigente) + ' €'}</b> <small class="muted">${esc(d.precio.clase)}${d.precio.fecha ? ' · ' + esc(String(d.precio.fecha).slice(0, 10)) : ''}${d.precio.ultimo_conocido != null && d.precio.vigente == null ? ' · último conocido ' + fmt(d.precio.ultimo_conocido) + ' € (histórico, fuera de estadísticos)' : ''}</small></p><p class="muted">${esc(d.precio.historico_nota)}</p></div></div>
+      <div class="k4scroll" tabindex="0" role="region" aria-label="Comparación detallada con ACTIVCORE"><table class="k4cmp k4cmp2"><caption>Comparación detallada con ACTIVCORE</caption><thead><tr><th scope="col"><span class="sr">Concepto</span></th><th scope="col" class="k4own-col">ACTIVCORE</th><th scope="col">${esc(d.marca)}</th></tr></thead><tbody>${rows.map(([k, l]) => `<tr><th scope="row">${l}</th><td class="k4own-col">${cell(p[k])}</td><td>${cell(d.celdas[k])}</td></tr>`).join('')}</tbody></table></div>
+      <h4>Fortalezas y debilidades</h4><ul>${(d.ventajas_propias || []).map((v) => `<li>${esc(v)}</li>`).join('') || '<li class="muted">SIN DATO suficiente.</li>'}</ul><p class="muted">${esc(d.equivalencia.nota)} · confianza ${esc((d.equivalencia.confianza || {}).nivel || 'n/d')}.</p><button class="btn" data-k4bv="comp">Volver a la comparativa</button></article>`;
   }
   function viewPrecio() {
     const d = S.d.precio; if (!d) return '<p class="muted">Cargando…</p>'; if (d.error) return `<p class="k4err">${esc(d.error)}</p>`;
@@ -115,6 +165,14 @@
     on('#k4fp', 'producto'); on('#k4fc', 'pais'); on('#k4fd', 'periodo'); on('#k4fk', 'canal');
     $$('[data-k4v]').forEach((b) => (b.onclick = () => { S.view = b.dataset.k4v; S.msg = ''; loadView(); }));
     $$('[data-k4go]').forEach((b) => (b.onclick = () => { S.view = b.dataset.k4go; loadView(); }));
+    $$('[data-k4bv]').forEach((b) => (b.onclick = () => { S.bv = b.dataset.k4bv; draw(); }));
+    $$('[data-k4exp360]').forEach((b) => (b.onclick = async () => { const r = await api('GET', '/api/k4/benchmark/expediente?' + qs() + '&key=' + encodeURIComponent(b.dataset.k4exp360)); S.d.exp = r.ok ? r.j : { error: (r.j && r.j.error) || 'No disponible' }; S.bv = 'exp'; draw(); const h = $('.k4exp360 h3'); if (h) { h.setAttribute('tabindex', '-1'); h.focus(); } }));
+    const par = $('#k4par'); if (par) par.onchange = () => { S.par = par.value === '' ? null : Number(par.value); draw(); };
+    const xs = { '#k4xq': ['q', 'input'], '#k4xs': ['seg', 'change'], '#k4xp': ['pc', 'change'], '#k4xo': ['ord', 'change'] };
+    Object.entries(xs).forEach(([id, [k, ev]]) => { const e = $(id); if (e) e['on' + ev] = () => { S.x[k] = e.value; const pos = e.selectionStart; draw(); const n = $(id); if (n && k === 'q') { n.focus(); try { n.setSelectionRange(pos, pos); } catch (_) {} } }; });
+    const xe = $('#k4xe'); if (xe) xe.onchange = () => { S.x.sel = xe.checked; draw(); };
+    const ajusta = async (key, accion) => { const motivo = root.prompt ? root.prompt((accion === 'ANADIR' ? 'Motivo para añadir' : 'Motivo para quitar') + ' (mín. 8 caracteres, queda auditado):') : ''; if (!motivo) return; const r = await api('POST', '/api/k4/seleccion/ajustar', { producto: S.f.producto, pais: S.f.pais === 'TODOS' ? 'ES' : S.f.pais, key, accion, motivo }); S.msg = r.ok ? 'Selección actualizada (auditada)' : (r.j.error || 'Error'); loadView(); };
+    $$('[data-k4anadir]').forEach((b) => (b.onclick = () => ajusta(b.dataset.k4anadir, 'ANADIR'))); $$('[data-k4quitar]').forEach((b) => (b.onclick = () => ajusta(b.dataset.k4quitar, 'QUITAR')));
     $$('[data-k4seg]').forEach((b) => (b.onclick = () => { S.seg = b.dataset.k4seg; draw(); }));
     $$('[data-k4exp]').forEach((b) => (b.onclick = () => exportar(b.dataset.k4exp)));
     $$('[data-k4val]').forEach((b) => (b.onclick = async () => { const r = await api('POST', '/api/k4/costes/validar', { id: Number(b.dataset.k4val), estado: 'VALIDADO' }); S.msg = r.ok ? 'Coste validado' : (r.j.error || 'Error'); loadView(); }));

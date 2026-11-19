@@ -19,6 +19,14 @@ CREATE TABLE IF NOT EXISTS k4_costs(id INTEGER PRIMARY KEY AUTOINCREMENT, produc
 CREATE TABLE IF NOT EXISTS k4_dossier(id TEXT PRIMARY KEY, tipo TEXT NOT NULL, producto TEXT, titulo TEXT NOT NULL, datos TEXT NOT NULL, estado TEXT NOT NULL, creado_por TEXT, creado TEXT, actualizado TEXT);
 CREATE TABLE IF NOT EXISTS k4_followup(id INTEGER PRIMARY KEY AUTOINCREMENT, decision_id INTEGER, ledger_id INTEGER, producto TEXT, pais TEXT, accion TEXT NOT NULL, ejecutor TEXT, ejecutada_en TEXT,
   ventana_dias INTEGER, metrica TEXT, base TEXT, post TEXT, resultado TEXT, estado TEXT NOT NULL, creado TEXT NOT NULL, entorno TEXT NOT NULL DEFAULT 'PRODUCCION');
+CREATE TABLE IF NOT EXISTS k4_selection(id INTEGER PRIMARY KEY AUTOINCREMENT, producto TEXT NOT NULL, pais TEXT NOT NULL, key TEXT NOT NULL, accion TEXT NOT NULL, motivo TEXT NOT NULL, actor TEXT NOT NULL, creado TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS k4_umbral(id INTEGER PRIMARY KEY AUTOINCREMENT, producto TEXT NOT NULL DEFAULT '*', categoria TEXT NOT NULL DEFAULT '*', pais TEXT NOT NULL DEFAULT '*', etapa TEXT NOT NULL DEFAULT '*',
+  valores TEXT NOT NULL, estado TEXT NOT NULL, motivo TEXT, propuesto_por TEXT, creado TEXT, aprobado_por TEXT, aprobado_en TEXT, vigente INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS k4_job(id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, producto TEXT, pais TEXT, params TEXT NOT NULL DEFAULT '{}', estado TEXT NOT NULL, intentos INTEGER NOT NULL DEFAULT 0, max_intentos INTEGER NOT NULL DEFAULT 3,
+  next_at REAL NOT NULL, lease_owner TEXT, lease_until REAL, dedupe TEXT, coste_eur REAL NOT NULL DEFAULT 0, creado TEXT, empezado TEXT, terminado TEXT, error TEXT, resultado TEXT);
+CREATE INDEX IF NOT EXISTS ix_k4job ON k4_job(estado, next_at);
+CREATE TABLE IF NOT EXISTS k4_joblog(id INTEGER PRIMARY KEY AUTOINCREMENT, job_id INTEGER, ts TEXT, nivel TEXT, mensaje TEXT);
+CREATE TABLE IF NOT EXISTS k4_planner(k TEXT PRIMARY KEY, v TEXT);
 """
 
 
