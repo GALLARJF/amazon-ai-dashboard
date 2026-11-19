@@ -1,6 +1,6 @@
 # INFORME DE ENTREGA — Amazon Pro Intelligence (coordinador autónomo)
 
-Generado: 2026-11-19T00:41:35Z · Registro íntegro: **SÍ** (157 líneas)
+Generado: 2026-11-19T01:44:13Z · Registro íntegro: **SÍ** (164 líneas)
 
 ## 1. Pruebas
 
@@ -44,7 +44,7 @@ Generado: 2026-11-19T00:41:35Z · Registro íntegro: **SÍ** (157 líneas)
 | UI-k3 | MOCK+NAVEGADOR | PASA | 1 | 37/37 OK |
 | k4-unidad | MOCK | PASA | 1 | 46/46 OK |
 | k4-planificador | MOCK | PASA | 1 | 14/14 |
-| k4-consejero | MOCK | PASA | 1 | 53/53 |
+| k4-consejero | MOCK | PASA | 1 | 102/102 |
 | k4-iter2 | MOCK | PASA | 1 | 27/27 |
 | k4-api | MOCK | PASA | 1 | 43/43 OK |
 | UI-k4 | MOCK+NAVEGADOR | PASA | 1 | 52/52 OK |

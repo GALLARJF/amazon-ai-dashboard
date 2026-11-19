@@ -3,9 +3,9 @@ Superar pruebas con estos proveedores valida el MOTOR (trazabilidad, verificador
 import re, unicodedata
 from .k4c_providers import ProveedorBusqueda, ProveedorLectura, ProveedorLLM, Herramienta
 
-ESCENARIOS = ("BASE", "NUEVA_EVIDENCIA_COMPARABLES", "REVISION_DEGRADADA", "SIN_DATOS")
-def _d(url, titulo, texto, tf, cal, td, fecha, org, obj, tags, temas):
-    return {"url": "sintetico://" + url, "titulo": "[SINTÉTICO] " + titulo, "texto": "[SINTÉTICO] " + texto, "tipo_fuente": tf, "calidad": cal, "tipo_dato": td, "fecha_publicacion": fecha, "organismo": org, "objeto": obj, "tags": tags, "temas": temas}
+ESCENARIOS = ("BASE", "NUEVA_EVIDENCIA_COMPARABLES", "REVISION_DEGRADADA", "SIN_DATOS", "COMPARABLES_NO_EQUIVALENTES")
+def _d(url, titulo, texto, tf, cal, td, fecha, org, obj, tags, temas, categoria=None):
+    return {"categoria": categoria, "url": "sintetico://" + url, "titulo": "[SINTÉTICO] " + titulo, "texto": "[SINTÉTICO] " + texto, "tipo_fuente": tf, "calidad": cal, "tipo_dato": td, "fecha_publicacion": fecha, "organismo": org, "objeto": obj, "tags": tags, "temas": temas}
 
 def corpus(escenario="BASE"):
     if escenario not in ESCENARIOS: raise ValueError("escenario desconocido")
@@ -18,16 +18,19 @@ def corpus(escenario="BASE"):
     docs = [
         _d("cafeina-revision", "Revisión sistemática de cafeína tópica", cafe_txt, "PRIMARIA", "ALTA" if escenario != "REVISION_DEGRADADA" else "ALTA", "ATEMPORAL", "2024-05-01", "Revista ficticia", "INGREDIENTE", [cafe_tag], "cafeina topica alopecia ensayo revision evidencia ingrediente"),
         _d("luteolina-raton", "Luteolina tópica en modelo murino", "Estudio ficticio en ratones: la luteolina tópica aumentó el crecimiento del pelo; no existen datos en humanos.", "PRIMARIA", "MEDIA", "ATEMPORAL", "2023-02-10", "Revista ficticia", "INGREDIENTE", [("H0", 0, "la luteolina tópica aumentó el crecimiento del pelo; no existen datos en humanos")], "luteolina topica raton murino evidencia ingrediente"),
-        _d("comp-alfa", "Ficha Alfa serum capilar", "Competidor Alfa, serum capilar premium de 90 ml, precio observado 39,94 EUR el 2026-11-16.", "PRIMARIA", "ALTA", "ACTUAL", "2026-11-16", "Marketplace sintético", "PRODUCTO", [("H2", 1, "serum capilar premium de 90 ml, precio observado 39,94 EUR")], "competidor precio serum capilar premium alfa mercado"),
-        _d("comp-beta", "Ficha Beta tratamiento capilar", "Competidor Beta, tratamiento capilar de 100 ml, precio 55,00 EUR en marzo de 2025.", "PRIMARIA", "ALTA", "HISTORICO", "2025-03-02", "Marketplace sintético", "PRODUCTO", [("H2", 0, "tratamiento capilar de 100 ml, precio 55,00 EUR en marzo de 2025")], "competidor precio tratamiento capilar beta mercado"),
-        _d("minoxidil", "Precio máximo minoxidil", "Minoxidil 5 % solución de 60 ml, precio máximo oficial 12,49 EUR, medicamento de uso tópico para alopecia.", "PRIMARIA", "ALTA", "ACTUAL", "2026-10-20", "Organismo sintético", "MEDICAMENTO", [("H3", 1, "Minoxidil 5 % solución de 60 ml, precio máximo oficial 12,49 EUR")], "minoxidil precio medicamento alopecia sustituto"),
+        _d("comp-alfa", "Ficha Alfa serum capilar", "Competidor Alfa, serum capilar premium de 90 ml, precio observado 39,94 EUR el 2026-11-16.", "PRIMARIA", "ALTA", "ACTUAL", "2026-11-16", "Marketplace sintético", "PRODUCTO", [("H2", 1, "serum capilar premium de 90 ml, precio observado 39,94 EUR")], "competidor precio serum capilar premium alfa mercado", "COSMETICO_CAPILAR_PREMIUM"),
+        _d("comp-beta", "Ficha Beta tratamiento capilar", "Competidor Beta, tratamiento capilar de 100 ml, precio 55,00 EUR en marzo de 2025.", "PRIMARIA", "ALTA", "HISTORICO", "2025-03-02", "Marketplace sintético", "PRODUCTO", [("H2", 0, "tratamiento capilar de 100 ml, precio 55,00 EUR en marzo de 2025")], "competidor precio tratamiento capilar beta mercado", "COSMETICO_CAPILAR_PREMIUM"),
+        _d("minoxidil", "Precio máximo minoxidil", "Minoxidil 5 % solución de 60 ml, precio máximo oficial 12,49 EUR, medicamento de uso tópico para alopecia.", "PRIMARIA", "ALTA", "ACTUAL", "2026-10-20", "Organismo sintético", "MEDICAMENTO", [("H3", 1, "Minoxidil 5 % solución de 60 ml, precio máximo oficial 12,49 EUR")], "minoxidil precio medicamento alopecia sustituto", "MEDICAMENTO"),
         _d("norma-oficial", "Criterio oficial de clasificación", "La clasificación como cosmético o medicamento se decide caso por caso valorando la presentación completa, la composición y las alegaciones del producto.", "PRIMARIA", "ALTA", "ATEMPORAL", "2023-06-01", "Autoridad sintética", "NORMA", [("H4", 1, "se decide caso por caso valorando la presentación completa, la composición y las alegaciones")], "clasificacion cosmetico medicamento alegaciones regulatoria normativa"),
         _d("blog-norma", "Blog: alegaciones capilares", "Un blog sintético afirma que las alegaciones de crecimiento capilar suelen considerarse medicinales.", "SECUNDARIA", "BAJA", "ATEMPORAL", "2024-09-01", "Blog sintético", "NORMA", [("H4", 0, "alegaciones de crecimiento capilar suelen considerarse medicinales")], "alegaciones crecimiento capilar medicinales normativa blog"),
         _d("bsr-nota", "Nota sobre el BSR", "El BSR refleja una posición relativa en la categoría y no equivale a unidades vendidas.", "SECUNDARIA", "MEDIA", "ATEMPORAL", "2024-01-15", "Consultora sintética", "METODO", [("H5", 0, "no equivale a unidades vendidas")], "bsr ranking ventas demanda unidades metodo"),
     ]
     if escenario == "NUEVA_EVIDENCIA_COMPARABLES":
-        docs += [_d("comp-gamma", "Ficha Gamma serum", "Competidor Gamma, serum capilar premium de 30 ml, precio observado 35,00 EUR el 2026-11-12.", "PRIMARIA", "ALTA", "ACTUAL", "2026-11-12", "Marketplace sintético", "PRODUCTO", [("H2", 1, "serum capilar premium de 30 ml, precio observado 35,00 EUR")], "competidor precio serum capilar premium gamma mercado"),
-                 _d("comp-delta", "Ficha Delta ampolla", "Competidor Delta, ampollas capilares premium de 50 ml, precio observado 52,00 EUR el 2026-11-12.", "PRIMARIA", "ALTA", "ACTUAL", "2026-11-12", "Marketplace sintético", "PRODUCTO", [("H2", 1, "ampollas capilares premium de 50 ml, precio observado 52,00 EUR")], "competidor precio ampollas capilar premium delta mercado")]
+        docs += [_d("comp-gamma", "Ficha Gamma serum", "Competidor Gamma, serum capilar premium de 30 ml, precio observado 35,00 EUR el 2026-11-12.", "PRIMARIA", "ALTA", "ACTUAL", "2026-11-12", "Marketplace sintético", "PRODUCTO", [("H2", 1, "serum capilar premium de 30 ml, precio observado 35,00 EUR")], "competidor precio serum capilar premium gamma mercado", "COSMETICO_CAPILAR_PREMIUM"),
+                 _d("comp-delta", "Ficha Delta ampolla", "Competidor Delta, ampollas capilares premium de 50 ml, precio observado 52,00 EUR el 2026-11-12.", "PRIMARIA", "ALTA", "ACTUAL", "2026-11-12", "Marketplace sintético", "PRODUCTO", [("H2", 1, "ampollas capilares premium de 50 ml, precio observado 52,00 EUR")], "competidor precio ampollas capilar premium delta mercado", "COSMETICO_CAPILAR_PREMIUM")]
+    if escenario == "COMPARABLES_NO_EQUIVALENTES":
+        docs += [_d("comp-epsilon", "Ficha Epsilon champú", "Competidor Epsilon, champú anticaída masivo de 400 ml, precio observado 5,99 EUR el 2026-11-12.", "PRIMARIA", "ALTA", "ACTUAL", "2026-11-12", "Marketplace sintético", "PRODUCTO", [("H2", 1, "champú anticaída masivo de 400 ml, precio observado 5,99 EUR")], "competidor precio tratamiento champu capilar masivo mercado", "COSMETICO_CAPILAR_MASIVO"),
+                 _d("comp-zeta", "Ficha Zeta spray", "Competidor Zeta, spray capilar masivo de 250 ml, precio observado 7,50 EUR el 2026-11-12.", "PRIMARIA", "ALTA", "ACTUAL", "2026-11-12", "Marketplace sintético", "PRODUCTO", [("H2", 1, "spray capilar masivo de 250 ml, precio observado 7,50 EUR")], "competidor precio tratamiento spray capilar masivo mercado", "COSMETICO_CAPILAR_MASIVO")]
     return docs
 
 
@@ -74,7 +77,7 @@ class CalculadoraExperimento(Herramienta):
 class LLMSimulado(ProveedorLLM):
     """Redactor SIMULADO: aplica una mutación determinista controlada por `trampa` para probar el verificador. NO razona; no sustituye a un modelo real."""
     nombre = "llm_simulado"; modo = "SIMULADO"
-    TRAMPAS = (None, "CITA_INEXISTENTE", "CITA_NO_RESPALDA", "HISTORICO_COMO_ACTUAL", "ERROR_DE_CALCULO", "SECUNDARIA_COMO_PRIMARIA", "COMPARACION_NO_EQUIVALENTE", "CONCLUSION_EXCEDE_EVIDENCIA", "AUSENCIA_COMO_AUSENCIA", "BSR_COMO_VENTAS", "CORRELACION_COMO_CAUSA", "INGREDIENTE_COMO_FORMULA")
+    TRAMPAS = (None, "CITA_INEXISTENTE", "CITA_NO_RESPALDA", "HISTORICO_COMO_ACTUAL", "ERROR_DE_CALCULO", "SECUNDARIA_COMO_PRIMARIA", "COMPARACION_NO_EQUIVALENTE", "CONCLUSION_EXCEDE_EVIDENCIA", "AUSENCIA_COMO_AUSENCIA", "BSR_COMO_VENTAS", "CORRELACION_COMO_CAUSA", "INGREDIENTE_COMO_FORMULA", "PRECIO_SOLO_POR_RANGO", "COMPARABLE_NO_EQUIVALENTE_EN_BASE", "VOLUMEN_ERRONEO")
     def __init__(self, trampa=None):
         if trampa not in self.TRAMPAS: raise ValueError("trampa desconocida")
         self.trampa = trampa
@@ -100,4 +103,9 @@ class LLMSimulado(ProveedorLLM):
         elif t == "BSR_COMO_VENTAS": nuevo("INFERENCIA", "El BSR de la competencia implica ventas mensuales de unidades elevadas.")
         elif t == "CORRELACION_COMO_CAUSA": nuevo("INFERENCIA", "La subida del BSR se debe a la bajada de precio, causa del aumento de ventas.").update(relacion="CORRELACION")
         elif t == "INGREDIENTE_COMO_FORMULA": nuevo("HECHO", "La fórmula final de ACTIVCORE es eficaz y segura.", sujeto="FORMULA_FINAL").update(citas=[next(a["citas"][0] for a in hechos if a["citas"] and a.get("categoria_dato") == "INGREDIENTE")])
+        elif t == "PRECIO_SOLO_POR_RANGO": inf["conclusion"] = dict(inf["conclusion"], decision="BAJAR", confianza="MEDIA", motivo="El precio está por encima del rango de competidores.", base=[a["id"] for a in afs if (a.get("dato_interno") and not a.get("respuesta_precio")) or (a.get("calculo") and a.get("vigencia_afirmada") == "ACTUAL" and a.get("categoria_comparable") == "COSMETICO_CAPILAR_PREMIUM")])
+        elif t == "COMPARABLE_NO_EQUIVALENTE_EN_BASE":
+            c0 = next(a for a in afs if a.get("calculo") and a.get("categoria_comparable")); c0["categoria_comparable"] = "COSMETICO_CAPILAR_MASIVO"; inf["conclusion"]["base"] = list(inf["conclusion"]["base"]) + [c0["id"]]
+        elif t == "VOLUMEN_ERRONEO":
+            p0 = next(a for a in afs if a.get("dato_interno") and a.get("calculo")); p0["calculo"]["inputs"]["volumen"]["valor"] = 50.0; p0["calculo"]["resultado"] = round(p0["calculo"]["inputs"]["precio"]["valor"] / 50.0 * 100, 2)
         return {"json": inf, "texto": "informe mutado (trampa=%s)" % t, "tokens_in": 0, "tokens_out": 0, "coste_eur": 0.0, "modo": "SIMULADO"}

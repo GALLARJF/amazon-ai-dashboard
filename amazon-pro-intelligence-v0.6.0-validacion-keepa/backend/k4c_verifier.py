@@ -56,7 +56,7 @@ class Verificador:
     def __init__(self, libro): self.L = libro
 
     def verificar(self, informe, inv_id, hoy=None):
-        hoy = datetime.date.fromisoformat(hoy) if hoy else datetime.date.today(); iss = []
+        hoy = datetime.date.fromisoformat(hoy) if hoy else datetime.date.today(); iss = []; self._inf = informe
         def add(sev, cod, af, msg): iss.append({"severidad": sev, "codigo": cod, "afirmacion": af, "detalle": msg})
         afs = {a["id"]: a for a in informe["afirmaciones"]}
         for a in afs.values():
@@ -104,6 +104,9 @@ class Verificador:
                 x = self.L.extracto(o["extracto"])
                 if not x: add(BLOQ, "CITA_INEXISTENTE", a["id"], "input %s cita un extracto inexistente" % k)
                 elif not _en(v["valor"], numeros(x["texto"])): add(BLOQ, "CALCULO_INPUT_NO_RESPALDADO", a["id"], "el valor %s de «%s» no figura en el extracto %s" % (v["valor"], k, o["extracto"]))
+            elif o.get("maestro"):
+                m = (self._inf.get("maestro") or {}); ref = {"precio": m.get("pvp"), "volumen": m.get("volumen_ml")}.get(k)
+                if ref is None or abs(float(ref) - float(v["valor"])) > 0.005: add(BLOQ, "DATO_MAESTRO_INCOHERENTE", a["id"], "el valor %s de «%s» no coincide con la ficha maestra (%s)" % (v["valor"], k, ref))
             elif "interno" not in o and "supuesto" not in o: add(AVISO, "INPUT_SIN_ORIGEN", a["id"], "input %s sin origen declarado" % k)
         try: r = _calc(c["expr"], vals)
         except Exception as e: add(BLOQ, "CALCULO_INVALIDO", a["id"], "no se pudo recalcular: %s" % e); return
@@ -140,14 +143,19 @@ class Verificador:
             if i not in afs: add(BLOQ, "CONCLUSION_BASE_INEXISTENTE", i, "la conclusión se apoya en una afirmación que no existe")
         cal = []
         for a in base:
-            if a["tipo"] in ("HIPOTESIS", "INFERENCIA", "FALTANTE"): cal.append(0 if a["tipo"] != "INFERENCIA" else 1); continue
+            if a["tipo"] == "FALTANTE": continue   # ignorancia declarada: no es una base que sostenga la conclusión
+            if a["tipo"] in ("HIPOTESIS", "INFERENCIA"): cal.append(0 if a["tipo"] != "INFERENCIA" else 1); continue
             q = [RANGO_CAL.get((self.L.fuente(self.L.extracto(cc)["fuente_id"]) or {}).get("calidad"), 0) for cc in a.get("citas") or [] if self.L.extracto(cc)]
             cal.append(max(q) if q else (3 if a.get("dato_interno") else 0))
         conf = CONF_RANGO.get(c.get("confianza"), 0)
-        if c.get("decision") == "NO_CONCLUIBLE":
+        if c.get("decision") in ("NO_CONCLUIBLE", "BLOQUEADO"):
             if conf > 1: add(BLOQ, "CONCLUSION_EXCEDE_EVIDENCIA", "conclusion", "una conclusión NO_CONCLUIBLE no puede declarar confianza superior a BAJA")
             return
         if cal and conf > min(cal): add(BLOQ, "CONCLUSION_EXCEDE_EVIDENCIA", "conclusion", "confianza %s pero el eslabón más débil de la base es de calidad %d/3" % (c.get("confianza"), min(cal)))
-        if c.get("decision") in ("SUBIR", "BAJAR", "MANTENER") and not any(a.get("dato_interno") for a in base): add(BLOQ, "CONCLUSION_EXCEDE_EVIDENCIA", "conclusion", "una decisión de precio exige datos internos observados (ventas/margen) entre sus bases")
+        if c.get("decision") in ("SUBIR", "BAJAR", "MANTENER", "DISENAR_EXPERIMENTO") and not any(a.get("dato_interno") for a in base): add(BLOQ, "CONCLUSION_EXCEDE_EVIDENCIA", "conclusion", "una decisión de precio exige datos internos observados (ventas/margen) entre sus bases")
+        if c.get("decision") in ("SUBIR", "BAJAR", "MANTENER") and not any(a.get("respuesta_precio") for a in base): add(BLOQ, "RECOMENDACION_SOLO_POR_RANGO", "conclusion", "SUBIR/BAJAR/MANTENER exige evidencia de la respuesta de la demanda al precio; la posición frente al rango de competidores no basta")
+        cats = set((informe.get("ficha") or {}).get("categorias_comparables") or [])
+        for a in base:
+            if a.get("categoria_comparable") and cats and a["categoria_comparable"] not in cats: add(BLOQ, "COMPARACION_NO_EQUIVALENTE", a["id"], "la conclusión se apoya en un comparable de categoría no equivalente (%s)" % a["categoria_comparable"])
         if base and all(a["tipo"] in ("HIPOTESIS", "INFERENCIA") for a in base) and conf > 1: add(BLOQ, "CONCLUSION_EXCEDE_EVIDENCIA", "conclusion", "conclusión basada solo en hipótesis/inferencias con confianza superior a BAJA")
         if not base and c.get("decision") not in (None, "NO_CONCLUIBLE"): add(BLOQ, "CONCLUSION_SIN_BASE", "conclusion", "decisión sin afirmaciones de base")

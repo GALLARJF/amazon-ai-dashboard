@@ -12,7 +12,7 @@
 | Captura/scraping de Amazon.es | — | Prohibido | No | — | **Descartado** |
 
 ## Ruta concreta recomendada
-1. **Esta semana (0 €):** fotografiar ACTIVCORE (frontal, 50 mL, ficha) y registrarla (`Medios → FOTO_PROPIA_AHT`, ASIN propio, derechos visualizar/almacenar/exportar).
+1. **Esta semana (0 €):** fotografiar ACTIVCORE (frontal, 100 mL, ficha) y registrarla (`Medios → FOTO_PROPIA_AHT`, ASIN propio, derechos visualizar/almacenar/exportar).
 2. **Identificar el ASIN** de las 4 referencias que hoy no lo tienen (solo Kérastase lo tiene). Sin ASIN la vinculación exacta producto+variante+ASIN no es posible.
 3. **Enviar solicitud de permiso** a cada marca (plantilla abajo). Al recibir respuesta: subir la imagen, registrar permiso y caducidad, verificar → pasa de PENDIENTE a VERIFICADA.
 4. **Opcional (decisión tuya):** valorar SP-API Catalog para miniaturas MAIN si la AUP lo permite; pedir a Keepa por escrito sus términos de imagen.

@@ -1,7 +1,7 @@
 """K4 · rutas /api/k4/*. El servidor ya aplicó sesión y CSRF. Roles: lectura = cualquier sesión con acceso al catálogo; escribir datos/medios/costes/propuestas = approver+; verificar derechos, validar costes y decidir = approver+; importar = approver+.
 Solo lectura y cálculo; ninguna acción comercial externa."""
 import base64, json, os
-from . import k4c_providers as KCP, k4c_mock as KCM, k4c_engine as KCE, k4_planner as KPL, k4_selection as KSEL, k4_umbrales as KUM, k4_bench as KB, k4_store as KS, k4_contracts as C, k4_costs as KC, k4_data as KD, k4_media as KM, k4_pricing as KP, k4_director as KDIR, k3_service as K3S, eu
+from . import k4c_providers as KCP, k4c_mock as KCM, k4c_engine as KCE, k4c_fases as KCF, k4_planner as KPL, k4_selection as KSEL, k4_umbrales as KUM, k4_bench as KB, k4_store as KS, k4_contracts as C, k4_costs as KC, k4_data as KD, k4_media as KM, k4_pricing as KP, k4_director as KDIR, k3_service as K3S, eu
 from .catalog import ACCOUNT_ID
 from .store import ROLES
 
@@ -141,7 +141,7 @@ def handle(APP, s, method, path, q, b):
         if p == "planificador":
             return K.plan.estado()
         if p == "consejero/estado":
-            m = K.consejero(); return dict(m.R.estado(), calibracion=m.calibracion(), escenarios=list(KCM.ESCENARIOS), trampas=[t for t in KCM.LLMSimulado.TRAMPAS if t], aviso="Fase F1–F2: solo proveedores SIMULADOS y datos SINTÉTICOS. Sin IA externa, sin búsqueda de pago, sin gasto.")
+            m = K.consejero(); return dict(m.R.estado(), calibracion=m.calibracion("REAL"), calibracion_sintetica=m.calibracion("SINTETICO"), fichas=["ACTIVCORE", "PHIVITAL_MG"], escenarios=list(KCM.ESCENARIOS), trampas=[t for t in KCM.LLMSimulado.TRAMPAS if t], aviso="Fase F1–F2: solo proveedores SIMULADOS y datos SINTÉTICOS. Sin IA externa, sin búsqueda de pago, sin gasto.")
         if p == "consejero/investigaciones":
             return {"investigaciones": K.k.q("SELECT id,pregunta,producto,estado,entorno,modo,creado,actor FROM k4c_inv ORDER BY creado DESC LIMIT 50")}
         if p.startswith("consejero/investigacion/"):
@@ -180,14 +180,29 @@ def handle(APP, s, method, path, q, b):
         rows, _ = K3S.K3Service(APP["store"], svc).rows(); K.sel.ajustar(f["producto"], f["pais"] or "ES", str(b.get("key") or ""), str(b.get("accion") or ""), b.get("motivo"), actor, rows); return {"ok": True}
     if p == "consejero/investigar":
         _need(s, "approver"); esc = str(b.get("escenario") or "BASE"); tr = b.get("trampa") or None
-        m = K.consejero(esc, tr); pr = b.get("propio") or {"precio": 49.90, "volumen_ml": 50}
-        return m.investigar(str(b.get("pregunta") or "¿Se sostiene el precio premium de ACTIVCORE?")[:400], str(b.get("producto") or "ACTIVCORE"), {"precio": float(pr["precio"]), "volumen_ml": float(pr["volumen_ml"])}, b.get("datos_internos") if isinstance(b.get("datos_internos"), dict) else None, actor)
+        if esc not in KCM.ESCENARIOS: raise ValueError("escenario inválido")
+        f = _filtros(lambda k: b.get(k)); svc = APP["_svc"](f["producto"]); maestro = None
+        if K3S.disponible(svc):
+            o = K3S.K3Service(APP["store"], svc).own(); maestro = {"pvp": o["pvp"], "volumen_ml": o["ml"], "fuente": "ficha maestra K3 · " + str(o["pvp_estado"])}
+        pr = b.get("propio") or ({"precio": maestro["pvp"], "volumen_ml": maestro["volumen_ml"]} if maestro else {"precio": None, "volumen_ml": None})
+        ficha = {"ACTIVCORE": KCF.FICHA_ACTIVCORE, "PHIVITAL_MG": KCF.FICHA_PHIVITAL_MG}.get(str(b.get("ficha") or "ACTIVCORE"))
+        if ficha is None: raise ValueError("ficha desconocida")
+        conf = b.get("confirmacion") if isinstance(b.get("confirmacion"), dict) else None
+        if conf: conf = {"usar": conf.get("usar"), "motivo": conf.get("motivo"), "actor": actor}
+        m = K.consejero(esc, tr)
+        return m.investigar(str(b.get("pregunta") or "¿Se sostiene el precio premium de ACTIVCORE?")[:400], str(b.get("producto") or f["producto"]), {"precio": pr.get("precio") if pr.get("precio") is None else float(pr["precio"]), "volumen_ml": pr.get("volumen_ml") if pr.get("volumen_ml") is None else float(pr["volumen_ml"])}, b.get("datos_internos") if isinstance(b.get("datos_internos"), dict) else None, actor, ficha=ficha, maestro=maestro, confirmacion=conf)
     if p == "consejero/dossier":
         _need(s, "approver"); return {"dossier": K.consejero().a_dossier(str(b.get("id")), actor)}
     if p == "consejero/proponer":
         _need(s, "approver"); return K.consejero().proponer_decision(str(b.get("id")), actor)
-    if p == "consejero/prediccion":
-        _need(s, "approver"); return K.consejero().cerrar_prediccion(int(b.get("id")), b.get("observado"), b.get("cumplida") is True, actor)
+    if p == "consejero/prediccion/resultado":
+        _need(s, "approver"); return K.consejero().resultado_prediccion(int(b.get("id")), b.get("valor"), b.get("fuente"), b.get("metodo"), b.get("incertidumbre"), str(b.get("fecha") or ""), actor)
+    if p == "consejero/prediccion/revisar":
+        _need(s, "approver"); return K.consejero().revisar_prediccion(int(b.get("id")), actor, str(b.get("decision")), str(b.get("nota") or ""))
+    if p == "consejero/limites":
+        _need(s, "admin"); return K.consejero().R.limites(b.get("tope_inv_eur"), b.get("tope_mes_eur"), b.get("tope_op_eur"), actor)
+    if p == "consejero/reanudar":
+        _need(s, "admin"); return K.consejero().R.reanudar(actor, str(b.get("motivo") or ""))
     if p == "planificador/encolar":
         _need(s, "approver"); return K.plan.encolar(str(b.get("kind")), b.get("producto"), b.get("pais"), b.get("params"), actor=actor)
     if p == "planificador/tick":

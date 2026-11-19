@@ -84,7 +84,7 @@ Detalle en `MATRIZ_ACEPTACION_V100.md`.
 | UI-k3 | MOCK+NAVEGADOR | PASA | 37/37 OK |
 | k4-unidad | MOCK | PASA | 46/46 OK |
 | k4-planificador | MOCK | PASA | 14/14 |
-| k4-consejero | MOCK | PASA | 53/53 |
+| k4-consejero | MOCK | PASA | 102/102 |
 | k4-iter2 | MOCK | PASA | 27/27 |
 | k4-api | MOCK | PASA | 43/43 OK |
 | UI-k4 | MOCK+NAVEGADOR | PASA | 52/52 OK |

@@ -1,5 +1,7 @@
 # K4 · Consejero Estratégico — Entrega F1–F2
 
+> *Documento regenerado en F2.1 con la corrección de formato (ACTIVCORE = 100 ml; ver `06_F21_CORRECCIONES.md`).*
+
 > **Todo lo mostrado aquí se ha generado con proveedores SIMULADOS y datos SINTÉTICOS** (URLs `sintetico://`, textos marcados «[SINTÉTICO]»). Gasto adicional: **0 €**. Sin IA externa, sin búsqueda de pago, sin credenciales. **Superar estas pruebas valida el motor (trazabilidad, verificación, sensibilidad a la evidencia); no demuestra razonamiento autónomo real.** PR #4 sin fusionar.
 
 ## 1. Qué se ha construido
@@ -13,9 +15,9 @@
 | `k4c_engine.py` | Plan, árbol de hipótesis (con búsqueda contraria), informe estructurado, decisión por reglas explícitas, evaluación adversarial, premisas, predicciones, integración con Director |
 | `api_k4.py` | `GET consejero/estado|investigaciones|investigacion/<id>|libro/<id>` · `POST consejero/investigar|dossier|proponer|prediccion` (sin pantallas nuevas) |
 
-Pruebas: `tests/k4c_test.py` → **53/53**; registrada en `run_all.sh`, `coordinador.py` y CI.
+Pruebas: `tests/k4c_test.py` (ver doc 06 para el recuento F2.1); registrada en `run_all.sh`, `coordinador.py` y CI.
 
-## 2. Demostración del libro de evidencias (investigación INV-e9b32600)
+## 2. Demostración del libro de evidencias (investigación INV-b269798b)
 
 10 fuentes · 10 extractos · 26 consultas registradas · gasto 0.0 €
 
@@ -34,37 +36,37 @@ Pruebas: `tests/k4c_test.py` → **53/53**; registrada en `run_all.sh`, `coordin
 
 Extractos (literales, con hash; cada uno ligado a una hipótesis y un efecto):
 
-- `X-317aa8f3f6` · H0 · efecto +1 · «la cafeína tópica mejora el recuento de cabello en alopecia androgenética con certeza GRADE moderada»
-- `X-b48269b0ab` · H0 · efecto +0 · «la luteolina tópica aumentó el crecimiento del pelo; no existen datos en humanos»
-- `X-654ca67f57` · H2 · efecto +1 · «serum capilar premium de 90 ml, precio observado 39,94 EUR»
-- `X-99bec6bd90` · H2 · efecto +1 · «serum capilar premium de 30 ml, precio observado 35,00 EUR»
-- `X-678f5c2084` · H2 · efecto +1 · «ampollas capilares premium de 50 ml, precio observado 52,00 EUR»
-- `X-770a7366b9` · H2 · efecto +0 · «tratamiento capilar de 100 ml, precio 55,00 EUR en marzo de 2025»
-- `X-94c020d83b` · H3 · efecto +1 · «Minoxidil 5 % solución de 60 ml, precio máximo oficial 12,49 EUR»
-- `X-1f81384876` · H4 · efecto +1 · «se decide caso por caso valorando la presentación completa, la composición y las alegaciones»
-- `X-2d6233728c` · H4 · efecto +0 · «alegaciones de crecimiento capilar suelen considerarse medicinales»
-- `X-eea46d4904` · H5 · efecto +0 · «no equivale a unidades vendidas»
+- `X-8b760705c7` · H0 · efecto +1 · «la cafeína tópica mejora el recuento de cabello en alopecia androgenética con certeza GRADE moderada»
+- `X-19c788cc2e` · H0 · efecto +0 · «la luteolina tópica aumentó el crecimiento del pelo; no existen datos en humanos»
+- `X-66ddec54e1` · H2 · efecto +1 · «serum capilar premium de 90 ml, precio observado 39,94 EUR»
+- `X-2e5aed35be` · H2 · efecto +1 · «serum capilar premium de 30 ml, precio observado 35,00 EUR»
+- `X-16d384c34a` · H2 · efecto +1 · «ampollas capilares premium de 50 ml, precio observado 52,00 EUR»
+- `X-b59a4af507` · H2 · efecto +0 · «tratamiento capilar de 100 ml, precio 55,00 EUR en marzo de 2025»
+- `X-d6abd99ae2` · H3 · efecto +1 · «Minoxidil 5 % solución de 60 ml, precio máximo oficial 12,49 EUR»
+- `X-c31b5580ac` · H4 · efecto +1 · «se decide caso por caso valorando la presentación completa, la composición y las alegaciones»
+- `X-23dda5283f` · H4 · efecto +0 · «alegaciones de crecimiento capilar suelen considerarse medicinales»
+- `X-23d4a00988` · H5 · efecto +0 · «no equivale a unidades vendidas»
 
 Primeras consultas del log (proveedor, método, estado, coste):
 
-- 2026-11-19T00:37:11 · busqueda_sintetica.buscar · «cafeina topica alopecia ensayo revision evidencia ingredient» · 2 resultados · OK · 0.0 €
-- 2026-11-19T00:37:11 · lectura_sintetica.leer · «sintetico://cafeina-revision» · 1 resultados · OK · 0.0 €
-- 2026-11-19T00:37:11 · lectura_sintetica.leer · «sintetico://luteolina-raton» · 1 resultados · OK · 0.0 €
-- 2026-11-19T00:37:11 · busqueda_sintetica.buscar · «luteolina topica raton murino evidencia ingrediente» · 2 resultados · OK · 0.0 €
-- 2026-11-19T00:37:11 · busqueda_sintetica.buscar · «cafeina topica evidencia ingrediente limites ensayo» · 2 resultados · OK · 0.0 €
-- 2026-11-19T00:37:11 · busqueda_sintetica.buscar · «luteolina topica evidencia ingrediente humanos» · 2 resultados · OK · 0.0 €
+- 2026-11-19T01:38:54 · busqueda_sintetica.buscar · «cafeina topica evidencia ingrediente ensayo revision» · 2 resultados · OK · 0.0 €
+- 2026-11-19T01:38:54 · lectura_sintetica.leer · «sintetico://cafeina-revision» · 1 resultados · OK · 0.0 €
+- 2026-11-19T01:38:54 · lectura_sintetica.leer · «sintetico://luteolina-raton» · 1 resultados · OK · 0.0 €
+- 2026-11-19T01:38:54 · busqueda_sintetica.buscar · «luteolina topica evidencia ingrediente ensayo revision» · 2 resultados · OK · 0.0 €
+- 2026-11-19T01:38:54 · busqueda_sintetica.buscar · «cafeina topica evidencia ingrediente limites ensayo» · 2 resultados · OK · 0.0 €
+- 2026-11-19T01:38:54 · busqueda_sintetica.buscar · «luteolina topica evidencia ingrediente limites ensayo» · 2 resultados · OK · 0.0 €
 
 ## 3. Ejemplo de investigación con proveedor simulado
 
-Pregunta: «¿Se sostiene el precio premium de ACTIVCORE?» (49,90 € / 50 ml = 99,80 €/100 ml) con datos internos sintéticos declarados (ventas 3/día, margen 20 €, tráfico 400/día, conversión 5 %).
+Pregunta: «¿Se sostiene el precio premium de ACTIVCORE?» (49,90 € / 100 ml = 49,90 €/100 ml, ficha maestra) con datos internos sintéticos declarados (ventas 3/día, margen 20 €, tráfico 400/día, conversión 5 %, elasticidad medida −2,0 sobre 12 observaciones).
 
 **Hipótesis (H0 = tesis de AHT; H1–H5 = alternativas):**
 
-- **H0** (AHT) — El precio premium de ACTIVCORE se sostiene por la evidencia de sus ingredientes (cafeína, luteolina). → *PARCIALMENTE_SOPORTADA_SOLO_INGREDIENTE* (puntuación 4)
+- **H0** (AHT) — El precio premium de ACTIVCORE se sostiene por la evidencia de sus ingredientes (cafeina, luteolina). → *PARCIALMENTE_SOPORTADA_SOLO_INGREDIENTE* (puntuación 4)
 - **H1** (ALTERNATIVA) — La evidencia del ingrediente no se traslada a la fórmula final y no justifica por sí sola un sobreprecio. → *SOPORTADA* (puntuación 0)
-- **H2** (ALTERNATIVA) — El mercado comparable vigente (cosméticos capilares premium) fija un rango de precio por 100 ml del que ACTIVCORE puede quedar dentro o fuera. → *SOPORTADA* (puntuación 12)
-- **H3** (ALTERNATIVA) — El minoxidil es un sustituto terapéutico indirecto que condiciona la disposición a pagar, no un competidor cosmético equivalente. → *SOPORTADA* (puntuación 4)
-- **H4** (ALTERNATIVA) — La clasificación regulatoria depende de la presentación completa, la composición y las alegaciones; una alegación de crecimiento puede cambiarla. → *SOPORTADA* (puntuación 4)
+- **H2** (ALTERNATIVA) — El mercado comparable vigente (cosméticos capilares premium equivalentes) fija un rango de precio por 100 ml del que ACTIVCORE puede quedar dentro o fuera; el rango no decide por sí solo. → *SOPORTADA* (puntuación 12)
+- **H3** (ALTERNATIVA) — Minoxidil es un sustituto terapéutico indirecto que condiciona la disposición a pagar, no un competidor cosmético equivalente. → *SOPORTADA* (puntuación 4)
+- **H4** (ALTERNATIVA) — La clasificación regulatoria depende de la presentación completa, la composición y las alegaciones (crecimiento capilar, anticaida); una alegación de crecimiento puede cambiarla. → *SOPORTADA* (puntuación 4)
 - **H5** (ALTERNATIVA) — No se pueden inferir ventas reales a partir del BSR ni atribuir causalidad a correlaciones de BSR y precio. → *INDECISA* (puntuación 0)
 
 **Hechos con cita y cálculo recalculado:**
@@ -74,20 +76,21 @@ Pregunta: «¿Se sostiene el precio premium de ACTIVCORE?» (49,90 € / 50 ml =
 - Precio por 100 ml calculado: Ficha Delta ampolla → `precio / volumen * 100` = 104.0 (vigente)
 - Precio por 100 ml calculado: Ficha Gamma serum → `precio / volumen * 100` = 116.67 (vigente)
 - Precio por 100 ml calculado: Precio máximo minoxidil (sustituto terapéutico indirecto, no competidor cosmético equivalente) → `precio / volumen * 100` = 20.82 (vigente)
-- Precio propio por 100 ml (dato interno declarado): 99.8 EUR → `precio / volumen * 100` = 99.8 (vigente)
+- Precio propio por 100 ml (ficha maestra): 49.9 EUR → `precio / volumen * 100` = 49.9 (vigente)
+- Precio óptimo de margen con elasticidad medida e=-2.0 (n=12, historial sintético de precio): 59.8 EUR → `coste * e / (1 + e)` = 59.8 (vigente)
 
 **Datos faltantes declarados:**
 
 - Ensayo clínico o prueba de eficacia/seguridad de la fórmula final de ACTIVCORE. No se localizó evidencia en las consultas del libro (no equivale a ausencia de efecto).
 - Clasificación regulatoria del caso concreto con fuente oficial. Pendiente de análisis de la presentación completa y las alegaciones.
 
-**Conclusión:** `MANTENER` · confianza MEDIA. El precio propio (99.80 €/100 ml) se compara con 3 comparables vigentes (rango 44.38–116.67); decisión condicionada a experimento y a la clasificación regulatoria.
+**Conclusión:** `SUBIR` · confianza MEDIA. Con elasticidad medida e=-2.00 y coste variable 29.90 €, el precio óptimo de margen es 59.80 € (+20 % vs actual).
 
 Tesis de AHT: **PARCIALMENTE_SOPORTADA_SOLO_INGREDIENTE** — alcance: evidencia de INGREDIENTE; no equivale a eficacia de la fórmula final.
 
 **Experimento** (según tráfico/conversión, no 3 días fijos): n = 14193 por variante, ≥ 71 días. al menos 2 semanas completas para cubrir ciclo semanal; potencia 80 %, alfa 0.05, efecto mínimo detectable 15 % relativo
 
-**Qué cambiaría la conclusión:** Aparecen ≥3 comparables cosméticos vigentes y equivalentes (cambia el rango de referencia). · Se obtienen ventas y margen reales (permite decidir el precio). · Se localiza evidencia de la fórmula final, a favor o en contra. · Una corrección o retractación de la revisión de cafeína (debilita H0).
+**Qué cambiaría la conclusión:** Aparecen ≥3 comparables vigentes y equivalentes (cambia el rango de referencia). · Se obtienen ventas y margen reales y una medida de la respuesta de la demanda al precio. · Se localiza evidencia de la fórmula final, a favor o en contra. · Una corrección o retractación de la evidencia del ingrediente (debilita la tesis de AHT).
 
 Verificación: **ACEPTADO_CON_RESERVAS** (0 bloqueantes, 1 avisos). Adversarial: **SUPERADA**. Publicación: **PUBLICABLE_INTERNO** (entorno SINTETICO).
 
@@ -96,21 +99,23 @@ Verificación: **ACEPTADO_CON_RESERVAS** (0 bloqueantes, 1 avisos). Adversarial:
 | Escenario sintético | Decisión | Confianza | Tesis AHT (H0) |
 |---|---|---|---|
 | BASE (sin datos internos, 1 comparable vigente) | NO_CONCLUIBLE | BAJA | PARCIALMENTE_SOPORTADA_SOLO_INGREDIENTE |
-| + 2 comparables vigentes + datos internos | MANTENER | MEDIA | PARCIALMENTE_SOPORTADA_SOLO_INGREDIENTE |
+| + 2 comparables vigentes + datos internos (sin elasticidad) | DISENAR_EXPERIMENTO | BAJA | PARCIALMENTE_SOPORTADA_SOLO_INGREDIENTE |
+| + elasticidad medida | SUBIR | MEDIA | PARCIALMENTE_SOPORTADA_SOLO_INGREDIENTE |
 | Revisión de cafeína corregida (certeza muy baja) | NO_CONCLUIBLE | BAJA | DEBILITADA |
 
 ## 4. Ejemplo de conclusión rechazada por el verificador
 
-El redactor simulado inyecta una decisión «SUBIR» con confianza ALTA apoyada solo en hipótesis/inferencias:
+El redactor simulado inyecta una decisión «SUBIR» con confianza ALTA apoyada solo en hipótesis/inferencias (sin evidencia de respuesta al precio):
 
 - **CONCLUSION_EXCEDE_EVIDENCIA** (conclusion): confianza ALTA pero el eslabón más débil de la base es de calidad 1/3
 - **CONCLUSION_EXCEDE_EVIDENCIA** (conclusion): una decisión de precio exige datos internos observados (ventas/margen) entre sus bases
+- **RECOMENDACION_SOLO_POR_RANGO** (conclusion): SUBIR/BAJAR/MANTENER exige evidencia de la respuesta de la demanda al precio; la posición frente al rango de competidores no basta
 - **CONCLUSION_EXCEDE_EVIDENCIA** (conclusion): conclusión basada solo en hipótesis/inferencias con confianza superior a BAJA
 
 Resultado: **RECHAZADO** → publicación **NO_PUBLICABLE**. El motor no la propone como decisión.
 
 Caso de cita válida que no respalda la afirmación (el id existe, el contenido no): 
-**CITA_NO_RESPALDA** — X-58257760b1: cifras no presentes en el extracto: 40. La afirmación se retira y el informe queda `ACEPTADO_CON_RESERVAS` con la retirada registrada.
+**CITA_NO_RESPALDA** — X-f64181dead: cifras no presentes en el extracto: 40. La afirmación se retira y el informe queda `ACEPTADO_CON_RESERVAS` con la retirada registrada.
 
 ## 5. Correcciones A–F al caso ACTIVCORE incorporadas
 
@@ -169,7 +174,7 @@ Regla de oro del diseño: si T1–T5 fallan, el informe no se presenta como aná
 | LLM | `ai.py` ya existente (OpenAI/Anthropic/compatible) | Precios en `ai.PRICES` (USD/1M tokens), **no reverificados hoy** → verificar en la página oficial antes de activar | Estimación previa en doc 02: ≈0,03 / 0,49 / 2,45 USD por investigación según modelo |
 | Lectura de páginas | Lector con lista de hosts permitidos | 0 € (propio) | Respeta robots y límites; sin descargar archivos |
 
-Presupuesto orientativo por investigación real (el motor actual realiza ≈26 llamadas entre búsqueda y lectura; cada una contará contra el tope; la lectura propia no cuesta): búsqueda con Brave ≈ 5 $/1.000 solicitudes, es decir, ≈0,005 $ por búsqueda más LLM 0,03–2,45 USD ⇒ **topes propuestos: 1 € por investigación, 20 € al mes, a fijar por José**.
+Presupuesto orientativo por investigación real (45 consultas del motor actual → se reducirá a ≈12–15 con deduplicación): búsqueda ≈0,06–0,23 $ con Brave más LLM 0,03–2,45 USD ⇒ **topes propuestos: 1 € por investigación, 20 € al mes, a fijar por José**.
 
 **Pasos F3:** (1) adaptador Brave/Tavily detrás de `ProveedorBusqueda` con lista de hosts y caché; (2) lector real con extracción por modelo y reverificación literal del extracto; (3) activar `autorizacion_externa` solo por decisión humana, con topes en `k4c_cfg`; (4) repetir T1–T5 con modelo real y corpus real de ACTIVCORE; (5) T7/T8 con revisión ciega de AHT; (6) iniciar T10 con predicciones reales.
 
