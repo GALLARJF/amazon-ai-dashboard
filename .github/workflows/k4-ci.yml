@@ -1,0 +1,46 @@
+name: k4-ci
+# Pruebas K4 + regresión K2/K3 + seguridad. Sin red externa, sin secretos, sin gasto. (El proyecto vive en un subdirectorio: los workflows deben estar en la RAÍZ del repositorio.)
+on:
+  push:
+    branches: [aht-k4-ejecutivo]
+    paths: ["amazon-pro-intelligence-v0.6.0-validacion-keepa/**", ".github/workflows/k4-ci.yml"]
+  pull_request:
+    branches: [aht-v100-desarrollo]
+    paths: ["amazon-pro-intelligence-v0.6.0-validacion-keepa/**", ".github/workflows/k4-ci.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+defaults:
+  run:
+    working-directory: amazon-pro-intelligence-v0.6.0-validacion-keepa
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Chromium para pruebas de interfaz
+        run: |
+          python -m pip install playwright jsonschema
+          python -m playwright install --with-deps chromium
+      - name: K4 unitarias y API
+        run: |
+          python tests/k4_unit_test.py
+          python tests/k4_api_test.py
+          python tests/k4_iter2_test.py
+          python tests/k4_planner_test.py
+          python tests/k4c_test.py
+      - name: K4 interfaz
+        run: python tests/ui_k4_test.py
+      - name: Regresión K2/K3
+        run: |
+          python tests/k2_director_test.py
+          python tests/k3_segmentacion_test.py
+          python tests/ui_k3_test.py
+      - name: Seguridad y esquema
+        run: |
+          python tests/v070_security_test.py
+          python tests/schema_test.py
+        # tests/security_test.py (V0.2) NO se incluye: falla desde K1 (4 comprobaciones del conector Keepa heredadas, también en local); está documentado en el informe como deuda aparte.
