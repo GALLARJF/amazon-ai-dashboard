@@ -23,7 +23,7 @@ jobs:
         with: { python-version: "3.12" }
       - name: Chromium para pruebas de interfaz
         run: |
-          python -m pip install playwright
+          python -m pip install playwright jsonschema
           python -m playwright install --with-deps chromium
       - name: K4 unitarias y API
         run: |
