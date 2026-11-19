@@ -26,6 +26,13 @@ with sync_playwright() as p:
         txt = pg.inner_text("body")
         check(f"pantalla «{name}»: carga, etiqueta visible y sin «restringido»/«solo administrador»/undefined", pg.locator("#envBanner").is_visible() and not re.search(r"restringido|solo administrador|undefined|\[object", txt, re.I))
         pg.screenshot(path=os.path.join(OUT, f"{i:02d}_{tab}.png"), full_page=True)
+    # la navegación interna de pantallas (sub-vistas) NO debe quedar bloqueada para el viewer (defecto corregido tras e914144)
+    pg.click('#tabs button[data-tab="k4"]'); pg.wait_for_timeout(1500)
+    nav_ok = True
+    for v in ("bench", "precio", "dir", "centro"):
+        nav_ok &= pg.eval_on_selector(f"[data-k4v={v}]", "e=>!e.disabled")
+        pg.click(f"[data-k4v={v}]", timeout=5000); pg.wait_for_timeout(700)
+    check("K4: las 4 sub-vistas (Centro, Benchmarking, Pricing, Director·Datos) son navegables para el viewer", nav_ok)
     # controles de escritura bloqueados
     pg.click('#tabs button[data-tab="k4"]'); pg.wait_for_timeout(1500)
     dis = pg.eval_on_selector_all("button:disabled.vro", "e=>e.length"); check(f"controles de escritura desactivados en la interfaz ({dis})", dis >= 1)

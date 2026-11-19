@@ -26,7 +26,7 @@
   /* viewer: la interfaz bloquea además lo que ya bloquea el backend (403) */
   function lockUi() {
     const W = /(guardar|crear|nuevo|nueva|aprobar|rechazar|lanzar|ejecutar|analizar|importar|publicar|activar|archivar|añadir|editar|enviar|proponer|investigar|reanudar|probar|confirmar|eliminar|borrar|registrar|validar|generar|iniciar|aplicar|actualizar|solicitar|reconciliar|fijar|cancelar plan|descartar|marcar|verificar|(?:^|\s)subir|(?:^|\s)cargar|restaurar|respaldo|preguntar|consultar al|enviar)/i;
-    const apply = () => document.querySelectorAll('button, textarea, input[type=submit], form input[type=text]').forEach((el) => { if (el.closest('#tabs') || el.closest('#lgForm') || el.matches('#lgOut,#lgOpen,.ro-ok,[data-tab]')) return; const w = el.tagName !== 'BUTTON' || el.type === 'submit' || el.hasAttribute('data-test') || W.test(el.textContent || ''); if (w && !el.disabled) { el.disabled = true; el.title = 'Solo lectura (viewer)'; el.classList.add('vro'); } });
+    const apply = () => document.querySelectorAll('button, textarea, input[type=submit], form input[type=text]').forEach((el) => { if (el.closest('#tabs') || el.closest('#lgForm') || el.matches('#lgOut,#lgOpen,.ro-ok,[data-tab]')) return; const w = el.tagName !== 'BUTTON' || el.getAttribute('type') === 'submit' || el.hasAttribute('data-test') || W.test(el.textContent || ''); if (w && !el.disabled) { el.disabled = true; el.title = 'Solo lectura (viewer)'; el.classList.add('vro'); } });
     if (!lockUi.mo) { lockUi.mo = new MutationObserver(() => { clearTimeout(lockUi.t); lockUi.t = setTimeout(apply, 30); }); lockUi.mo.observe(document.body, { childList: true, subtree: true }); }
     apply();
   }
