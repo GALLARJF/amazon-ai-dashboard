@@ -84,13 +84,14 @@ Detalle en `MATRIZ_ACEPTACION_V100.md`.
 | UI-k3 | MOCK+NAVEGADOR | PASA | 37/37 OK |
 | k4-unidad | MOCK | PASA | 46/46 OK |
 | k4-planificador | MOCK | PASA | 14/14 |
+| k4-consejero | MOCK | PASA | 53/53 |
 | k4-iter2 | MOCK | PASA | 27/27 |
 | k4-api | MOCK | PASA | 43/43 OK |
 | UI-k4 | MOCK+NAVEGADOR | PASA | 52/52 OK |
-| v0.7-registro | LOCAL | PASA | 92/92 OK |
+| v0.7-registro | LOCAL | PASA | 93/93 OK |
 | v0.7-entrega | LOCAL | PASA | 15/15 OK |
 
-Resumen: 43 pasan · 0 intermitentes · 0 fallan · 43 total. **MOCK = proveedores simulados, no integraciones reales.**
+Resumen: 44 pasan · 0 intermitentes · 0 fallan · 44 total. **MOCK = proveedores simulados, no integraciones reales.**
 
 ## Auditoría
 

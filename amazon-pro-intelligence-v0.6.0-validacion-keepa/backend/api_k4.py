@@ -1,7 +1,7 @@
 """K4 · rutas /api/k4/*. El servidor ya aplicó sesión y CSRF. Roles: lectura = cualquier sesión con acceso al catálogo; escribir datos/medios/costes/propuestas = approver+; verificar derechos, validar costes y decidir = approver+; importar = approver+.
 Solo lectura y cálculo; ninguna acción comercial externa."""
 import base64, json, os
-from . import k4_planner as KPL, k4_selection as KSEL, k4_umbrales as KUM, k4_bench as KB, k4_store as KS, k4_contracts as C, k4_costs as KC, k4_data as KD, k4_media as KM, k4_pricing as KP, k4_director as KDIR, k3_service as K3S, eu
+from . import k4c_providers as KCP, k4c_mock as KCM, k4c_engine as KCE, k4_planner as KPL, k4_selection as KSEL, k4_umbrales as KUM, k4_bench as KB, k4_store as KS, k4_contracts as C, k4_costs as KC, k4_data as KD, k4_media as KM, k4_pricing as KP, k4_director as KDIR, k3_service as K3S, eu
 from .catalog import ACCOUNT_ID
 from .store import ROLES
 
@@ -29,6 +29,12 @@ class K4:
 
     def director(self):
         return KDIR.Director(self.k, self.APP["ops"], self.data)
+
+    def consejero(self, escenario="BASE", trampa=None):
+        """Motor del Consejero. Solo proveedores SIMULADOS (F1–F2): ninguna llamada externa ni gasto."""
+        r = KCP.Router(self.k, autorizacion_externa=False); r.registrar(KCM.BusquedaSimulada(escenario)); r.registrar(KCM.LecturaSimulada(escenario)); r.registrar(KCM.LLMSimulado(trampa)); r.registrar(KCM.CalculadoraExperimento(), "diseno_experimento")
+        r.registrar(KCP.AdaptadorLLMExterno({}), "externo"); r.registrar(KCP.BusquedaExternaNoImplementada(), "externa"); r.registrar(KCP.LecturaExternaNoImplementada(), "externa")
+        return KCE.Motor(self.k, r, self.director())
 
 
 def _k4(APP):
@@ -134,6 +140,14 @@ def handle(APP, s, method, path, q, b):
             return {"umbrales": K.um.listar(), "ilustrativos": KUM.ILUSTRATIVOS, "descripcion": KUM.DESCR, "rangos": KUM.RANGOS, "regla": "Ningún umbral está aprobado por defecto. Los ilustrativos solo se usan en entorno SINTETICO_DEMO. Un umbral nunca activa acciones comerciales."}
         if p == "planificador":
             return K.plan.estado()
+        if p == "consejero/estado":
+            m = K.consejero(); return dict(m.R.estado(), calibracion=m.calibracion(), escenarios=list(KCM.ESCENARIOS), trampas=[t for t in KCM.LLMSimulado.TRAMPAS if t], aviso="Fase F1–F2: solo proveedores SIMULADOS y datos SINTÉTICOS. Sin IA externa, sin búsqueda de pago, sin gasto.")
+        if p == "consejero/investigaciones":
+            return {"investigaciones": K.k.q("SELECT id,pregunta,producto,estado,entorno,modo,creado,actor FROM k4c_inv ORDER BY creado DESC LIMIT 50")}
+        if p.startswith("consejero/investigacion/"):
+            return K.consejero().L.inv(p.rsplit("/", 1)[1])
+        if p.startswith("consejero/libro/"):
+            return K.consejero().L.libro(p.rsplit("/", 1)[1])
         if p == "benchmark/expediente":
             f = _filtros(g); return expediente(APP, K, f, g("key") or "")
         if p == "benchmark/explorador":
@@ -164,6 +178,16 @@ def handle(APP, s, method, path, q, b):
         _need(s, "approver"); f = _filtros(lambda k: b.get(k)); svc = APP["_svc"](f["producto"])
         if not K3S.disponible(svc): raise ValueError("producto sin perfil K3")
         rows, _ = K3S.K3Service(APP["store"], svc).rows(); K.sel.ajustar(f["producto"], f["pais"] or "ES", str(b.get("key") or ""), str(b.get("accion") or ""), b.get("motivo"), actor, rows); return {"ok": True}
+    if p == "consejero/investigar":
+        _need(s, "approver"); esc = str(b.get("escenario") or "BASE"); tr = b.get("trampa") or None
+        m = K.consejero(esc, tr); pr = b.get("propio") or {"precio": 49.90, "volumen_ml": 50}
+        return m.investigar(str(b.get("pregunta") or "¿Se sostiene el precio premium de ACTIVCORE?")[:400], str(b.get("producto") or "ACTIVCORE"), {"precio": float(pr["precio"]), "volumen_ml": float(pr["volumen_ml"])}, b.get("datos_internos") if isinstance(b.get("datos_internos"), dict) else None, actor)
+    if p == "consejero/dossier":
+        _need(s, "approver"); return {"dossier": K.consejero().a_dossier(str(b.get("id")), actor)}
+    if p == "consejero/proponer":
+        _need(s, "approver"); return K.consejero().proponer_decision(str(b.get("id")), actor)
+    if p == "consejero/prediccion":
+        _need(s, "approver"); return K.consejero().cerrar_prediccion(int(b.get("id")), b.get("observado"), b.get("cumplida") is True, actor)
     if p == "planificador/encolar":
         _need(s, "approver"); return K.plan.encolar(str(b.get("kind")), b.get("producto"), b.get("pais"), b.get("params"), actor=actor)
     if p == "planificador/tick":
