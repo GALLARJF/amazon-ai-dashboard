@@ -18,12 +18,13 @@
   function statusOf(L, steps) {
     const sec = (id) => (L.sections || []).find((s) => s.id === id) || {};
     const rec = sec('recomendacion'), eco = sec('economia'), cum = sec('cumplimiento'), pais = sec('paises');
+    const cmp = (sec('competidores').rows || []), cmpOk = cmp.length > 0 && cmp.every((c) => c.estado_comparabilidad === 'CONFIRMADA');   // sin comparabilidad confirmada por una persona no hay GO
     const rows = (eco.rows || []).filter((r) => r.contribution != null && r.margin != null);
     const blockers = (rec.reasons || []).length, undecidable = /NO DECIDIBLE/i.test(rec.verdict || '');
     if (rows.length && rows.every((r) => r.contribution < 0) && rows.length === (eco.rows || []).length) return { v: 'NO GO', why: 'La contribución por unidad es negativa en todos los países calculados (' + rows.length + ').' };
     const withData = steps.filter((s) => s.state !== 'SIN DATOS').length;
     if (undecidable && !steps.some((s) => ['economia', 'benchmark', 'cumplimiento'].includes(s.id) && s.state !== 'SIN DATOS')) return { v: 'SIN DATOS', why: 'El servidor no puede decidir todavía y ni la economía, ni el benchmark, ni el cumplimiento tienen datos (' + withData + ' de ' + steps.length + ' pasos con algún dato).' };
-    if (!undecidable && !blockers && cum.open === 0 && rows.length && (eco.rows || []).every((r) => r.contribution != null && r.contribution > 0) && (pais.ranking || []).length) return { v: 'GO', why: 'Economía positiva en todos los países, cumplimiento sin requisitos abiertos y ranking de países disponible.' };
+    if (!undecidable && !blockers && cmpOk && cum.open === 0 && rows.length && (eco.rows || []).every((r) => r.contribution != null && r.contribution > 0) && (pais.ranking || []).length) return { v: 'GO', why: 'Economía positiva en todos los países, competidores con comparabilidad confirmada, cumplimiento sin requisitos abiertos y ranking de países disponible.' };
     return { v: 'REVISAR', why: blockers ? blockers + ' bloqueo(s) abiertos con datos parciales: hay que resolverlos antes de decidir.' : 'Hay datos mínimos: decide el país piloto con el ranking y la economía.' };
   }
   const ROLE = [[/regulator|cumplimiento|cpnp|pif|cpsr|notific|etiquet|claims/i, 'Responsable regulatorio'], [/keepa|descubrimiento|autoriz|presupuesto/i, 'Aprobador (autoriza el gasto Keepa)'],
@@ -49,9 +50,9 @@
       lines: [['PVP de referencia', pv.v != null ? eur(pv.v) + ' · ' + (pv.status || '') : 'SIN DATOS'], ['Fuente del precio', pv.v != null ? (pv.source || 'SIN DATOS') + (pv.date ? ' (' + pv.date + ')' : '') : 'SIN DATOS'], ['Margen', calc.length ? calc.map((r) => r.country + ' ' + pct(r.margin)).join(' · ') : 'NO DETERMINABLE (no se calcula sin costes completos)']],
       missing: pv.v == null ? [miss('PVP de referencia con fuente y fecha', 'Responsable de producto · sin persona asignada')] : (pv.status === 'PROPUESTO' ? [miss('Aprobar el PVP propuesto', 'Dirección · sin persona asignada')] : []) });
     S.push({ id: 'benchmark', n: 4, title: 'Benchmark y competidores', state: (comp.rows || []).length ? 'PARCIAL' : 'SIN DATOS',
-      lines: [['Competidores con datos', String((comp.rows || []).length)], ['Referencias del usuario (pistas, no evidencia)', (P.reference_competitors || []).join(' · ') || 'SIN DATOS'], ['Comparables confirmados', 'SIN DATOS: faltan comparables confirmados con BSR y precio por unidad']],
-      cards: (comp.rows || []).map((c) => ({ t: (c.brand || '') + ' ' + c.asin + ' · ' + c.country, d: 'Precio ' + (c.price == null ? 'ND' : c.price) + ' · por unidad ' + (c.price_norm == null ? 'ND' : c.price_norm) + ' · ' + (c.comparabilidad || '—') })),
-      missing: (comp.rows || []).length ? [] : [miss('Descubrimiento de competidores (gasto Keepa aprobado)'), miss('Confirmar comparabilidad de competidores', 'Analista de mercado · sin persona asignada')] });
+      lines: [['Competidores con datos', String((comp.rows || []).length)], ['Referencias del usuario (pistas, no evidencia)', (P.reference_competitors || []).join(' · ') || 'SIN DATOS'], ['Comparabilidad confirmada por una persona', (comp.rows || []).length ? (comp.rows || []).filter((c) => c.estado_comparabilidad === 'CONFIRMADA').length + ' de ' + (comp.rows || []).length : 'SIN DATOS']],
+      cards: (comp.rows || []).map((c) => ({ t: (c.brand || '') + ' ' + c.asin + ' · ' + c.country, d: 'Precio ' + (c.price == null ? 'SIN DATOS' : eur(c.price)) + ' · por unidad ' + (c.price_norm == null ? 'SIN DATOS' : eur(c.price_norm)) + ' · ' + (c.comparabilidad || '—') })),
+      missing: (comp.rows || []).length ? ((comp.rows || []).some((c) => c.estado_comparabilidad !== 'CONFIRMADA') ? [miss('Confirmar la comparabilidad de ' + (comp.rows || []).filter((c) => c.estado_comparabilidad !== 'CONFIRMADA').length + ' competidor(es)', 'Analista de mercado · sin persona asignada')] : []) : [miss('Descubrimiento de competidores (gasto Keepa aprobado)'), miss('Confirmar comparabilidad de competidores', 'Analista de mercado · sin persona asignada')] });
     S.push({ id: 'demanda', n: 5, title: 'Demanda', state: 'SIN DATOS', lines: [['Volumen de búsqueda', 'SIN DATOS'], ['Fuente de demanda conectada', 'Ninguna: no se estima demanda sin fuente y fecha'], ['Ventas propias', 'SIN DATOS: sin informe de ventas importado']],
       missing: [miss('Keywords con volumen, fuente y fecha (p. ej. exportación Helium 10)', 'Analista de mercado · sin persona asignada')] });
     S.push({ id: 'stock', n: 6, title: 'Stock y logística', state: st.v != null && !/HISTORICO|NO_DISP/.test(st.status || '') ? 'OK' : st.v != null ? 'PARCIAL' : 'SIN DATOS',
@@ -123,7 +124,7 @@
   }
   function detailHtml(x) {
     const mfs = x.missing.slice(0, 12);
-    return `<section class="lzdet" data-lz-detail="${esc(x.P.id)}">
+    return `<section class="lzdet" data-lz-detail="${esc(x.P.id)}"><div class="lzactive" data-lz-active role="status" aria-live="polite">Producto activo: <b>${esc(x.P.name)}</b> ${chip(x.status.v)}</div>
       <article class="h2c lzl1" data-lz-level="1"><h3>1 · Conclusión · ${esc(x.P.name)} ${chip(x.status.v)}${x.status.v === 'SIN DATOS' ? '' : ' ' + badge(kind())}</h3><p class="lzconc">${esc(x.concl)}</p><p>${esc(x.status.why)}</p></article>
       <article class="h2c lzl2" data-lz-level="2"><h3>2 · Decisión</h3>
         <dl class="lzdl"><dt>Decisión solicitada</dt><dd>${x.pend.length ? x.pend.map((d) => esc(d.title)).join(' · ') + ' (aprobar o rechazar en Decisiones)' : 'Ninguna decisión pendiente en la bandeja. Siguiente: ' + esc(x.next)}</dd>
@@ -133,7 +134,7 @@
         <div class="lzdir"><b>Director IA · resumen sin consumo de IA</b><p>${esc(x.P.name)} está en <b>${esc(x.status.v)}</b>. ${x.blockers.length ? 'Lo que lo bloquea: ' + esc(x.blockers.slice(0, 3).join(' ')) : 'No hay bloqueos registrados.'} Siguiente acción: ${esc(x.next)}.</p></div>
         <div class="lzacts"><button class="btn ghost" data-h2go="dec">Ir a Decisiones${x.pend.length ? ' (' + x.pend.length + ')' : ''}</button><button class="btn ghost" data-h2go="dir">Ver Director IA</button><button class="btn ghost" data-h2prod="${esc(x.P.id)}">Ver ficha en Productos</button></div></article>
       <details class="h2det lzl3" id="lzevi" data-lz-level="3"><summary>3 · Evidencia · expediente guiado en 10 pasos</summary><div>${x.steps.map(stepHtml).join('')}</div></details>
-      <details class="h2det lzl4" id="lzmet" data-lz-level="4"><summary>4 · Metodología y expediente completo (11 secciones originales)</summary><div id="lzmetbody"><ul class="h2src"><li>El estado sale de reglas fijas sobre los datos del servidor: GO solo con economía positiva, cumplimiento completo y ranking; NO GO solo si la contribución es negativa en todos los países calculados; SIN DATOS si el servidor no puede decidir y no hay economía, benchmark ni cumplimiento; en otro caso REVISAR.</li><li>Fuentes (solo lectura): GET /api/catalog, /api/v06/launch, /api/v06/decisions. No se ejecuta Keepa, IA de pago, publicación ni acción comercial.</li><li>Los responsables son roles propuestos por regla; el sistema no tiene asignación de personas.</li></ul><div id="lzlegacy"></div></div></details></section>`;
+      <details class="h2det lzl4" id="lzmet" data-lz-level="4"><summary>4 · Metodología y expediente completo (11 secciones originales)</summary><div id="lzmetbody"><p class="lzscope" data-lz-scope><b>Ámbito:</b> solo datos de <b>${esc(x.P.name)}</b>. Los datos generales de la cuenta (conexiones, gasto Keepa, ventas importadas) no son de este producto: <button class="btn ghost" data-lz-general="adm">Fuente general de la cuenta</button></p><ul class="h2src"><li>El estado sale de reglas fijas sobre los datos del servidor: GO solo con economía positiva, cumplimiento completo y ranking; NO GO solo si la contribución es negativa en todos los países calculados; SIN DATOS si el servidor no puede decidir y no hay economía, benchmark ni cumplimiento; en otro caso REVISAR.</li><li>Fuentes (solo lectura): GET /api/catalog, /api/v06/launch, /api/v06/decisions. No se ejecuta Keepa, IA de pago, publicación ni acción comercial.</li><li>Los responsables son roles propuestos por regla; el sistema no tiene asignación de personas.</li></ul><details class="h2det lzorig" id="lzorig"><summary>Secciones originales del expediente (11) y panel de procedencia V0.7</summary><div id="lzlegacy"></div></details></div></details></section>`;
   }
   function html(d) {
     if (!d.logged) return '<section class="h2head"><h2>Lanzamientos ' + badge('SIN DATOS') + '</h2><p class="h2empty">Inicia sesión para ver los lanzamientos.</p></section>';
@@ -149,14 +150,39 @@
     const tab = $('#tab-lanz'); if (!tab) return null;
     h = document.createElement('div'); h.id = 'lanz2'; h.className = 'h2root lz'; tab.insertBefore(h, tab.firstChild); return h;
   }
+  /* AISLAMIENTO POR PRODUCTO. El legado (11 secciones + panel V0.7) se pinta por separado y es asíncrono: aquí se verifica que cada bloque pertenece al producto
+     abierto. Lo que no se pueda verificar se OCULTA para este producto y se sustituye por un enlace rotulado a la fuente general. */
+  const others = () => { const cur = D && D.items.find((x) => x.P.id === SEL); if (!cur) return []; const own = (cur.P.name + ' ' + cur.P.brand + ' ' + cur.P.id).toLowerCase();
+    return [...new Set([].concat(...D.items.filter((x) => x.P.id !== SEL).map((x) => (x.P.name + ' ' + x.P.brand).split(/[\s·:\/]+/).concat([x.P.id]))))].filter((w) => w.length >= 5 && !own.includes(w.toLowerCase())); };
+  function quarantine(why, name) { return `<aside class="h2c lzq" data-lz-q><b>${esc(name)}: oculto para este producto.</b> ${esc(why)} <button class="btn ghost" data-lz-general="adm">Fuente general (no es de este producto)</button></aside>`; }
+  let guarding = false;
+  function guard() {
+    if (guarding) return; const root_ = $('#lzlegacy'); if (!root_ || !D || !D.items) return; guarding = true;
+    try {
+      $$('label', root_).forEach((l) => { if ($('[data-v6prod]', l)) l.remove(); });                      // el selector legacy lista a los demás productos: el guiado ya elige
+      const stv = root.V06 && root.V06.state, lg = $('#v6lanz') ;
+      const okPid = !!(stv && stv.pid === SEL);
+      if (lg && !okPid) { if (lg.parentElement === root_) { $('#tab-lanz').appendChild(lg); lg.hidden = true; } if (!$('[data-lz-q="pid"]', root_)) root_.insertAdjacentHTML('afterbegin', quarantine('El expediente original aún no corresponde a este producto.', 'Expediente original').replace('data-lz-q', 'data-lz-q="pid"')); }
+      else if (lg && okPid) { if (lg.parentElement !== root_) root_.appendChild(lg); lg.hidden = false; $$('[data-lz-q="pid"]', root_).forEach((e) => e.remove()); }
+      $$('section.v7', root_).forEach((v) => { if (v.dataset.product !== SEL) { v.remove(); if (root.V07) root.V07.schedule(); } });
+      const bad = others();
+      $$('#v6lanz .v6sec, section.v7 article.card', root_).forEach((b) => { const t = b.textContent.toLowerCase();
+        if (bad.some((w) => t.includes(w.toLowerCase()))) { const h = (b.querySelector('h3') || b).textContent.replace(/\s+/g, ' ').trim().slice(0, 40); (b.closest('details.lzfold') || b).insertAdjacentHTML('afterend', quarantine('Contenía datos o nombres de otro producto y se eliminó de esta vista.', h.replace(new RegExp(bad.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'gi'), '…'))); (b.closest('details.lzfold') || b).remove(); } });
+      if (root.matchMedia('(max-width: 760px)').matches) $$('#v6lanz .v6sec, section.v7 article.card', root_).forEach((b) => {   // móvil: cada sección original, plegada (la página no pasa de ~10.000 px)
+        if (b.parentElement.matches('details.lzfold')) return; const d = document.createElement('details'); d.className = 'lzfold'; const sm = document.createElement('summary');
+        sm.textContent = ((b.querySelector('h3') || b).textContent || 'Sección').replace(/\s+/g, ' ').trim().slice(0, 70); d.appendChild(sm); b.parentNode.insertBefore(d, b); d.appendChild(b); });
+    } finally { guarding = false; }
+  }
   const openState = () => $$('#lanz2 details[open]').map((e) => e.id || e.dataset.lzStep).filter(Boolean);
   async function render() {
     const h = ensure(); if (!h) return; const d = await load(), keep = openState(), lg = $('#v6lanz');
     if (lg) $('#tab-lanz').appendChild(lg);   // se saca antes de repintar para no destruir la pantalla original
     h.innerHTML = html(d); const slot = $('#lzlegacy'); if (lg && slot) slot.appendChild(lg);
     else if (lg && !slot && lg.parentElement !== $('#tab-lanz')) $('#tab-lanz').appendChild(lg);   // sin lista: el original queda accesible
+    guard(); observe();
     keep.forEach((k) => { const e = $('#' + k, h) || $('[data-lz-step="' + k + '"]', h); if (e) e.open = true; });
   }
+  let mo = null; const observe = () => { const t = $('#lzlegacy'); if (!t || (mo && mo.t === t)) return; if (mo) mo.disconnect(); mo = new MutationObserver(() => guard()); mo.t = t; mo.observe(t, { childList: true, subtree: true }); };
   async function select(pid) {
     SEL = pid; if (root.V06 && root.V06.state) { root.V06.state.pid = pid; try { root.V06.render(); } catch (e) { /* ignorar */ } }
     await render(); const dt = $('#lanz2 .lzdet'); if (dt && root.matchMedia('(max-width: 760px)').matches) dt.scrollIntoView({ block: 'start' });
@@ -166,7 +192,10 @@
   document.addEventListener('DOMContentLoaded', () => {
     ensure();
     document.addEventListener('click', (e) => { const o = e.target.closest('[data-lz-open]'); if (o) select(o.dataset.lzOpen); });
-    setInterval(() => { const u = VV().user || null; if (u !== (onShow.u || null)) { onShow.u = u; D = null; if (NS().sec === 'lanz') render(); } }, 700);
+    document.addEventListener('click', (e) => { const g = e.target.closest('[data-lz-general]'); if (g && root.NAV6) root.NAV6.go(g.dataset.lzGeneral, 0); });
+    document.addEventListener('toggle', (e) => { const d = e.target; if (!d.open || !d.matches || !d.matches('#lzevi, #lzmet') || !root.matchMedia('(max-width: 760px)').matches) return;   // móvil: Evidencia y Metodología son excluyentes
+      const o = $(d.id === 'lzevi' ? '#lzmet' : '#lzevi'); if (o && o.open) o.open = false; }, true);
+    setInterval(() => { const u = VV().user || null; if (u !== (onShow.u || null)) { onShow.u = u; D = null; if (NS().sec === 'lanz') render(); } if (NS().sec === 'lanz') guard(); }, 700);
   });
   root.LANZ2 = { onShow, render, _statusOf: statusOf, _stepsOf: stepsOf, _summarize: summarize, _roleOf: roleOf };
 })(self);

@@ -40,7 +40,7 @@
       <ul>${e.limits.map((x) => `<li><small class="muted">${esc(x)}</small></li>`).join('')}</ul></article>`;
   }
   function keepaHtml(k) {
-    if (k.state !== 'REAL') return `<article class="card c-amber v7-keepa"><h3>Competidores reales (Keepa) ${badge(k.state, 'b7-none')}</h3><div class="v7-empty"><p><b>SIN DATOS</b>: ${esc(k.why || 'sin explicación')}</p><p class="muted">Siguiente paso: una consulta real autorizada por una persona (consume tokens Keepa; nunca se hace sola). Mientras tanto no se muestran ceros ni datos de otros productos.</p></div></article>`;
+    if (k.state !== 'REAL') return `<article class="card c-amber v7-keepa"><h3>Competidores reales (Keepa) ${badge(k.state, 'b7-none')}</h3><div class="v7-empty"><p><b>SIN DATOS</b>: este producto no tiene evidencia real de Keepa propia. No se reutilizan competidores de ningún otro producto.</p><p class="muted">Siguiente paso: una consulta real autorizada por una persona (consume tokens Keepa; nunca se hace sola). Mientras tanto no se muestran ceros ni datos de otros productos.</p></div></article>`;
     const s = k.summary;
     const rows = k.competitors.map((c) => `<tr><td>${esc(c.asin)}</td><td>${esc(c.brand)}</td><td>${esc(c.title)}</td><td>${esc(eur(c.price_eur))}</td><td>${esc(c.price_as_of || 'NO DISPONIBLE')} ${c.price_stale ? badge('OBSOLETO ' + c.price_age_days + ' d', 'b7-stale') : ''}</td><td>${esc(c.price_per_100ml == null ? 'NO DISPONIBLE' : num(c.price_per_100ml))}</td><td>${esc(c.bsr == null ? 'NO DISPONIBLE' : num(c.bsr, 0))}</td><td>${badge('REAL', 'b7-real')} ${badge('NO CONFIRMADO', 'b7-unc')}</td></tr>`).join('');
     return `<article class="card c-amber v7-keepa"><h3>Competidores reales (Keepa) ${badge('REAL', 'b7-real')} <small>${esc(k.source)} · consultado ${esc(k.consulted_at)}</small></h3>
@@ -54,6 +54,7 @@
     const q = encodeURIComponent(product);
     const [b, e, k] = await Promise.all([get('/api/v07/briefing?product=' + q), get('/api/v07/expediente?product=' + q), get('/api/v07/keepa-real?product=' + q)]);
     if (!sec.isConnected || sec.dataset.token !== String(token)) return;
+    if (pid() !== product) { sec.remove(); schedule(); return; }   // el usuario cambió de producto mientras llegaba la respuesta: se descarta (aislamiento por producto)
     if (!b.ok || !e.ok || !k.ok) { sec.innerHTML = `<p role="status" aria-live="polite" class="v7-err">No se pudo cargar el panel V0.7: ${esc((b.j && b.j.error) || (e.j && e.j.error) || (k.j && k.j.error) || 'error')}</p>`; return; }
     const st = `<p role="status" aria-live="polite" class="muted v7-status">Datos cargados para ${esc(b.j.name)}: ${k.j.competitors.length} competidores reales · ${k.j.network_calls} llamadas de red · ${k.j.tokens_spent_now} tokens Keepa.</p>`;
     sec.innerHTML = `<h2 class="v7-title">V0.7 · Procedencia del dato <small class="muted">REAL / CALCULADO / SIN DATOS / NO CONFIRMADO</small></h2>${st}` +
@@ -64,7 +65,7 @@
     const host = document.getElementById(SPACES[space]); if (!host || host.querySelector('section.v7')) return;
     if (!host.querySelector('.layout, .filters')) return; // V06 aún no ha pintado (o falta sesión)
     const product = pid(); if (!product) return;
-    const sec = document.createElement('section'); sec.className = 'v7'; sec.dataset.space = space; sec.dataset.token = String(++seq); sec.setAttribute('role', 'region'); sec.setAttribute('aria-label', 'Panel V0.7: briefing, expediente y datos reales de Keepa');
+    const sec = document.createElement('section'); sec.className = 'v7'; sec.dataset.space = space; sec.dataset.product = product; sec.dataset.token = String(++seq); sec.setAttribute('role', 'region'); sec.setAttribute('aria-label', 'Panel V0.7: briefing, expediente y datos reales de Keepa');
     sec.innerHTML = '<p role="status" aria-live="polite" class="muted">Cargando panel V0.7…</p>'; host.appendChild(sec);
     fill(sec, space, product, seq).catch((err) => { if (sec.isConnected) sec.innerHTML = `<p role="status" aria-live="polite" class="v7-err">No se pudo cargar el panel V0.7: ${esc(err && err.message)}</p>`; });
   }

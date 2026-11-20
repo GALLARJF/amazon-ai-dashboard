@@ -68,6 +68,7 @@ run "P0 Fase 2: HOY/DECISIONES/DIRECTOR con el selector REAL/DEMO sin mezcla" py
 run "P0 Fase 2.1: prioridades, sin vacíos, sin scroll horizontal, cabecera móvil, decisión plegable" python3 tests/ui_fase21_test.py
 run "P0 Fase 3: Lanzamientos guiados (4 niveles, 10 pasos, viewer, móvil)" python3 tests/ui_lanz_test.py
 run "P0 Fase 3: Lanzamientos con selector REAL/DEMO sin mezcla" python3 tests/ui_lanz_modo_test.py
+run "P0 Fase 3.1: aislamiento por producto (centinelas), acordeones móviles, coherencia de estado" python3 tests/ui_lanz_aislamiento_test.py
 run "P0 Fase 2: viewer — todos los controles de escritura desactivados y rotulados" python3 tests/ui_viewer_ro_test.py
 run "K4: planificador robusto (ejecución única, reintentos, recuperación, tope de gasto, parada)" python3 tests/k4_planner_test.py
 run "K4 it.2: selección, umbrales, conciliación, informe, explorador, planificador (API)" python3 tests/k4_iter2_test.py

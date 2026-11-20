@@ -378,3 +378,8 @@ body.shell6{overflow-x:clip}
 .lz .lzn{display:inline-flex;width:24px;height:24px;border-radius:50%;border:1px solid #5a6b7d;align-items:center;justify-content:center;font-size:12px}
 .lz .lzmiss{margin-top:8px}.lz #lzlegacy{margin-top:10px;overflow-x:auto;max-width:100%}
 @media(max-width:760px){.lz #lzlegacy button,.lz #lzlegacy summary,.lz #lzlegacy a.btn,.lz #lzlegacy select{min-height:44px}.lz .lzgrid{grid-template-columns:1fr}.lz .lzdl{grid-template-columns:96px 1fr;gap:3px 8px}.lz .lzdl dt{margin-top:0}.lz #lzlegacy table{display:block;overflow-x:auto}}
+
+/* ===== Corrección 3.1: aislamiento por producto, acordeones móviles, producto activo ===== */
+.lz .lzactive{position:sticky;top:0;z-index:5;background:#06101f;border:1px solid var(--cy,#33e0ff);border-radius:10px;padding:8px 12px;margin:8px 0;min-height:44px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lz .lzscope{margin:0 0 8px}.lz .lzq{border-color:#ffd24a;margin:8px 0}.lz .lzq .btn{min-height:44px;margin-top:6px}.lz [data-lz-general]{min-height:44px}
+.lz details.lzfold{border:1px solid #1d3550;border-radius:10px;margin:8px 0;background:#050c1a}.lz details.lzfold>summary{cursor:pointer;padding:10px 12px;min-height:44px;display:flex;align-items:center;font-weight:700}.lz details.lzfold>.card{margin:0;border:0}

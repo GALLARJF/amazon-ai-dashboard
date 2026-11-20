@@ -92,15 +92,15 @@ def run(pw, name, vp, mobile):
 # ---- lógica de estado (pura, sin servidor de datos): casos que los datos de staging no cubren
 def logic(pw):
     pg = pw.new_context().new_page(); pg.goto(f"http://localhost:{port}/"); pg.wait_for_function("window.LANZ2")
-    r = pg.evaluate("""()=>{const mk=(o)=>({sections:[{id:'economia',rows:o.eco||[]},{id:'cumplimiento',open:o.open||0,ok:o.ok||0},{id:'paises',ranking:o.rank||[]},{id:'recomendacion',verdict:o.verdict||'NO DECIDIBLE TODAVÍA',reasons:o.reasons||[]}]});
+    r = pg.evaluate("""()=>{const mk=(o)=>({sections:[{id:'economia',rows:o.eco||[]},{id:'cumplimiento',open:o.open||0,ok:o.ok||0},{id:'paises',ranking:o.rank||[]},{id:'competidores',rows:o.cmp||[]},{id:'recomendacion',verdict:o.verdict||'NO DECIDIBLE TODAVÍA',reasons:o.reasons||[]}]});
       const st=(s)=>s.map((x)=>({id:x,state:'SIN DATOS'})); const f=(o,steps)=>LANZ2._statusOf(mk(o),steps||st(['economia','benchmark','cumplimiento'])).v;
       const pos=[{contribution:3,margin:.2},{contribution:2,margin:.1}], neg=[{contribution:-1,margin:-.1},{contribution:-2,margin:-.2}];
-      return {sd:f({reasons:['x']}), rev:f({reasons:['x']},[{id:'economia',state:'PARCIAL'}]), nogo:f({eco:neg,reasons:['x']}), mixto:f({eco:[neg[0],pos[0]],reasons:['x']},[{id:'economia',state:'PARCIAL'}]), go:f({verdict:'EVALUAR POR PAÍSES',eco:pos,open:0,ok:12,rank:[1]}), goSinRank:f({verdict:'EVALUAR POR PAÍSES',eco:pos,open:0,ok:12}), goBloq:f({verdict:'EVALUAR POR PAÍSES',eco:pos,open:3,ok:9,rank:[1]}), roles:[LANZ2._roleOf('Aportar costes logísticos y evidencias regulatorias'),LANZ2._roleOf('algo raro')]}}""")
+      return {sd:f({reasons:['x']}), rev:f({reasons:['x']},[{id:'economia',state:'PARCIAL'}]), nogo:f({eco:neg,reasons:['x']}), mixto:f({eco:[neg[0],pos[0]],reasons:['x']},[{id:'economia',state:'PARCIAL'}]), go:f({verdict:'EVALUAR POR PAÍSES',eco:pos,open:0,ok:12,rank:[1],cmp:[{estado_comparabilidad:'CONFIRMADA'}]}), goSinRank:f({verdict:'EVALUAR POR PAÍSES',eco:pos,open:0,ok:12,cmp:[{estado_comparabilidad:'CONFIRMADA'}]}), goBloq:f({verdict:'EVALUAR POR PAÍSES',eco:pos,open:3,ok:9,rank:[1],cmp:[{estado_comparabilidad:'CONFIRMADA'}]}), roles:[LANZ2._roleOf('Aportar costes logísticos y evidencias regulatorias'),LANZ2._roleOf('algo raro')]}}""")
     check(f"lógica · sin economía/benchmark/cumplimiento y NO DECIDIBLE ⇒ SIN DATOS ({r['sd']})", r["sd"] == "SIN DATOS")
     check(f"lógica · con algún dato pero bloqueos ⇒ REVISAR ({r['rev']})", r["rev"] == "REVISAR")
     check(f"lógica · contribución negativa en TODOS los países calculados ⇒ NO GO ({r['nogo']})", r["nogo"] == "NO GO")
     check(f"lógica · economía mixta (una negativa, una positiva) ⇒ NO se declara NO GO ({r['mixto']})", r["mixto"] == "REVISAR")
-    check(f"lógica · GO solo con economía positiva, cumplimiento completo y ranking ({r['go']})", r["go"] == "GO")
+    check(f"lógica · GO solo con economía positiva, comparabilidad confirmada, cumplimiento completo y ranking ({r['go']})", r["go"] == "GO")
     check(f"lógica · sin ranking o con requisitos abiertos jamás es GO ({r['goSinRank']}, {r['goBloq']})", r["goSinRank"] == "REVISAR" and r["goBloq"] == "REVISAR")
     check("lógica · roles propuestos por regla, nunca una persona inventada", "Operaciones" in r["roles"][0] and "regulatorio" in r["roles"][0] and "sin persona asignada" in r["roles"][1])
     pg.context.close()

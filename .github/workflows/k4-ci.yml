@@ -44,6 +44,7 @@ jobs:
           python tests/ui_fase21_test.py
           python tests/ui_lanz_test.py
           python tests/ui_lanz_modo_test.py
+          python tests/ui_lanz_aislamiento_test.py
           python tests/ui_viewer_ro_test.py
       - name: Regresión K2/K3
         run: |
