@@ -24,7 +24,7 @@ with sync_playwright() as p:
     check("al pasar a DEMO: barra ámbar «DATOS DEMO/SINTÉTICOS … no se mezclan con los reales»", "DATOS DEMO/SINTÉTICOS" in pg.inner_text("#modeBar") and "no se mezclan" in pg.inner_text("#modeBar"))
     check("en DEMO aparece «Ventas › Panel DEMO» (modo de datos, no pestaña principal)", pg.locator("#subnav6 [data-sub]", has_text="Panel DEMO").count() == 1)
     pg.click('#nav6 [data-sec="hoy"]'); pg.wait_for_timeout(1500)
-    check("Hoy en DEMO muestra el conjunto demo (marcado DEMO) y ninguna tarjeta real", pg.locator(".v6demo").count() == 1 and "NO SON REALES" in pg.inner_text("#tab-inicio").upper())
+    check("Hoy en DEMO muestra el conjunto demo (Fase 2: bloques rotulados DEMO, aviso «no describen el negocio real») y ninguna tarjeta real; el Inicio heredado se conserva en segundo nivel", pg.locator(".v6demo").count() == 1 and pg.locator("#h2top .h2b-demo").count() >= 2 and "datos sintéticos" in pg.inner_text("#h2top").lower() and "no describen el negocio real" in pg.inner_text(".h2sit"))
     for sid, lab in (("prod", "Productos"), ("lanz", "Lanzamientos"), ("dir", "Director IA")):
         pg.click(f'#nav6 [data-sec="{sid}"]'); pg.wait_for_timeout(700)
         check(f"{lab} en DEMO: NO se muestran datos reales (guarda visible, ninguna pantalla activa)", pg.locator("#modeGuard:not([hidden])").count() == 1 and pg.locator("main.tab.on").count() == 0)

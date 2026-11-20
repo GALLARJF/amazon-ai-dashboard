@@ -63,6 +63,9 @@ run "K4 Consejero F1–F2: proveedores, libro de evidencias, verificador, motor 
 run "STAGING: rol viewer SOLO LECTURA (403 en toda escritura, lectura como admin, sin servicios de pago)" python3 tests/viewer_test.py
 run "P0 Fase 1: navegación de 6 secciones con viewer + barra móvil Android (navegador real)" python3 tests/ui_nav_test.py
 run "P0 Fase 1: selector DATOS REALES / DEMO sin mezcla y ?legacy=1 transitorio" python3 tests/ui_nav_modo_test.py
+run "P0 Fase 2: HOY ejecutivo, DECISIONES unificada y DIRECTOR IA simplificado (viewer, escritorio + Android)" python3 tests/ui_hoy_test.py
+run "P0 Fase 2: HOY/DECISIONES/DIRECTOR con el selector REAL/DEMO sin mezcla" python3 tests/ui_hoy_modo_test.py
+run "P0 Fase 2: viewer — todos los controles de escritura desactivados y rotulados" python3 tests/ui_viewer_ro_test.py
 run "K4: planificador robusto (ejecución única, reintentos, recuperación, tope de gasto, parada)" python3 tests/k4_planner_test.py
 run "K4 it.2: selección, umbrales, conciliación, informe, explorador, planificador (API)" python3 tests/k4_iter2_test.py
 run "K4: API (roles, CSRF, aislamiento demo/producción, derechos de imagen, export, persistencia)" python3 tests/k4_api_test.py

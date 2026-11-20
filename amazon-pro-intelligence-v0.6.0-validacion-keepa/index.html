@@ -29,6 +29,7 @@
   <button data-tab="hist" class="adv">Historial · Auditoría</button>
   <button data-tab="estado" class="adv">Estado · Conexiones</button>
   <button data-tab="aprob" class="adv">Aprobaciones <span id="apCount" class="pill">0</span></button>
+  <button data-tab="decisiones" class="adv">Decisiones</button>
 </nav>
 <main id="tab-inicio" class="tab on v6root"><div id="v6inicio" class="v6"></div></main>
 <main id="tab-lanz" class="tab v6root"><div id="v6lanz" class="v6"></div></main>
@@ -105,6 +106,8 @@
   <article class="card c-amber"><h3>Cola local de propuestas <small>solo registro: V0.3 no ejecuta ningún cambio comercial · las aprobaciones del servidor están en Historial</small></h3><div id="apList"></div></article>
 </main>
 
+<main id="tab-decisiones" class="tab"><div id="dec2" class="h2root"></div></main>
+
 <div id="modal" class="modal" hidden><div class="mbox card c-cyan"><button class="x" id="mClose" aria-label="Cerrar">✕</button><div id="mBody"></div></div></div>
 
 <script src="js/calc.js"></script>
@@ -122,6 +125,8 @@
 <script src="js/eu.js"></script>
 <script src="js/v06.js"></script>
 <script src="js/v07.js"></script>
+<script src="js/ro.js"></script>
+<script src="js/hoy.js"></script>
 <script src="js/nav.js"></script>
 </body>
 </html>

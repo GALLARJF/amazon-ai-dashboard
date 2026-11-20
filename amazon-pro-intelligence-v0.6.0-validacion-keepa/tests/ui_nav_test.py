@@ -7,7 +7,7 @@ os.environ.update(AMAZON_PRO_STAGING="1", AMAZON_PRO_SEED_VIEWERS="auditor", AMA
 from playwright.sync_api import sync_playwright
 import server as S
 from backend import ai as AI
-OUT = os.path.join(ROOT, "docs", "p0_hoy", "fase1"); os.makedirs(OUT, exist_ok=True); R = []
+OUT = os.path.join(ROOT, "docs", "p0_hoy", "fase2", "nav"); os.makedirs(OUT, exist_ok=True); R = []
 def check(n, c): R.append(bool(c)); print(("OK   " if c else "FAIL ") + n)
 tmp = tempfile.mkdtemp(); srv = S.make_server(0, admin_token="t", db_path=os.path.join(tmp, "s.db"), cfg_fn=lambda: AI.config({}), admin_password="admin-pass-p9Zt4w"); port = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -56,7 +56,7 @@ def run(pw, name, vp, mobile):
         r0 = pg.evaluate(BAR_JS); check(f"[{name}] control negativo: sin espacio inferior la barra SÍ taparía contenido (prueba sensible: {r0.get('maxBottom')} > {r0.get('barTop')})", r0.get("maxBottom", 0) > r0.get("barTop", 0) + 1)
         pg.evaluate("document.body.style.paddingBottom=''")
     pg.click(f'{nav} [data-sec="hoy"]'); pg.wait_for_timeout(600)
-    chip = pg.locator("#decChip"); check(f"[{name}] chip «Decisiones · n» visible; abre Administración › Aprobaciones", chip.is_visible() and (chip.click() or True) and pg.wait_for_function("document.querySelector('#tab-aprob.on')", timeout=5000) is not None)
+    chip = pg.locator("#decChip"); check(f"[{name}] chip «Decisiones · n» visible; abre la bandeja única DECISIONES (Fase 2)", chip.is_visible() and (chip.click() or True) and pg.wait_for_function("document.querySelector('#tab-decisiones.on')", timeout=5000) is not None)
     r = pg.evaluate("fetch('/api/k4/consejero/investigar',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':window.V03.V.csrf},body:'{}'}).then(r=>r.status)"); check(f"[{name}] servidor: POST forzado del viewer → 403", r == 403)
     check(f"[{name}] sin errores de consola y sin peticiones externas", not errs and not ext)
     if errs: print(errs[:4])

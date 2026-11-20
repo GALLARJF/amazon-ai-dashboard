@@ -14,33 +14,34 @@
     { id: 'prod', l: 'Productos', s: 'Productos', i: '▣', subs: [{ l: 'Catálogo', tab: 'prod' }, { l: 'Precio', tab: 'k4', k4: 'precio' }, { l: 'Competencia', tab: 'k4', k4: 'bench' }, { l: 'Expediente PHIVITAL', tab: 'piloto' }] },
     { id: 'lanz', l: 'Lanzamientos', s: 'Lanzam.', i: '✈', subs: [{ l: 'Expediente', tab: 'lanz' }, { l: 'Pre-Launch', tab: 'prelaunch' }, { l: 'Europa · Mercados', tab: 'europa' }] },
     { id: 'dir', l: 'Director IA', s: 'Director', i: '✦', subs: [{ l: 'Director', tab: 'dir' }, { l: 'Datos del Director', tab: 'k4', k4: 'dir' }] },
+    { id: 'dec', l: 'Decisiones', s: 'Decisiones', i: '✔', hidden: true, subs: [{ l: 'Decisiones', tab: 'decisiones' }] },
     { id: 'adm', l: 'Administración', s: 'Admin', i: '⚙', admin: true, subs: [{ l: 'Auditoría', tab: 'hist' }, { l: 'Estado · Conexiones', tab: 'estado' }, { l: 'Aprobaciones', tab: 'aprob' }] },
   ];
   const ST = { mode: 'real', sec: 'hoy', sub: 0, guard: false };
   try { const m = sessionStorage.getItem('apiMode'); if (m === 'demo' || m === 'real') ST.mode = m; } catch (e) { /* sin almacenamiento */ }
   const tabOf = (s) => { const x = $('.tab.on'); return x ? x.id.replace(/^tab-/, '') : null; };
   const subs = (sec) => sec.subs.filter((x) => !x.demo || ST.mode === 'demo');
-  const allowedInDemo = (sec, sub) => STAGING() || sec.admin || sec.id === 'hoy' || sub.demo;   // modo DEMO: nunca se muestran datos reales
+  const allowedInDemo = (sec, sub) => STAGING() || sec.admin || sec.id === 'hoy' || sec.id === 'dec' || sub.demo;   // modo DEMO: nunca se muestran datos reales
   const allowedInReal = (sub) => !sub.demo;
 
   function build() {
     document.body.classList.add('shell6');
     const top = $('header.top'); if (!top) return;
     const bar = document.createElement('div'); bar.id = 'nav6bar'; bar.className = 'nav6bar';
-    bar.innerHTML = '<nav id="nav6" class="nav6" aria-label="Secciones"></nav><div class="nav6r"><label class="dmode" title="Procedencia de los datos que se muestran"><span class="dml">DATOS</span><select id="dmode" aria-label="Procedencia de los datos"><option value="real">DATOS REALES</option><option value="demo">DATOS DEMO/SINTÉTICOS</option></select></label><button type="button" id="decChip" class="decchip ro-ok" title="Decisiones pendientes (Fase 2: bandeja única)">Decisiones · <b id="decN">0</b></button></div>';
+    bar.innerHTML = '<nav id="nav6" class="nav6" aria-label="Secciones"></nav><div class="nav6r"><label class="dmode" title="Procedencia de los datos que se muestran"><span class="dml">DATOS</span><select id="dmode" aria-label="Procedencia de los datos"><option value="real">DATOS REALES</option><option value="demo">DATOS DEMO/SINTÉTICOS</option></select></label><button type="button" id="decChip" class="decchip ro-ok" title="Decisiones pendientes: bandeja única">Decisiones · <b id="decN">0</b></button></div>';
     top.insertAdjacentElement('afterend', bar);
     const sub = document.createElement('div'); sub.id = 'subnav6'; sub.className = 'subnav6'; bar.insertAdjacentElement('afterend', sub);
     const strip = document.createElement('div'); strip.id = 'modeBar'; strip.className = 'modebar'; sub.insertAdjacentElement('afterend', strip);
     const guard = document.createElement('main'); guard.id = 'modeGuard'; guard.className = 'modeguard'; guard.hidden = true; strip.insertAdjacentElement('afterend', guard);
     const bn = document.createElement('nav'); bn.id = 'bnav'; bn.className = 'bnav'; bn.setAttribute('aria-label', 'Secciones (móvil)'); document.body.appendChild(bn);
     $('#dmode').onchange = (e) => setMode(e.target.value);
-    $('#decChip').onclick = () => go('adm', 2);
+    $('#decChip').onclick = () => go('dec', 0);
     $('#modeGuard').addEventListener('click', (e) => { if (e.target.closest('[data-togreal]')) setMode('real'); });
     if (STAGING()) { ST.mode = 'demo'; const o = $('#dmode option[value=real]'); o.disabled = true; o.textContent = 'DATOS REALES (no hay en staging)'; $('#dmode').title = 'Staging: solo datos sintéticos'; }
     $('#dmode').value = ST.mode; paintNav(); applyMode(true);
   }
   function paintNav() {
-    const mk = (cls) => SECS.map((s) => `<button type="button" class="${cls} ro-ok ${s.id === ST.sec ? 'on' : ''}" data-sec="${s.id}" ${s.id === ST.sec ? 'aria-current="page"' : ''}>${cls === 'bn' ? '<i>' + s.i + '</i><span>' + s.s + '</span>' : s.l}</button>`).join('');
+    const mk = (cls) => SECS.filter((s) => !s.hidden).map((s) => `<button type="button" class="${cls} ro-ok ${s.id === ST.sec ? 'on' : ''}" data-sec="${s.id}" ${s.id === ST.sec ? 'aria-current="page"' : ''}>${cls === 'bn' ? '<i>' + s.i + '</i><span>' + s.s + '</span>' : s.l}</button>`).join('');
     $('#nav6').innerHTML = mk('n6'); $('#bnav').innerHTML = mk('bn');
     const sec = SECS.find((s) => s.id === ST.sec), ss = subs(sec);
     $('#subnav6').innerHTML = ss.length > 1 ? ss.map((x, i) => `<button type="button" class="sn ro-ok ${i === ST.sub ? 'on' : ''}" data-sub="${i}">${x.l}</button>`).join('') : '';
@@ -63,6 +64,7 @@
     if (ok) clickLegacy(sub.tab, sub.k4);
     else { ST.guard = true; $('#modeGuard').innerHTML = `<article class="card c-amber"><h3>Modo DATOS DEMO/SINTÉTICOS</h3><p>Esta sección muestra datos reales, y en este modo nunca se mezclan con los demo. Cambia a <b>DATOS REALES</b> para verla, o usa «Hoy» y «Ventas › Panel DEMO».</p><p><button type="button" class="btn ro-ok" data-togreal="1">Cambiar a DATOS REALES</button></p></article>`; }
     paintNav(); scrollTo(0, 0);
+    if (ok && root.HOY2) root.HOY2.onShow(sec.id);
   }
   function go(id, i) { const sec = SECS.find((s) => s.id === id); if (sec) show(sec, i || 0); }
   function setMode(m) {
@@ -85,8 +87,7 @@
   async function decisions() {
     try {
       const V = root.V03 && root.V03.V; if (!V || !V.user) { $('#decN').textContent = '0'; return; }
-      const r = await root.V03.api('GET', '/api/v06/decisions'); const a = r.ok ? (r.j.decisions || []).length : 0;
-      const loc = parseInt(($('#apCount') || {}).textContent || '0', 10) || 0; $('#decN').textContent = String(a + loc);
+      $('#decN').textContent = String(root.HOY2 ? await root.HOY2.pendingCount() : 0);   // bandeja única (Fase 2)
     } catch (e) { /* sin dato */ }
   }
   document.addEventListener('DOMContentLoaded', () => {
