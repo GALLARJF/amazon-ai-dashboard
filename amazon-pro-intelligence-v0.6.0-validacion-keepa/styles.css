@@ -334,3 +334,31 @@ body.viewer label.vro,body.viewer .vro{pointer-events:none}
  .h2dec dl{grid-template-columns:1fr}.h2dec dt{margin-top:6px}
  .h2sit{padding:12px 14px}
 }
+
+/* ===== P0 · Fase 2.1 — cabecera móvil compacta · tarjetas de decisión plegables · sin desplazamiento horizontal · sin paneles vacíos ===== */
+body.shell6{overflow-x:clip}
+.modebar:empty,.modeguard:empty,.subnav6:empty,.h2head p:empty,.v6msg:empty{display:none}
+.mbx{font-weight:700}
+.h2more>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--cy);font-weight:700}
+.h2more dl{margin-top:6px}
+@media (min-width:761px){.h2more>summary{display:none}}
+@media (max-width:760px){
+ .envbanner{font-size:11px;letter-spacing:.02em;padding:5px 6px}
+ body.shell6 .top{position:relative;flex-wrap:nowrap;align-items:center;gap:8px;padding:2px 0 4px}
+ body.shell6 .brand span{display:none}body.shell6 .brand b{font-size:24px}
+ body.shell6 .title{flex:1 1 auto;min-width:0}body.shell6 .title h1{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ body.shell6 .hr{width:auto;flex:0 0 auto;align-items:flex-end}
+ body.shell6 .sess{flex-wrap:nowrap}
+ body.shell6 .sessu{display:flex;align-items:center;min-height:44px;padding:0 10px;border:1px solid #2a5b86;border-radius:10px;font-size:11px;max-width:132px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer}
+ body.shell6 .sessu::after{content:"\00a0▾"}
+ body.shell6 #sess #acSel,body.shell6 #sess #lgOut{display:none}
+ body.shell6 .top.acct-open #sess{position:absolute;right:0;top:100%;z-index:960;width:min(100%,340px);background:#07142a;border:1px solid #2a5b86;border-radius:12px;padding:10px;display:flex;flex-direction:column;align-items:stretch;gap:8px;box-shadow:0 8px 24px #000a}
+ body.shell6 .top.acct-open #sess #acSel,body.shell6 .top.acct-open #sess #lgOut{display:block;min-height:44px;width:100%;font-size:13px}
+ body.shell6 #sess #lgOpen{min-height:44px}
+ body.shell6 .nav6bar{margin:0 0 4px}.dmode{min-height:44px}.decchip{min-height:44px}
+ body.shell6 .modebar{margin:0 0 6px;padding:4px 8px;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mbx{display:none}
+ body.shell6 .h2sit{padding:10px 12px;margin:2px 0 8px}.h2sit h2{font-size:13px}.h2big{font-size:15px}
+ .h2dec{padding:10px 12px}.h2dec h3{font-size:14px;margin:2px 0 6px}
+ .h2dec dl{grid-template-columns:92px 1fr;gap:3px 8px;font-size:13.5px}.h2dec dt{margin-top:0;font-size:11px}
+ .h2lock{display:block;margin:0 0 4px}.h2act{margin-top:4px}
+}

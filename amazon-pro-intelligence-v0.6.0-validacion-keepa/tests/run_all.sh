@@ -65,6 +65,7 @@ run "P0 Fase 1: navegación de 6 secciones con viewer + barra móvil Android (na
 run "P0 Fase 1: selector DATOS REALES / DEMO sin mezcla y ?legacy=1 transitorio" python3 tests/ui_nav_modo_test.py
 run "P0 Fase 2: HOY ejecutivo, DECISIONES unificada y DIRECTOR IA simplificado (viewer, escritorio + Android)" python3 tests/ui_hoy_test.py
 run "P0 Fase 2: HOY/DECISIONES/DIRECTOR con el selector REAL/DEMO sin mezcla" python3 tests/ui_hoy_modo_test.py
+run "P0 Fase 2.1: prioridades, sin vacíos, sin scroll horizontal, cabecera móvil, decisión plegable" python3 tests/ui_fase21_test.py
 run "P0 Fase 2: viewer — todos los controles de escritura desactivados y rotulados" python3 tests/ui_viewer_ro_test.py
 run "K4: planificador robusto (ejecución única, reintentos, recuperación, tope de gasto, parada)" python3 tests/k4_planner_test.py
 run "K4 it.2: selección, umbrales, conciliación, informe, explorador, planificador (API)" python3 tests/k4_iter2_test.py

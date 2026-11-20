@@ -50,7 +50,8 @@
   function modeBar() {
     const demo = ST.mode === 'demo', st = STAGING();
     $('#modeBar').className = 'modebar ' + (demo ? 'demo' : 'real');
-    $('#modeBar').textContent = demo ? (st ? 'DATOS DEMO/SINTÉTICOS · entorno de auditoría: no existe ningún dato real' : 'DATOS DEMO/SINTÉTICOS · no son datos reales · no se mezclan con los reales') : 'DATOS REALES · solo informes importados y fuentes verificadas · sin datos demo';
+    const hd = demo ? 'DATOS DEMO/SINTÉTICOS' : 'DATOS REALES', tl = demo ? (st ? 'entorno de auditoría: no existe ningún dato real' : 'no son datos reales · no se mezclan con los reales') : 'solo informes importados y fuentes verificadas · sin datos demo';
+    $('#modeBar').innerHTML = `<b>${hd}</b><span class="mbx"> · ${tl}</span>`;   // en móvil solo la parte en negrita (una línea)
   }
   function clickLegacy(tab, k4) {
     const b = $(`#tabs button[data-tab="${tab}"]`); if (!b) return;
@@ -63,7 +64,7 @@
     $('#modeGuard').hidden = ok; $$('main.tab').forEach((m) => { if (!ok) m.classList.remove('on'); });
     if (ok) clickLegacy(sub.tab, sub.k4);
     else { ST.guard = true; $('#modeGuard').innerHTML = `<article class="card c-amber"><h3>Modo DATOS DEMO/SINTÉTICOS</h3><p>Esta sección muestra datos reales, y en este modo nunca se mezclan con los demo. Cambia a <b>DATOS REALES</b> para verla, o usa «Hoy» y «Ventas › Panel DEMO».</p><p><button type="button" class="btn ro-ok" data-togreal="1">Cambiar a DATOS REALES</button></p></article>`; }
-    paintNav(); scrollTo(0, 0);
+    paintNav(); scrollTo(0, 0); const hd = $('header.top'); if (hd) hd.classList.remove('acct-open');
     if (ok && root.HOY2) root.HOY2.onShow(sec.id);
   }
   function go(id, i) { const sec = SECS.find((s) => s.id === id); if (sec) show(sec, i || 0); }
@@ -93,9 +94,12 @@
   document.addEventListener('DOMContentLoaded', () => {
     build();
     document.addEventListener('click', (e) => {
+      const su = e.target.closest('.sessu'); if (su) { $('header.top').classList.toggle('acct-open'); return; }
+      if (!e.target.closest('#sess')) $('header.top').classList.remove('acct-open');
       const n = e.target.closest('#nav6 [data-sec], #bnav [data-sec]'); if (n) { go(n.dataset.sec, 0); return; }
       const s = e.target.closest('#subnav6 [data-sub]'); if (s) go(ST.sec, Number(s.dataset.sub));
     });
+    setInterval(() => { const u = $('.sessu'); if (u && !u.hasAttribute('role')) { u.setAttribute('role', 'button'); u.setAttribute('tabindex', '0'); u.setAttribute('aria-label', 'Cuenta activa: ' + u.textContent + ' (abre el menú de cuenta)'); } }, 700);
     setInterval(sync, 400); setInterval(decisions, 15000); setTimeout(decisions, 1500);
   });
   root.NAV6 = { go, setMode, state: ST };

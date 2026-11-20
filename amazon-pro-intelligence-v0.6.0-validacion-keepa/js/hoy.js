@@ -123,6 +123,7 @@
     parts.push(np ? `${np} ${plural(np, 'decisión pendiente', 'decisiones pendientes')} de una persona.` : 'Ninguna decisión pendiente.');
     return { color, label: lab, text: parts.join(' '), kind: dataKind() };
   }
+  const prioTitle = (n) => ['Prioridades', 'Una prioridad', 'Dos prioridades', 'Tres prioridades'][Math.max(0, Math.min(3, n))];   // el título refleja SIEMPRE las que hay: no se inventa una tercera
   function hoyHtml(d) {
     const st = situation(d), sal = salesOf(d), stk = stockOf(d), pend = pendingOnes(d);
     const demoOnly = isDemo() && !STG();
@@ -140,7 +141,7 @@
         <article class="h2c" data-blk="margen"><h3>Margen ${badge(sal.margin != null ? 'DEMO' : 'SIN DATOS')}</h3>${margin}</article>
         <article class="h2c" data-blk="stock"><h3>Stock y riesgos ${badge(demoOnly ? 'SIN DATOS' : (d.home ? dataKind() : 'SIN DATOS'))}</h3>${riskBlock}</article></section>
       <section class="h2two"><article class="h2c" data-blk="decisiones"><h3>Decisiones pendientes ${badge(demoOnly || !d.logged ? 'SIN DATOS' : dataKind())}</h3>${decBlock}</article>
-        <article class="h2c" data-blk="prioridades"><h3>Tres prioridades ${badge(demoOnly || !d.logged ? 'SIN DATOS' : dataKind())}</h3>${prBlock}</article></section>`;
+        <article class="h2c" data-blk="prioridades"><h3>${prioTitle(demoOnly ? 0 : d.prios.length)} ${badge(demoOnly || !d.logged ? 'SIN DATOS' : dataKind())}</h3>${prBlock}</article></section>`;
   }
   function hoyDetail(d) {
     const rows = [['Ventas', isDemo() ? 'GET /api/v06/demo' : 'GET /api/v06/home (kpis)', salesOf(d).kind], ['Margen', isDemo() ? 'GET /api/v06/demo' : 'GET /api/v06/home (kpis)', salesOf(d).margin != null ? 'DEMO' : 'SIN DATOS'],
@@ -151,6 +152,8 @@
 
   // ---------------------------------------------------------------------------------------------- DECISIONES
   let FILT = 'pend', RESOLVED = null;
+  const MQ = root.matchMedia ? root.matchMedia('(min-width: 761px)') : { matches: true };
+  const wide = () => MQ.matches;   // escritorio: detalle siempre abierto; móvil: plegado bajo «Ver detalle» (los 8 campos siguen en la tarjeta)
   const decCard = (x) => {
     const v = VV(), canDecide = x.decidable && !v.viewer && ['admin', 'approver'].includes(v.role);
     let btn = '';
@@ -161,8 +164,10 @@
     }
     const link = x.product ? `<button type="button" class="h2btn ghost ro-ok" data-h2prod="${esc(x.product)}">Ir al producto</button>` : '';
     return `<article class="h2dec h2p-${esc(x.priority).replace(/[^A-Z]/g, '').toLowerCase()}" data-dkey="${esc(x.key)}"><header><span class="h2pri">${esc(x.priority)}</span><span class="h2org">${esc(x.origin)}</span></header><h3>${esc(x.title)}</h3>
-      <dl><dt>Producto</dt><dd>${esc(x.productName || 'Sin producto asociado')}</dd><dt>Prioridad</dt><dd>${esc(x.priority)}</dd><dt>Fecha límite</dt><dd>${esc(x.deadline)}${x.since ? ' · solicitada ' + esc(x.since) : ''}</dd>
-      <dt>Impacto estimado</dt><dd>${esc(x.impact)}</dd><dt>Responsable</dt><dd>${esc(x.owner)}</dd><dt>Evidencia</dt><dd>${(x.evidence || []).map(esc).join('<br>') || 'SIN DATOS'}</dd><dt>Estado</dt><dd>${esc(x.state)}</dd><dt>Acción recomendada</dt><dd><b>${esc(x.action)}</b></dd></dl>${btn}${link}</article>`;
+      <dl><dt>Acción recomendada</dt><dd><b>${esc(x.action)}</b></dd><dt>Producto</dt><dd>${esc(x.productName || 'Sin producto asociado')}</dd><dt>Prioridad</dt><dd>${esc(x.priority)}</dd><dt>Fecha límite</dt><dd>${esc(x.deadline)}${x.since ? ' · solicitada ' + esc(x.since) : ''}</dd>
+      <dt>Impacto estimado</dt><dd>${esc(x.impact)}</dd></dl>
+      <details class="h2more" ${wide() ? 'open' : ''}><summary>Ver detalle</summary><dl><dt>Responsable</dt><dd>${esc(x.owner)}</dd><dt>Evidencia</dt><dd>${(x.evidence || []).map(esc).join('<br>') || 'SIN DATOS'}</dd><dt>Estado</dt><dd>${esc(x.state)}</dd></dl></details>
+      ${btn}${link}</article>`;
   };
   async function decHtml(d) {
     const F = [['pend', 'Pendientes de ti', pendingOnes(d)], ['regla', 'Sugeridas por reglas', d.list.filter((x) => x.rule)], ['seg', 'En seguimiento', d.seg || []], ['res', 'Resueltas', RESOLVED || []]];
@@ -245,7 +250,7 @@
   // ---------------------------------------------------------------------------------------------- eventos y ciclo
   async function pendingCount() { const d = await load(); return d.logged && d.real ? pendingOnes(d).length : 0; }
   let cur = 'hoy', lastUser = null;
-  function onShow(sec) { cur = sec; D = null;   // cada vez que se muestra una pantalla se relee (datos y modo REAL/DEMO frescos)
+  function onShow(sec) { cur = sec; D = null; if (root.scrollX) root.scrollTo(0, root.scrollY);   // cada vez que se muestra una pantalla se relee (datos y modo REAL/DEMO frescos)
     if (sec === 'hoy') renderHoy(); else if (sec === 'dec') renderDec(); else if (sec === 'dir') renderDir(); }
   document.addEventListener('DOMContentLoaded', () => {
     ensureHoy(); ensureDir();
@@ -259,6 +264,8 @@
         D = null; await renderDec(); const m = $('#dec2 .h2head p'); if (m) m.textContent = r.ok ? (r.j.nota || 'Decisión registrada.') : 'No se pudo registrar: ' + ((r.j && r.j.error) || 'error'); return;
       }
     });
+    if (MQ.addEventListener) MQ.addEventListener('change', () => { if (cur === 'dec') renderDec(); });
+    root.addEventListener('scroll', () => { if (root.scrollX) root.scrollTo(0, root.scrollY); }, { passive: true });   // nunca queda desplazado en horizontal
     setInterval(() => { const u = VV().user || null; if (u !== lastUser) { lastUser = u; D = null; RESOLVED = null; onShow(cur); } }, 700);
     setInterval(() => { if (document.visibilityState === 'visible') { D = null; onShow(cur); } }, 20000);
   });

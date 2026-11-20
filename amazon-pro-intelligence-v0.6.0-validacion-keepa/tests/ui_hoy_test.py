@@ -18,8 +18,8 @@ cj = http.cookiejar.CookieJar(); op = urllib.request.build_opener(urllib.request
 def call(p, b=None, csrf=""):
     r = urllib.request.Request(f"http://localhost:{port}" + p, data=json.dumps(b).encode() if b is not None else None, headers={"Content-Type": "application/json", "X-CSRF-Token": csrf}); return json.loads(op.open(r).read())
 csrf = call("/api/login", {"username": "admin", "password": "admin-pass-p9Zt4w"})["csrf"]; call("/api/v06/order", {"product": "PRD-PHIVITAL-MAGNESIO"}, csrf)
-SIX = ["Situación general", "Ventas", "Margen", "Stock y riesgos", "Decisiones pendientes", "Tres prioridades"]
-LABELS = ["Producto", "Prioridad", "Fecha límite", "Impacto estimado", "Responsable", "Evidencia", "Estado", "Acción recomendada"]
+SIX = ["Situación general", "Ventas", "Margen", "Stock y riesgos", "Decisiones pendientes", "Dos prioridades"]   # el título es dinámico: aquí hay 2 prioridades reales (no se inventa una tercera)
+LABELS = ["Acción recomendada", "Producto", "Prioridad", "Fecha límite", "Impacto estimado", "Responsable", "Evidencia", "Estado"]
 TECH = re.compile(r"/api/|endpoint|metodolog|\bGET\b|\bPOST\b|\btokens?\b|\bmodelo|llamadas? a", re.I)
 BAR_JS = open(os.path.join(ROOT, "tests", "ui_nav_test.py"), encoding="utf-8").read().split('BAR_JS = """')[1].split('"""')[0]
 def run(pw, name, vp, mobile):
@@ -72,7 +72,7 @@ def run(pw, name, vp, mobile):
     check(f"{T} DECISIONES › Pendientes: 1 decisión de servidor con los 8 campos", n == 1 and pg.eval_on_selector_all("#dec2 .h2dec dt", "e=>e.map(x=>x.textContent.trim())") == LABELS)
     vals = pg.eval_on_selector_all("#dec2 .h2dec dd", "e=>e.map(x=>x.textContent.trim())")
     check(f"{T} DECISIONES: ningún campo vacío; lo desconocido dice SIN FECHA / NO DETERMINABLE (no se inventa)", all(len(v) > 1 for v in vals) and any("SIN FECHA LÍMITE" in v for v in vals) and any("NO DETERMINABLE" in v for v in vals))
-    check(f"{T} DECISIONES: producto, estado y acción recomendada correctos", "PHIVITAL Magnesio" in vals[0] and "PENDIENTE DE APROBACIÓN" in vals[6] and len(vals[7]) > 20)
+    check(f"{T} DECISIONES: producto, estado y acción recomendada correctos", "PHIVITAL Magnesio" in vals[1] and "PENDIENTE DE APROBACIÓN" in vals[7] and len(vals[0]) > 20)
     pg.click('[data-h2f="regla"]'); pg.wait_for_timeout(400)
     rc = pg.locator("#dec2 .h2dec"); check(f"{T} DECISIONES › Sugeridas por reglas: 5 (una por riesgo) con 8 campos cada una", rc.count() == 5 and all(pg.eval_on_selector_all("#dec2 .h2dec:nth-of-type(%d) dt" % (i + 1), "e=>e.length") == 8 for i in range(5)))
     check(f"{T} DECISIONES: prioridad MEDIA coherente con los 5 riesgos medios", pg.eval_on_selector_all("#dec2 .h2dec .h2pri", "e=>e.every(x=>x.textContent.trim()==='MEDIA')"))
