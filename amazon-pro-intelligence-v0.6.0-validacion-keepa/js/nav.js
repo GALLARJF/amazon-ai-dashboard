@@ -66,6 +66,7 @@
     else { ST.guard = true; $('#modeGuard').innerHTML = `<article class="card c-amber"><h3>Modo DATOS DEMO/SINTÉTICOS</h3><p>Esta sección muestra datos reales, y en este modo nunca se mezclan con los demo. Cambia a <b>DATOS REALES</b> para verla, o usa «Hoy» y «Ventas › Panel DEMO».</p><p><button type="button" class="btn ro-ok" data-togreal="1">Cambiar a DATOS REALES</button></p></article>`; }
     paintNav(); scrollTo(0, 0); const hd = $('header.top'); if (hd) hd.classList.remove('acct-open');
     if (ok && root.HOY2) root.HOY2.onShow(sec.id);
+    if (ok && root.LANZ2) root.LANZ2.onShow(sec.id);
   }
   function go(id, i) { const sec = SECS.find((s) => s.id === id); if (sec) show(sec, i || 0); }
   function setMode(m) {
