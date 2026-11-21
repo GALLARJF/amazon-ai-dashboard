@@ -1,0 +1,41 @@
+# Blueprint de STAGING de Render — SOLO LECTURA, DATOS SINTÉTICOS. Se aplica a mano desde el panel; no se despliega solo.
+# Sin credenciales de Amazon, Keepa ni IA. Coste estimado: Starter 7 USD/mes + disco 1 GB 0,25 USD/mes.
+services:
+  - type: web
+    name: amazon-pro-intelligence-staging
+    runtime: docker
+    plan: starter            # el plan gratuito no admite disco persistente
+    branch: aht-finalizacion-fase4
+    rootDir: amazon-pro-intelligence-v0.6.0-validacion-keepa
+    autoDeploy: false
+    healthCheckPath: /healthz
+    disk:
+      name: datos-staging
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: AMAZON_PRO_STAGING
+        value: "1"
+      - key: AMAZON_PRO_BIND
+        value: 0.0.0.0
+      - key: AMAZON_PRO_DB
+        value: /data/amazon_pro.db
+      - key: AMAZON_PRO_BACKUP_DIR
+        value: /data/backups
+      - key: AMAZON_PRO_CONNECTORS      # vacío: ningún conector habilitado
+        value: ""
+      - key: AMAZON_PRO_AI_ENABLE
+        value: "0"
+      - key: AMAZON_PRO_KEEPA_ENABLE
+        value: "0"
+      - key: AMAZON_PRO_NO_WORKER
+        value: "1"
+      - key: AMAZON_PRO_SEED_USERS      # sin usuarios operativos adicionales
+        value: ""
+      - key: AMAZON_PRO_SEED_VIEWERS
+        value: auditor
+      - key: AMAZON_PRO_ADMIN_PASSWORD  # la escribe el propietario en el panel; nunca en chat ni en GitHub
+        sync: false
+      - key: AMAZON_PRO_PASSWORD_AUDITOR
+        sync: false
+      # NO definir nunca en staging: KEEPA_API_KEY, OPENAI_API_KEY, ANTHROPIC_API_KEY, AMAZON_PRO_SPAPI_*, AMAZON_PRO_ADS_*, AMAZON_PRO_LIVE_* (el servidor no arranca).
