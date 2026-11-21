@@ -59,6 +59,7 @@
     if (/coste/i.test(t)) return 'Documentar los costes con fuente y fecha en la ficha del producto';
     return 'Revisar el riesgo y registrar la decisión en la ficha';
   }
+  const ownerFor = (r) => { const t = String(r.risk || ''); return /regulatori|claim/i.test(t) ? 'Responsable regulatorio' : /coste/i.test(t) ? 'Responsable de costes y compras' : /ventas|informe/i.test(t) ? 'Analista (importa el informe)' : 'Aprobador (rol approver o admin)'; };
   const impactFor = (r) => {
     const t = String(r.risk || '');
     const why = /regulatori/i.test(t) ? 'bloquea la publicación; sin ventas ni costes no se puede traducir a euros' : /claim/i.test(t) ? 'impide usar esos claims; sin ventas no se puede traducir a euros' : /coste/i.test(t) ? 'sin costes no hay contribución calculable' : 'sin datos suficientes';
@@ -88,8 +89,8 @@
   const pendingOnes = (d) => (d.list || []).filter((x) => x.pending);
   function priorities(d) {   // máx. 3: riesgos agrupados por tipo (gravedad, nº de productos) + hueco de datos de ventas
     const g = {}; risksOf(d).forEach((r) => { const k = String(r.risk).replace(/^\d+ /, '#'); const w = LVL[String(r.level).toUpperCase()] || 'MEDIA'; (g[k] = g[k] || { risk: r.risk, level: w, names: [], pids: [] }); g[k].names.push(r.name); g[k].pids.push(r.product); if (WEIGHT[w] > WEIGHT[g[k].level]) g[k].level = w; });
-    const items = Object.values(g).map((x) => ({ title: actionFor({ risk: x.risk }), why: x.risk, level: x.level, products: [...new Set(x.names)], pids: [...new Set(x.pids)] }));
-    if (d.real && d.home && !salesOf(d).num) items.push({ title: 'Importar un informe de ventas de Amazon', why: 'Sin ventas importadas no hay ventas, margen ni rentabilidad', level: 'MEDIA', products: [], pids: [] });
+    const items = Object.values(g).map((x) => ({ title: actionFor({ risk: x.risk }), why: x.risk, level: x.level, products: [...new Set(x.names)], pids: [...new Set(x.pids)], impact: impactFor({ risk: x.risk }), owner: ownerFor({ risk: x.risk }), evidence: 'Ficha del catálogo de ' + [...new Set(x.names)].join(', ') + ': ' + x.risk, next: actionFor({ risk: x.risk }) }));
+    if (d.real && d.home && !salesOf(d).num) items.push({ title: 'Importar un informe de ventas de Amazon', why: 'Sin ventas importadas no hay ventas, margen ni rentabilidad', level: 'MEDIA', products: [], pids: [], impact: 'NO DETERMINABLE · sin ventas importadas no hay ventas, margen ni rentabilidad', owner: 'Analista (importa el informe)', evidence: 'Ningún informe de ventas importado (Ventas › Mis ventas)', next: 'Descargar el informe de ventas de Seller Central e importarlo en Ventas' });
     items.sort((a, b) => (WEIGHT[b.level] - WEIGHT[a.level]) || (b.products.length - a.products.length));
     return items.slice(0, 3);
   }
@@ -210,8 +211,8 @@
       concl = a.join(' ');
     }
     const pn = (id) => ((d.cat || []).find((p) => p.id === id) || {}).name || id;
-    const fromPend = pendingOnes(d).map((x) => ({ title: x.action, why: plain(x.title), level: x.priority, kind: x.kind, prods: x.product ? [{ id: x.product, name: x.productName || x.product }] : [] }));
-    const fromRules = (d.prios || []).map((p) => ({ title: p.title, why: p.why, level: p.level, kind: 'Regla determinista', prods: p.pids.map((id) => ({ id, name: pn(id) })) }));
+    const fromPend = pendingOnes(d).map((x) => ({ title: x.action, why: plain(x.title), level: x.priority, kind: x.kind, impact: plain(x.impact), owner: x.owner, evidence: (x.evidence || []).map(plain).join(' · ') || 'SIN DATOS', next: x.action, prods: x.product ? [{ id: x.product, name: x.productName || x.product }] : [] }));
+    const fromRules = (d.prios || []).map((p) => ({ title: p.title, why: p.why, level: p.level, kind: 'Regla determinista', impact: p.impact, owner: p.owner, evidence: p.evidence, next: p.next, prods: p.pids.map((id) => ({ id, name: pn(id) })) }));
     const decs = fromPend.concat(fromRules).slice(0, 3);
     return { concl, insuf, decs, faltan };
   }
@@ -227,9 +228,9 @@
     const chip = (t, c) => `<span class="h2kind h2k-${c}">${t}</span>`;
     const kindChip = (k) => (/Cálculo/.test(k) ? chip('Cálculo', 'calc') : chip('Regla determinista', 'rule'));
     $('#d2top').innerHTML = `<section class="h2head"><h2>Director IA ${badge(d.logged ? (isDemo() && !STG() ? 'DEMO' : dataKind()) : 'SIN DATOS')}</h2>
-      <p class="h2leg">Cada punto indica cómo se obtuvo: ${chip('Regla determinista', 'rule')} ${chip('Cálculo', 'calc')} ${chip('IA generativa', 'gen')} <small>· la IA generativa no participa en esta conclusión; este panel no ejecuta consultas de pago ni conectores externos.</small></p></section>
+      <p class="h2leg">Cada punto indica cómo se obtuvo: ${chip('Regla determinista', 'rule')} ${chip('Cálculo', 'calc')} ${chip('IA generativa', 'gen')} <small>· <b>Regla determinista</b>: condición fija sobre la ficha (no es IA). <b>Cálculo</b>: aritmética del motor económico. <b>IA generativa</b>: ninguna en este panel. La IA generativa no participa en esta conclusión; este panel no ejecuta consultas de pago ni conectores externos.</small></p></section>
       <article class="h2c h2conc ${b.insuf ? 'h2insuf' : ''}"><h3>Conclusión</h3><p class="h2big">${esc(b.concl)}</p>${b.insuf && d.logged ? '<p class="h2insmsg"><b>Datos insuficientes</b> — el Director lo dice expresamente en lugar de estimar.</p>' : ''}</article>
-      <article class="h2c"><h3>Decisión recomendada <small>(máx. 3)</small></h3>${b.decs.length ? `<ol class="h2recs">${b.decs.map((x) => `<li><b>${esc(x.title)}</b><br><span>${esc(x.prods.length ? x.prods.map((q) => q.name).join(', ') : 'Sin producto asociado')} · ${esc(x.level)} · ${esc(x.why)}</span><br>${kindChip(x.kind)}${x.prods.map((q) => ` <button type="button" class="h2btn ghost ro-ok" data-h2prod="${esc(q.id)}">Ir al producto afectado: ${esc(q.name)}</button>`).join('')}</li>`).join('')}</ol>` : '<p>No hay decisiones recomendadas: sin riesgos ni aprobaciones pendientes.</p>'}</article>`;
+      <article class="h2c"><h3>Decisión recomendada <small>(máx. 3)</small></h3>${b.decs.length ? `<ol class="h2recs">${b.decs.map((x) => `<li><b>${esc(x.title)}</b> ${kindChip(x.kind)}<dl class="x4dl"><dt>Producto</dt><dd>${esc(x.prods.length ? x.prods.map((q) => q.name).join(', ') : 'Sin producto asociado (general)')}</dd><dt>Impacto</dt><dd>${esc(x.impact || 'NO DETERMINABLE')}</dd><dt>Evidencia</dt><dd>${esc(x.evidence || x.why || 'SIN DATOS')}</dd><dt>Responsable</dt><dd>${esc(x.owner || 'Sin asignar')}</dd><dt>Próxima acción</dt><dd>${esc(x.next || x.title)}</dd><dt>Prioridad</dt><dd>${esc(x.level)}</dd></dl>${x.prods.map((q) => ` <button type="button" class="h2btn ghost ro-ok" data-h2prod="${esc(q.id)}">Ir al producto afectado: ${esc(q.name)}</button>`).join('')}</li>`).join('')}</ol>` : '<p>No hay decisiones recomendadas: sin riesgos ni aprobaciones pendientes.</p>'}</article>`;
     const evid = [];
     b.decs.forEach((x) => evid.push(`${x.prods.map((q) => q.name).join(', ') || 'General'}: ${x.why}`)); (b.faltan || []).slice(0, 6).forEach((f) => evid.push('Falta: ' + f.dato));
     $('#d2evibody').innerHTML = evid.length ? `<ul class="h2src">${evid.map((e) => `<li>${esc(e)}</li>`).join('')}</ul>` : '<p class="h2note">Sin evidencia que mostrar: no hay datos.</p>';
@@ -238,6 +239,7 @@
 
   // ---------------------------------------------------------------------------------------------- navegación al producto
   function goProduct(pid) {
+    if (root.PROD2) { root.PROD2.open(pid); return; }
     if (root.V06 && root.V06.state) root.V06.state.pid = pid;
     root.NAV6.go('prod', 0);
     const name = CAT.find((p) => p.id === pid);

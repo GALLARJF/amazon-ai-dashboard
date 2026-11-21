@@ -197,5 +197,5 @@
       const o = $(d.id === 'lzevi' ? '#lzmet' : '#lzevi'); if (o && o.open) o.open = false; }, true);
     setInterval(() => { const u = VV().user || null; if (u !== (onShow.u || null)) { onShow.u = u; D = null; if (NS().sec === 'lanz') render(); } if (NS().sec === 'lanz') guard(); }, 700);
   });
-  root.LANZ2 = { onShow, render, _statusOf: statusOf, _stepsOf: stepsOf, _summarize: summarize, _roleOf: roleOf };
+  root.LANZ2 = { onShow, render, select, _statusOf: statusOf, _stepsOf: stepsOf, _summarize: summarize, _roleOf: roleOf };
 })(self);

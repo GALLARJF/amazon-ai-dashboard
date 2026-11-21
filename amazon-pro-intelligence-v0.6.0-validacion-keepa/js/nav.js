@@ -15,7 +15,7 @@
     { id: 'lanz', l: 'Lanzamientos', s: 'Lanzam.', i: '✈', subs: [{ l: 'Expediente', tab: 'lanz' }, { l: 'Pre-Launch', tab: 'prelaunch' }, { l: 'Europa · Mercados', tab: 'europa' }] },
     { id: 'dir', l: 'Director IA', s: 'Director', i: '✦', subs: [{ l: 'Director', tab: 'dir' }, { l: 'Datos del Director', tab: 'k4', k4: 'dir' }] },
     { id: 'dec', l: 'Decisiones', s: 'Decisiones', i: '✔', hidden: true, subs: [{ l: 'Decisiones', tab: 'decisiones' }] },
-    { id: 'adm', l: 'Administración', s: 'Admin', i: '⚙', admin: true, subs: [{ l: 'Auditoría', tab: 'hist' }, { l: 'Estado · Conexiones', tab: 'estado' }, { l: 'Aprobaciones', tab: 'aprob' }] },
+    { id: 'adm', l: 'Administración', s: 'Admin', i: '⚙', admin: true, subs: [{ l: 'Administración', tab: 'hist' }] },
   ];
   const ST = { mode: 'real', sec: 'hoy', sub: 0, guard: false };
   try { const m = sessionStorage.getItem('apiMode'); if (m === 'demo' || m === 'real') ST.mode = m; } catch (e) { /* sin almacenamiento */ }
@@ -67,6 +67,9 @@
     paintNav(); scrollTo(0, 0); const hd = $('header.top'); if (hd) hd.classList.remove('acct-open');
     if (ok && root.HOY2) root.HOY2.onShow(sec.id);
     if (ok && root.LANZ2) root.LANZ2.onShow(sec.id);
+    if (ok && root.VENTAS2) root.VENTAS2.onShow(sec.id);
+    if (ok && root.PROD2) root.PROD2.onShow(sec.id);
+    if (ok && root.ADM2) root.ADM2.onShow(sec.id);
   }
   function go(id, i) { const sec = SECS.find((s) => s.id === id); if (sec) show(sec, i || 0); }
   function setMode(m) {

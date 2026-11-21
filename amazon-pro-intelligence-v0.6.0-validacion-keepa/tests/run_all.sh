@@ -69,6 +69,9 @@ run "P0 Fase 2.1: prioridades, sin vacíos, sin scroll horizontal, cabecera móv
 run "P0 Fase 3: Lanzamientos guiados (4 niveles, 10 pasos, viewer, móvil)" python3 tests/ui_lanz_test.py
 run "P0 Fase 3: Lanzamientos con selector REAL/DEMO sin mezcla" python3 tests/ui_lanz_modo_test.py
 run "P0 Fase 3.1: aislamiento por producto (centinelas), acordeones móviles, coherencia de estado" python3 tests/ui_lanz_aislamiento_test.py
+run "P0 Fase 4: Ventas, Productos, Administración y Director IA (1440/390/360, viewer, 0 llamadas externas)" python3 tests/ui_fase4_test.py
+run "P0 Fase 4: arquitectura Amazon SP-API/Ads (desactivada, solo lectura, sin credenciales)" python3 tests/amazon_arch_test.py
+run "P0 Fase 4: paridad de componentes navegación antigua vs nueva" python3 tests/ui_legacy_paridad_test.py
 run "P0 Fase 2: viewer — todos los controles de escritura desactivados y rotulados" python3 tests/ui_viewer_ro_test.py
 run "K4: planificador robusto (ejecución única, reintentos, recuperación, tope de gasto, parada)" python3 tests/k4_planner_test.py
 run "K4 it.2: selección, umbrales, conciliación, informe, explorador, planificador (API)" python3 tests/k4_iter2_test.py

@@ -4,7 +4,7 @@
 (function (root) {
   'use strict';
   const W = /(guardar|crear|nuevo|nueva|aprobar|rechazar|lanzar|ejecutar|analizar|importar|publicar|activar|archivar|añadir|editar|enviar|proponer|investigar|reanudar|probar|confirmar|eliminar|borrar|registrar|validar|generar|iniciar|aplicar|actualizar|solicitar|reconciliar|fijar|cancelar|descartar|marcar|verificar|subir|cargar|restaurar|respaldo|preguntar|consultar al|medir|calcular|refrescar|cambiar contraseña|restablecer|desactivar|reanudar|pausar|detener|programar|asignar|sincronizar|exportar a)/i;
-  const KEEP = '#lgOut,#lgOpen,#lgForm *,.ro-ok,[data-tab],#nav6 *,#bnav *,#subnav6 *,[data-k4v],[data-h2f],[data-h2go],[data-h2prod],a.btn,#dmode';
+  const KEEP = '#lgOut,#lgOpen,#lgForm *,.ro-ok,[data-tab],#nav6 *,#bnav *,#subnav6 *,[data-k4v],[data-h2f],[data-h2go],[data-h2prod],[data-x4go],[data-x4open],a.btn,#dmode';
   function lock(el) { if (el.disabled && el.classList.contains('vro')) return; el.disabled = true; el.setAttribute('aria-disabled', 'true'); el.title = 'No disponible: solo lectura (viewer)'; el.classList.add('vro'); }
   function apply() {
     const V = root.V03 && root.V03.V; if (!V || !V.viewer) return;

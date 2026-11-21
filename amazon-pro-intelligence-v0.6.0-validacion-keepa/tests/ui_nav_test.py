@@ -13,7 +13,7 @@ tmp = tempfile.mkdtemp(); srv = S.make_server(0, admin_token="t", db_path=os.pat
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 for f in glob.glob(os.path.join(OUT, "*.png")): os.remove(f)
 SECS = [("hoy", "Hoy", ["Hoy"]), ("ventas", "Ventas", ["Mis ventas", "Indicadores", "Panel DEMO"]), ("prod", "Productos", ["Catálogo", "Precio", "Competencia", "Expediente PHIVITAL"]),
-        ("lanz", "Lanzamientos", ["Expediente", "Pre-Launch", "Europa · Mercados"]), ("dir", "Director IA", ["Director", "Datos del Director"]), ("adm", "Administración", ["Auditoría", "Estado · Conexiones", "Aprobaciones"])]
+        ("lanz", "Lanzamientos", ["Expediente", "Pre-Launch", "Europa · Mercados"]), ("dir", "Director IA", ["Director", "Datos del Director"]), ("adm", "Administración", ["Administración"])]
 K4 = {"Indicadores": "centro", "Precio": "precio", "Competencia": "bench", "Datos del Director": "dir"}
 BAR_JS = """() => { const bar = document.querySelector('#bnav'); const cs = getComputedStyle(bar); if (cs.display === 'none') return {err: 'barra oculta'};
   window.scrollTo(0, document.documentElement.scrollHeight); const top = bar.getBoundingClientRect().top; 

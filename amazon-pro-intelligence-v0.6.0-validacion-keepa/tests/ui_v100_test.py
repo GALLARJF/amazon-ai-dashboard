@@ -3,6 +3,7 @@ import glob, os, re, sys, tempfile, threading
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); sys.path.insert(0, ROOT)
 os.environ.update(AMAZON_PRO_NO_WORKER="1", AMAZON_PRO_KEEPA_ENABLE="0")
 for k in ("AMAZON_PRO_KEEPA_KEY", "KEEPA_API_KEY", "OPENAI_API_KEY"): os.environ.pop(k, None)
+import _nav_shim  # Fase 4: navegación nueva (sin ?legacy=1)
 from playwright.sync_api import sync_playwright
 import server as S
 from backend import ai as AI
@@ -18,7 +19,7 @@ with sync_playwright() as p:
         ctx = b.new_context(viewport={"width": w, "height": h}); pg = ctx.new_page(); errs = []; ext = []
         pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
         pg.on("request", lambda r: not re.match(r"^(http://(localhost|127\.0\.0\.1):%d/|data:|blob:)" % port, r.url) and ext.append(r.url))
-        pg.goto(f"http://localhost:{port}/?legacy=1"); pg.wait_for_selector("#tabs"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu")
+        pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu")
         labs = pg.eval_on_selector_all("#tabs button", "e=>e.map(x=>x.dataset.tab+'|'+x.innerText.trim())")
         check("[%s] las 5 secciones existen en la barra: %s" % (nm, ", ".join(t for _, t in SECC)), all(any(l.startswith(k + "|") and l.split("|")[1] == t for l in labs) for k, t in SECC))
         for k, t in SECC:
@@ -39,7 +40,7 @@ with sync_playwright() as p:
             check("[movil] ACTIVCORE: veredicto NO DECIDIBLE visible y 20 competidores con procedencia", "NO DECIDIBLE" in pg.inner_text('section.v7[data-space="lanz"] .v7-brief') and pg.locator('section.v7[data-space="lanz"] .v7-keepa tbody tr').count() == 20)
         ctx.close()
     # error visible al fallar el servidor (estado de error, no pantalla en blanco)
-    ctx = b.new_context(viewport={"width": 1600, "height": 900}); pg = ctx.new_page(); pg.goto(f"http://localhost:{port}/?legacy=1"); pg.wait_for_selector("#tabs")
+    ctx = b.new_context(viewport={"width": 1600, "height": 900}); pg = ctx.new_page(); pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs")
     check("sin sesión: la interfaz invita a iniciar sesión (estado vacío explicado)", pg.locator("#lgOpen").count() == 1)
     b.close()
 srv.shutdown(); print("%d/%d OK" % (sum(R), len(R))); sys.exit(0 if all(R) else 1)

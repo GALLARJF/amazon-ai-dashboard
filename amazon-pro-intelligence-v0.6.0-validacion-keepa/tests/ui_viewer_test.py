@@ -3,6 +3,7 @@ import glob, json, os, re, sys, tempfile, threading
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); sys.path.insert(0, ROOT)
 for k in ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"): os.environ.pop(k, None)
 os.environ.update(AMAZON_PRO_STAGING="1", AMAZON_PRO_SEED_VIEWERS="auditor", AMAZON_PRO_PASSWORD_AUDITOR="viewer-pass-x7Qk2m")
+import _nav_shim  # Fase 4: navegación nueva (sin ?legacy=1)
 from playwright.sync_api import sync_playwright
 import server as S
 from backend import ai as AI
@@ -15,7 +16,7 @@ with sync_playwright() as p:
     b = p.chromium.launch(); ctx = b.new_context(viewport={"width": 1600, "height": 1000}); pg = ctx.new_page(); errs = []; writes = []; ext = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
     pg.on("request", lambda r: (r.method != "GET" and not r.url.endswith(("/api/login", "/api/logout")) and writes.append((r.method, r.url))) or (not re.match(r"^(http://(localhost|127\.0\.0\.1):%d/|data:|blob:)" % port, r.url) and ext.append(r.url)))
-    pg.goto(f"http://localhost:{port}/?legacy=1"); pg.wait_for_selector("#tabs")
+    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs")
     check("etiqueta STAGING visible ANTES de iniciar sesión", pg.locator("#envBanner").is_visible() and S.STAGING_LABEL in pg.inner_text("#envBanner"))
     pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1200)
     check("sesión visible como «auditor · viewer»", "auditor · viewer" in pg.inner_text("#sess"))

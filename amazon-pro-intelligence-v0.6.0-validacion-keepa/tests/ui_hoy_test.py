@@ -90,7 +90,7 @@ def run(pw, name, vp, mobile):
     pg.click('[data-h2f="seg"]'); pg.wait_for_timeout(300); pg.click('[data-h2f="res"]'); pg.wait_for_timeout(600)
     check(f"{T} DECISIONES › En seguimiento / Resueltas: estados vacíos explícitos, sin errores", "Todavía no hay decisiones resueltas" in pg.inner_text("#dec2") and not errs)
     pg.click('[data-h2f="pend"]'); pg.click('[data-h2prod]'); pg.wait_for_timeout(1500)
-    check(f"{T} DECISIONES › «Ir al producto» abre Productos y resalta el producto", pg.locator("#tab-prod.on").count() == 1 and pg.locator("#tab-prod .v6prod.h2hl").count() == 1 and "PHIVITAL Magnesio" in pg.inner_text("#tab-prod .v6prod.h2hl"))
+    check(f"{T} DECISIONES › «Ir al producto» abre Productos y resalta el producto", pg.locator("#tab-prod.on").count() == 1 and pg.locator("#prod2 .x4prod.h2hl").count() == 1 and "PHIVITAL Magnesio" in pg.inner_text("#prod2 .x4prod.h2hl"))
     # ------------------------------------------------------------------ DIRECTOR IA
     pg.click(f'{nav} [data-sec="dir"]'); pg.wait_for_selector("#d2top .h2conc", timeout=8000); pg.wait_for_timeout(600)
     hs = pg.eval_on_selector_all("#d2top h3", "e=>e.map(x=>x.childNodes[0].textContent.trim())")
@@ -110,12 +110,12 @@ def run(pw, name, vp, mobile):
     check(f"{T} DIRECTOR › Metodología (abierta): rutas /api y el Centro operativo heredado (tareas, libro, conexiones) se conservan", "/api/" in met and "Centro operativo del Director" in met)
     pg.click("#d2evi summary"); pg.click("#d2met summary")
     pg.click('#d2top [data-h2prod]'); pg.wait_for_timeout(1500)
-    check(f"{T} DIRECTOR › «Ir al producto afectado» navega a Productos con el producto resaltado", pg.locator("#tab-prod.on").count() == 1 and pg.locator("#tab-prod .v6prod.h2hl").count() == 1)
+    check(f"{T} DIRECTOR › «Ir al producto afectado» navega a Productos con el producto resaltado", pg.locator("#tab-prod.on").count() == 1 and pg.locator("#prod2 .x4prod.h2hl").count() == 1)
     # ------------------------------------------------------------------ seguridad / coste
     sw = pg.evaluate("fetch('/api/v06/decide',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':window.V03.V.csrf},body:JSON.stringify({id:1,approve:false})}).then(r=>r.status)")
     check(f"{T} servidor: POST forzado a decidir desde el viewer → 403 (bloqueo íntegro)", sw == 403)
     check(f"{T} 0 escrituras desde la interfaz del viewer (salvo el POST forzado de la prueba)", [w for w in writes if not w[1].endswith("/api/v06/decide")] == [] and len(writes) == 1)
-    check(f"{T} 0 peticiones externas y 0 a rutas que ejecutan o gastan (order/run/import/discovery/keepa)", ext == [] and not [u for u in reqs if re.search(r"/api/v06/(order|run|import)|keepa/(refrescar|descubr)|investigar", u)])
+    check(f"{T} 0 peticiones externas y 0 a rutas que ejecutan o gastan (order/run/import/discovery/keepa)", ext == [] and not [u for u in reqs if re.search(r"/api/v06/(order|run|import(?!s))|keepa/(refrescar|descubr)|investigar", u)])
     check(f"{T} sin errores de consola ni excepciones", errs == [])
     ctx.close()
 with sync_playwright() as p:

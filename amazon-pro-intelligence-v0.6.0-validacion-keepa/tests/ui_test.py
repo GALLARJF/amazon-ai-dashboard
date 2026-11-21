@@ -2,6 +2,7 @@
 Los datos del expediente «Magnesio PRUEBA» son FICTICIOS (origen PRUEBA) y se usan solo para demostrar el flujo."""
 import datetime, json, os, re, sys, tempfile, threading
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); sys.path.insert(0, ROOT)
+import _nav_shim  # Fase 4: navegación nueva (sin ?legacy=1)
 from playwright.sync_api import sync_playwright
 import server as S
 from backend import ai as AI, pilot as P
@@ -29,7 +30,7 @@ st.put(ACC, "news", {"title": "Nota de prueba verificada", "url": "https://examp
 with sync_playwright() as p:
     b = p.chromium.launch(); ctx = b.new_context(viewport={"width": 1600, "height": 840}); pg = ctx.new_page(); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
-    U = f"http://localhost:{port}/?legacy=1"; pg.goto(U); pg.wait_for_selector("#tabs"); pg.click("#tabs button[data-tab=panel]"); pg.wait_for_selector("#kpis .kpi")
+    U = f"http://localhost:{port}/"; pg.goto(U); pg.wait_for_selector("#tabs"); pg.click("#tabs button[data-tab=panel]"); pg.wait_for_selector("#kpis .kpi")
     check("carga sin errores JS ni violaciones CSP", not errs)
     check("sin sesión: Director pide iniciar sesión y no responde con datos", "Inicia sesión" in pg.inner_text("#dirEngine"))
     pg.fill("#chatIn", "resumen"); pg.press("#chatIn", "Enter"); pg.wait_for_selector("#lgForm"); check("preguntar sin sesión abre el acceso", True); pg.click("#mClose")

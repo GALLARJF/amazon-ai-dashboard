@@ -1,6 +1,7 @@
 """V0.6.0 — UI real (Playwright/Chromium) de los cinco espacios. Servidor local REAL con proveedores SIMULADOS (sin red, sin Keepa/OpenAI/Amazon reales). Genera capturas en CAPTURAS_UI/."""
 import os, sys, tempfile, threading
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); sys.path.insert(0, ROOT); os.environ["AMAZON_PRO_NO_WORKER"] = "1"
+import _nav_shim  # Fase 4: navegación nueva (sin ?legacy=1)
 from playwright.sync_api import sync_playwright
 import server as S
 from backend import ai as AI
@@ -13,7 +14,7 @@ threading.Thread(target=srv.serve_forever, daemon=True).start()
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_context(viewport={"width": 1600, "height": 900}).new_page(); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
-    pg.goto(f"http://localhost:{port}/?legacy=1"); pg.wait_for_selector("#tabs")
+    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs")
     check("5 espacios principales en el orden pedido", pg.locator("#tabs button.main").all_inner_texts() == ["INICIO", "LANZAMIENTOS", "MIS VENTAS", "PRODUCTOS", "DIRECTOR IA"])
     check("sin sesión: se pide iniciar sesión (no datos)", "Inicia sesión" in pg.inner_text("#v6inicio"))
     pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_selector("#v6inicio .kpi"); pg.wait_for_timeout(500)
@@ -59,7 +60,7 @@ with sync_playwright() as p:
     pg.screenshot(path=f"{OUT}/27_director_ia.png", full_page=True); pg.click("[data-act=kill]"); pg.wait_for_selector("text=Automatizaciones externas permitidas")
     pg.click("#tabs button[data-tab=panel]"); pg.wait_for_selector("#kpis .kpi"); check("Panel DEMO antiguo sigue accesible bajo «Avanzado» y rotulado DEMO", "DEMO" in pg.inner_text("#badge"))
     check("sin errores JS ni violaciones CSP", not errs)
-    m = b.new_context(viewport={"width": 390, "height": 844}).new_page(); m.goto(f"http://localhost:{port}/?legacy=1"); m.wait_for_selector("#tabs"); m.fill  # noqa
+    m = b.new_context(viewport={"width": 390, "height": 844}).new_page(); m.goto(f"http://localhost:{port}/"); m.wait_for_selector("#tabs"); m.fill  # noqa
     m.click("#lgOpen"); m.fill("#lgU", "admin"); m.fill("#lgP", "admin-password-123"); m.click("#lgGo"); m.wait_for_selector(".sessu"); m.wait_for_selector("#v6inicio .kpi"); m.wait_for_timeout(500)
     check("móvil 390 px: sin desbordamiento horizontal", m.evaluate("document.documentElement.scrollWidth") <= 392); m.screenshot(path=f"{OUT}/28_movil_inicio.png", full_page=True)
 n = sum(R); print(f"{n}/{len(R)} OK"); sys.exit(0 if n == len(R) else 1)

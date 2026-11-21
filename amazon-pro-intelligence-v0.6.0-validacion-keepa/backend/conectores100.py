@@ -8,9 +8,9 @@ class ConectorError(Exception): pass
 
 SERVICIOS = {
     "spapi": {"nombre": "Amazon SP-API", "vars": ["AMAZON_PRO_SPAPI_CLIENT_ID", "AMAZON_PRO_SPAPI_CLIENT_SECRET", "AMAZON_PRO_SPAPI_REFRESH_TOKEN"], "hosts": {"sellingpartnerapi-eu.amazon.com"},
-              "token_url": "https://api.amazon.com/auth/o2/token", "rutas": [r"^/orders/v0/orders$", r"^/fba/inventory/v1/summaries$", r"^/catalog/2022-04-01/items(/[A-Z0-9]{10})?$", r"^/reports/2021-06-30/reports(/[A-Za-z0-9\-]+)?$"], "live": "AMAZON_PRO_LIVE_SPAPI"},
+              "token_url": "https://api.amazon.com/auth/o2/token", "rutas": [r"^/orders/v0/orders$", r"^/fba/inventory/v1/summaries$", r"^/catalog/2022-04-01/items(/[A-Z0-9]{10})?$", r"^/reports/2021-06-30/reports(/[A-Za-z0-9\-]+)?$", r"^/finances/v0/financialEventGroups$", r"^/finances/v0/financialEvents$", r"^/finances/2024-06-19/transactions$"], "live": "AMAZON_PRO_LIVE_SPAPI"},
     "ads": {"nombre": "Amazon Ads API", "vars": ["AMAZON_PRO_ADS_CLIENT_ID", "AMAZON_PRO_ADS_CLIENT_SECRET", "AMAZON_PRO_ADS_REFRESH_TOKEN"], "hosts": {"advertising-api-eu.amazon.com"},
-            "token_url": "https://api.amazon.com/auth/o2/token", "rutas": [r"^/v2/profiles$", r"^/reporting/reports/[A-Za-z0-9\-]+$"], "live": "AMAZON_PRO_LIVE_ADS"},
+            "token_url": "https://api.amazon.com/auth/o2/token", "rutas": [r"^/v2/profiles$", r"^/v2/sp/campaigns$", r"^/v2/sp/adGroups$", r"^/v2/sp/keywords$", r"^/reporting/reports/[A-Za-z0-9\-]+$"], "live": "AMAZON_PRO_LIVE_ADS"},
 }
 LOOP = {"127.0.0.1", "localhost"}
 

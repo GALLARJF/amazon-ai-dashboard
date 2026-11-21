@@ -2,6 +2,7 @@
 import glob, json, os, re, sys, tempfile, threading, time
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); sys.path.insert(0, ROOT)
 os.environ["AMAZON_PRO_NO_WORKER"] = "1"; os.environ["AMAZON_PRO_KEEPA_ENABLE"] = "0"
+import _nav_shim  # Fase 4: navegación nueva (sin ?legacy=1)
 from playwright.sync_api import sync_playwright
 import server as S
 from backend import ai as AI
@@ -18,7 +19,7 @@ def wait(pg, js, timeout=20):
         pg.wait_for_timeout(150)
     return False
 def login(pg):
-    pg.goto(f"http://localhost:{port}/?legacy=1"); pg.wait_for_selector("#tabs"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu")
+    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu")
 def open_k3(pg):
     pg.click('#tabs button[data-tab="europa"]'); pg.wait_for_selector(".eucard", timeout=15000); pg.click(".euchip[data-cat]:has-text('Cosm')"); pg.click(f".eucard[data-pid='{ACT}']"); wait(pg, "document.querySelectorAll('#euRoot .euview').length>=4")
     pg.click(".euview[data-view=segmentos]"); return wait(pg, "document.querySelectorAll('#euRoot .k3row').length>0")
