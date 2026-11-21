@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from backend import api_k4 as API4K, api6 as API6, api7 as API7, ai as AI, coworkers as COW, engine as ENG, pilot as PILOT, synthetic as SY, envfile as ENVF, keepa as KP, activcore as AC, eu as EU, eu_director as EUD, catalog as CT, discovery as DSC, k3 as K3M, k3_service as K3S
 from backend.director import Director
 from backend.store import Store, Forbidden
+from backend import conectores100 as C
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 HOST = os.environ.get("AMAZON_PRO_BIND", "127.0.0.1")   # V1.0 cloud: 0.0.0.0 detrás del proxy HTTPS del proveedor
@@ -25,8 +26,10 @@ PUBLIC_HOST = (os.environ.get("AMAZON_PRO_PUBLIC_HOST") or os.environ.get("RENDE
 CLOUD = bool(PUBLIC_HOST)
 STAGING = os.environ.get("AMAZON_PRO_STAGING") == "1"   # entorno de auditoría: datos sintéticos, SOLO LECTURA, sin servicios de pago
 STAGING_LABEL = "STAGING — DATOS SINTÉTICOS — SOLO LECTURA"
-FORBIDDEN_ENV = ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "SPAPI_CLIENT_ID", "SPAPI_CLIENT_SECRET", "SPAPI_REFRESH_TOKEN",
-                 "ADS_CLIENT_ID", "ADS_CLIENT_SECRET", "ADS_REFRESH_TOKEN", "H10_API_KEY")
+FORBIDDEN_ENV = ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
+                 "AMAZON_PRO_SPAPI_CLIENT_ID", "AMAZON_PRO_SPAPI_CLIENT_SECRET", "AMAZON_PRO_SPAPI_REFRESH_TOKEN",
+                 "AMAZON_PRO_ADS_CLIENT_ID", "AMAZON_PRO_ADS_CLIENT_SECRET", "AMAZON_PRO_ADS_REFRESH_TOKEN",
+                 "AMAZON_PRO_LIVE_SPAPI", "AMAZON_PRO_LIVE_ADS", "H10_API_KEY")   # convención ÚNICA de variables de Amazon (Corrección 4.1)
 
 
 def staging_guard():
@@ -42,10 +45,10 @@ if STAGING and staging_guard():
     sys.exit("STAGING: variables de servicios de pago presentes (" + ", ".join(staging_guard()) + "). No se arranca. Elimínalas del entorno de staging.")
 
 CONNECTORS = {
-    "sp-api": {"label": "Amazon SP-API", "env": ["SPAPI_CLIENT_ID", "SPAPI_CLIENT_SECRET", "SPAPI_REFRESH_TOKEN"],
-               "note": "Prueba de solo lectura: token LWA + marketplaceParticipations (EU)."},
-    "ads": {"label": "Amazon Ads API", "env": ["ADS_CLIENT_ID", "ADS_CLIENT_SECRET", "ADS_REFRESH_TOKEN"],
-            "note": "Prueba de solo lectura: token LWA + GET /v2/profiles (EU)."},
+    "sp-api": {"label": "Amazon SP-API", "env": ["AMAZON_PRO_SPAPI_CLIENT_ID", "AMAZON_PRO_SPAPI_CLIENT_SECRET", "AMAZON_PRO_SPAPI_REFRESH_TOKEN"], "live": "AMAZON_PRO_LIVE_SPAPI",
+               "note": "Lectura: token LWA + marketplaceParticipations (EU). Doble activación: AMAZON_PRO_CONNECTORS y AMAZON_PRO_LIVE_SPAPI=1."},
+    "ads": {"label": "Amazon Ads API", "env": ["AMAZON_PRO_ADS_CLIENT_ID", "AMAZON_PRO_ADS_CLIENT_SECRET", "AMAZON_PRO_ADS_REFRESH_TOKEN"], "live": "AMAZON_PRO_LIVE_ADS",
+            "note": "Lectura: token LWA + GET /v2/profiles (EU). Doble activación: AMAZON_PRO_CONNECTORS y AMAZON_PRO_LIVE_ADS=1."},
     "keepa": {"label": "Keepa", "env": ["KEEPA_API_KEY"], "note": "Prueba de solo lectura: GET /token."},
     "helium10": {"label": "Helium 10", "env": ["H10_API_KEY"], "note": "Sin API pública verificada: usar importación CSV."},
 }
@@ -56,9 +59,13 @@ TESTABLE = {"sp-api", "ads", "keepa"}
 READ_ONLY_ALLOW = [
     ("GET", "api.keepa.com", "/token"),
     ("POST", "api.amazon.com", "/auth/o2/token"),
-    ("GET", "sellingpartnerapi-eu.amazon.com", "/sellers/v1/marketplaceParticipations"),
-    ("GET", "advertising-api-eu.amazon.com", "/v2/profiles"),
 ]
+# Amazon: las rutas de lectura salen de la lista blanca del adaptador (backend/conectores100.py): una única fuente de verdad. Solo GET.
+for _svc in C.SERVICIOS.values():
+    for _h in _svc["hosts"]:
+        for _rx in _svc["rutas"]:
+            READ_ONLY_ALLOW.append(("GET", _h, re.compile(_rx)))
+READ_ONLY_ALLOW.append(("GET", C.DL_HOST, re.compile(r"^/.*$")))   # descarga de informes SP-API ya generados (URL prefirmada de S3)
 
 
 class Blocked(Exception):
@@ -69,20 +76,35 @@ def _open(req, timeout):  # punto de sustitución en tests (sin red)
     return urllib.request.urlopen(req, timeout=timeout)
 
 
-def guarded_request(method, url, data=None, headers=None, timeout=15):
+def _allowed(method, u):
+    for m, h, p in READ_ONLY_ALLOW:
+        if method != m: continue
+        hok = h.match(u.hostname or "") if hasattr(h, "match") else u.hostname == h
+        pok = p.match(u.path) if hasattr(p, "match") else u.path == p
+        if hok and pok: return True
+    return False
+
+
+def guarded_request(method, url, data=None, headers=None, timeout=15, raw=False):
     u = urllib.parse.urlparse(url)
-    if u.scheme != "https" or not any(method == m and u.hostname == h and u.path == p for m, h, p in READ_ONLY_ALLOW):
+    if u.scheme != "https" or not _allowed(method, u):
         raise Blocked("operación no permitida (solo lectura)")
     req = urllib.request.Request(url, data=data, headers=headers or {}, method=method)
     with _open(req, timeout) as r:
-        return r.status, r.read().decode("utf-8", "replace")
+        return r.status, (r.read(C.MAX_DL_BYTES + 1) if raw else r.read().decode("utf-8", "replace"))
 
 
-def _lwa(prefix):
-    body = urllib.parse.urlencode({"grant_type": "refresh_token", "refresh_token": os.environ[prefix + "_REFRESH_TOKEN"],
-                                   "client_id": os.environ[prefix + "_CLIENT_ID"], "client_secret": os.environ[prefix + "_CLIENT_SECRET"]}).encode()
-    _, txt = guarded_request("POST", "https://api.amazon.com/auth/o2/token", body, {"Content-Type": "application/x-www-form-urlencoded"})
-    return json.loads(txt)["access_token"]
+# ---- Capa de servicio de lectura de Amazon (usa el adaptador; TODA salida pasa por guarded_request) ----
+AMZ = {"sp-api": "spapi", "ads": "ads"}
+def _amz_transport(url, hdr): return json.loads(guarded_request("GET", url, headers=hdr)[1])
+def _amz_post(url, data, hdr): return json.loads(guarded_request("POST", url, data, hdr)[1])
+def _amz_download(url): return guarded_request("GET", url, raw=True, timeout=30)[1]
+
+
+def amazon_leer(conn, op, params, max_pages=None):
+    """Única función con la que la aplicación lee de Amazon: doble activación (AMAZON_PRO_CONNECTORS + AMAZON_PRO_LIVE_*) y solo operaciones de lectura declaradas."""
+    svc = C.Conector(AMZ[conn], os.environ)
+    return svc.leer(op, params, modo="REAL", habilitado=conn in enabled_connectors(), transport=_amz_transport, post=_amz_post, download=_amz_download, max_pages=max_pages or C.MAX_PAGES_DEFAULT)
 
 
 def run_test(name):
@@ -91,16 +113,14 @@ def run_test(name):
         if name == "keepa":
             s, t = guarded_request("GET", "https://api.keepa.com/token?key=" + urllib.parse.quote(os.environ.get("KEEPA_API_KEY") or os.environ.get("KEEPA_KEY") or ""))
             return s == 200 and "tokensLeft" in t, "KEEPA_HTTP_%d" % s
-        if name == "sp-api":
-            s, _ = guarded_request("GET", "https://sellingpartnerapi-eu.amazon.com/sellers/v1/marketplaceParticipations", headers={"x-amz-access-token": _lwa("SPAPI")})
-            return s == 200, "SPAPI_HTTP_%d" % s
-        if name == "ads":
-            s, _ = guarded_request("GET", "https://advertising-api-eu.amazon.com/v2/profiles",
-                                   headers={"Authorization": "Bearer " + _lwa("ADS"), "Amazon-Advertising-API-ClientId": os.environ["ADS_CLIENT_ID"]})
-            return s == 200, "ADS_HTTP_%d" % s
+        if name in AMZ:
+            amazon_leer(name, "participations" if name == "sp-api" else "profiles", {})
+            return True, ("SPAPI" if name == "sp-api" else "ADS") + "_HTTP_200"
         return False, "SIN_PRUEBA"
     except Blocked:
         return False, "BLOQUEADO_SOLO_LECTURA"
+    except C.ConectorError as e:
+        return False, ("HTTP_%d" % e.http) if e.http else ("BLOQUEADO_SOLO_LECTURA" if "Blocked" in str(e) else "ERROR_DE_RED_O_RESPUESTA")
     except urllib.error.HTTPError as e:
         return False, "HTTP_%d" % e.code
     except Exception:  # noqa — deliberadamente sin detalle
@@ -127,12 +147,14 @@ def status():
             st = "DESHABILITADO (por defecto)"
         elif missing:
             st = "HABILITADO · SIN CREDENCIALES"
+        elif c.get("live") and os.environ.get(c["live"]) != "1":
+            st = "HABILITADO · LECTURA REAL DESACTIVADA (%s)" % c["live"]
         elif k in LAST:
             st = "CONECTADO (prueba real OK)" if LAST[k]["ok"] else "ERROR EN PRUEBA"
         else:
             st = "HABILITADO · SIN PROBAR"
         out.append({"id": k, "label": c["label"], "enabled": k in en, "status": st, "missing": missing if k in en else [e for e in c["env"]],
-                    "note": c["note"], "testable": k in TESTABLE and k in en and not missing, "last_test": LAST.get(k)})
+                    "note": c["note"], "testable": k in TESTABLE and k in en and not missing and (not c.get("live") or os.environ.get(c["live"]) == "1"), "live": (os.environ.get(c["live"]) == "1") if c.get("live") else None, "last_test": LAST.get(k)})
     return {"connectors": out, "write_actions": "NO IMPLEMENTADAS (solo lectura)", "default": "conectores deshabilitados"}
 
 
@@ -311,6 +333,30 @@ class H(BaseHTTPRequestHandler):
             return self._send(200, r[1], r[2], r[3])
         return self._json(r)
 
+    def _amazon_get(self, path, q):
+        """Lectura de Amazon (SP-API / Ads) SOLO LECTURA: GET interno que usa el adaptador. Sin conector habilitado y con LIVE=1 no hay ninguna salida de red."""
+        s = self._sess()
+        if not s: return
+        if path == "/api/amazon/ops": return self._json({"solo_lectura": True, "operaciones": C.catalogo_ops(), "escritura": "NO IMPLEMENTADA"})
+        one = lambda k: (q.get(k) or [""])[0]
+        conn, op = one("service"), one("op")
+        if conn not in AMZ: return self._json({"error": "servicio no válido (sp-api | ads)"}, 400)
+        if conn not in enabled_connectors(): return self._json({"error": "conector deshabilitado (AMAZON_PRO_CONNECTORS)"}, 403)
+        now = time.time(); STATE["amz"] = [t for t in STATE.get("amz", []) if now - t < 60]
+        if len(STATE["amz"]) >= 20: return self._json({"error": "demasiadas lecturas; espera"}, 429, {"Retry-After": "30"})
+        STATE["amz"].append(now)
+        try: mp = int(one("max_pages") or C.MAX_PAGES_DEFAULT)
+        except ValueError: mp = C.MAX_PAGES_DEFAULT
+        params = {k: v[0] for k, v in q.items() if k not in ("service", "op", "max_pages") and v}
+        try: out = amazon_leer(conn, op, params, mp)
+        except C.ConectorError as e:
+            gate = any(x in str(e) for x in ("desactivada", "no habilitado", "faltan credenciales"))
+            return self._json({"error": str(e)[:200]}, 403 if gate else (e.http if e.http in (429, 403, 404) else 400))
+        except Blocked: return self._json({"error": "operación no permitida (solo lectura)"}, 403)
+        try: APP["store"].audit(None, s["username"], "amazon.read", {"service": conn, "op": op, "pages": out["paginas"]})
+        except Exception: pass
+        return self._json(out)
+
     def _api_get(self, path, q):
         st = APP["store"]
         if path.startswith(("/api/v06/", "/api/v07/", "/api/k4/")):
@@ -320,6 +366,8 @@ class H(BaseHTTPRequestHandler):
             return self._v06("GET", path, q, None, s)
         if path.startswith(("/api/eu/", "/api/keepa/", "/api/catalog", "/api/discovery")):
             return self._eu_get(path, q)
+        if path in ("/api/amazon/ops", "/api/amazon/read"):
+            return self._amazon_get(path, q)
         if path not in ("/api/me", "/api/accounts", "/api/ai/status", "/api/ai/usage", "/api/ai/calls", "/api/coworkers/status", "/api/records", "/api/audit", "/api/news"):
             return self._json({"error": "no encontrado"}, 404)
         if path == "/api/me":
@@ -737,6 +785,9 @@ class H(BaseHTTPRequestHandler):
         missing = [e for e in CONNECTORS[name]["env"] if not os.environ.get(e)]
         if missing:
             return self._json({"ok": False, "detail": "FALTAN_CREDENCIALES", "missing": missing})
+        lv = CONNECTORS[name].get("live")
+        if lv and os.environ.get(lv) != "1":
+            return self._json({"error": "lectura real desactivada (%s != 1)" % lv}, 403)
         now = time.time()
         STATE["recent"] = [t for t in STATE["recent"] if now - t < 60]
         if len(STATE["recent"]) >= 6 or now - STATE["cool"].get(name, 0) < 15:

@@ -15,8 +15,8 @@ CAPACIDADES = [
     {"id": "ads-metricas", "servicio": "ads", "nombre": "Gasto, ventas atribuidas, ACoS y ROAS", "rutas": ["/reporting/reports/{id}"], "alimenta": "ACoS, ROAS y gasto por campaña", "hoy": "informe de publicidad importado (CSV); crear informes por API es POST y requiere una decisión aparte"},
 ]
 VARIABLES_RENDER = {
-    "spapi": {"estado_servidor": ["SPAPI_CLIENT_ID", "SPAPI_CLIENT_SECRET", "SPAPI_REFRESH_TOKEN"], "adaptador": ["AMAZON_PRO_SPAPI_CLIENT_ID", "AMAZON_PRO_SPAPI_CLIENT_SECRET", "AMAZON_PRO_SPAPI_REFRESH_TOKEN"], "interruptor": "AMAZON_PRO_LIVE_SPAPI"},
-    "ads": {"estado_servidor": ["ADS_CLIENT_ID", "ADS_CLIENT_SECRET", "ADS_REFRESH_TOKEN"], "adaptador": ["AMAZON_PRO_ADS_CLIENT_ID", "AMAZON_PRO_ADS_CLIENT_SECRET", "AMAZON_PRO_ADS_REFRESH_TOKEN"], "interruptor": "AMAZON_PRO_LIVE_ADS"},
+    "spapi": {"variables": ["AMAZON_PRO_SPAPI_CLIENT_ID", "AMAZON_PRO_SPAPI_CLIENT_SECRET", "AMAZON_PRO_SPAPI_REFRESH_TOKEN"], "interruptor": "AMAZON_PRO_LIVE_SPAPI"},
+    "ads": {"variables": ["AMAZON_PRO_ADS_CLIENT_ID", "AMAZON_PRO_ADS_CLIENT_SECRET", "AMAZON_PRO_ADS_REFRESH_TOKEN"], "interruptor": "AMAZON_PRO_LIVE_ADS"},
     "global": ["AMAZON_PRO_CONNECTORS (lista: sp-api,ads; vacía = ninguna llamada de red)"],
 }
 def manifiesto():

@@ -25,7 +25,7 @@ for bad in ("/listings/2021-08-01/items/A/B", "/feeds/2021-06-30/feeds", "/produ
     try: C.Conector("spapi", {}).get(bad); ok = False
     except C.ConectorError: ok = True
     check(f"ruta de escritura/no permitida rechazada: {bad}", ok)
-check("variables de Render documentadas (servidor + adaptador + interruptor LIVE)", all(m["variables"][s]["estado_servidor"] and m["variables"][s]["interruptor"].startswith("AMAZON_PRO_LIVE_") for s in ("spapi", "ads")))
+check("variables de Render documentadas (servidor + adaptador + interruptor LIVE)", all(m["variables"][s]["variables"] and m["variables"][s]["interruptor"].startswith("AMAZON_PRO_LIVE_") for s in ("spapi", "ads")))
 check("cero conexiones de red abiertas durante la prueba", not calls)
 # sin secretos en el repositorio
 pat = re.compile(r"(Atzr\|[A-Za-z0-9_\-]{20,}|amzn1\.(oa2-client|application-oa2-client)\.[0-9a-f]{20,}|amzn1\.sp\.solution\.[0-9a-f-]{20,}|sk-[A-Za-z0-9]{30,}|ghp_[A-Za-z0-9]{30,})")

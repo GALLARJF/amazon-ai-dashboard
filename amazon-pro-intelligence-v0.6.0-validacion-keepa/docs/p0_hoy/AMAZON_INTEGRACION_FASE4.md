@@ -17,13 +17,14 @@ Cambio de Fase 4 en `conectores100.py`: la lista blanca de solo lectura se ampl�
 **Ads API:** campañas, grupos y palabras clave (`/v2/sp/*`, lectura) y gasto, ventas atribuidas, ACoS y ROAS (informes `reporting/reports/{id}`; **crear** un informe es POST y requiere una decisión aparte, por eso hoy se importa el CSV).
 
 ## 3. Variables para Render (todas son secretos: se crean en el panel de Render, nunca en el repositorio, el chat ni `render.yaml`)
-| Servicio | Estado en `/api/status` | Adaptador de lectura | Interruptor |
-|---|---|---|---|
-| SP-API | `SPAPI_CLIENT_ID`, `SPAPI_CLIENT_SECRET`, `SPAPI_REFRESH_TOKEN` | `AMAZON_PRO_SPAPI_CLIENT_ID/SECRET/REFRESH_TOKEN` | `AMAZON_PRO_LIVE_SPAPI=1` |
-| Ads API | `ADS_CLIENT_ID`, `ADS_CLIENT_SECRET`, `ADS_REFRESH_TOKEN` | `AMAZON_PRO_ADS_CLIENT_ID/SECRET/REFRESH_TOKEN` | `AMAZON_PRO_LIVE_ADS=1` |
-| Global | `AMAZON_PRO_CONNECTORS=sp-api,ads` (vacío = ninguna llamada de red) | | |
+Convención única (servidor, adaptador, `/api/status`, guardia STAGING, documentación y pruebas):
+| Servicio | Credenciales (secretos) | Interruptor LIVE |
+|---|---|---|
+| SP-API | `AMAZON_PRO_SPAPI_CLIENT_ID`, `AMAZON_PRO_SPAPI_CLIENT_SECRET`, `AMAZON_PRO_SPAPI_REFRESH_TOKEN` | `AMAZON_PRO_LIVE_SPAPI=1` |
+| Ads API | `AMAZON_PRO_ADS_CLIENT_ID`, `AMAZON_PRO_ADS_CLIENT_SECRET`, `AMAZON_PRO_ADS_REFRESH_TOKEN` | `AMAZON_PRO_LIVE_ADS=1` |
+| Global | `AMAZON_PRO_CONNECTORS=sp-api,ads` (vacío = ninguna llamada de red) | |
 
-**Pendiente técnico conocido (no bloquea Fase 4):** `/api/status` y el adaptador usan nombres de variable distintos (`SPAPI_*` vs `AMAZON_PRO_SPAPI_*`). Antes de conectar hay que unificarlos en una sola convención; hoy no se unifica para no cambiar un contrato existente sin justificación.
+Doble activación: hace falta `AMAZON_PRO_CONNECTORS` **y** el interruptor LIVE del servicio, con las tres credenciales. En STAGING ninguna de estas variables puede existir (el servidor no arranca). Corrección 4.1: el desajuste de nombres queda **resuelto**. Lectura real mediante `GET /api/amazon/read` (sesión, 20/min, auditada) y catálogo `GET /api/amazon/ops`; el access token LWA se obtiene por lectura y no se guarda ni se devuelve.
 
 ## 4. Proceso OAuth (lo ejecuta una persona de AHT, no el sistema)
 1. **SP-API:** en Seller Central (cuenta titular, hoy «POR CONFIRMAR») → Aplicaciones y servicios → Desarrollar aplicaciones → registrar una aplicación **privada** con roles de solo lectura (Información del producto, Pedidos, Inventario y Fulfillment, Finanzas, Informes). Autorizar la aplicación para la propia cuenta: se obtiene el **refresh token**. Client ID/Secret salen de LWA.

@@ -55,7 +55,7 @@ Cumplidos: criterio 1 (10 suites sin legacy), 2 (dos ejecuciones) y 3 (paridad d
 **Modificados:** `.github/workflows/k4-ci.yml` · `backend/conectores100.py` · `index.html` · `js/hoy.js` · `js/lanz.js` · `js/nav.js` · `js/ro.js` · `styles.css` · `tools/coordinador.py` · `tests/run_all.sh` · `docs/p0_hoy/PLAN_RETIRADA_LEGACY.md` · `tests/ui_{test,v06,v07,k4,k3,eu,synth,v100,v100_cloud,viewer,hoy,nav,viewer_ro}_test.py` (según el caso).
 
 ## 7. Variables necesarias para conectar Amazon
-Ver `AMAZON_INTEGRACION_FASE4.md` §3–4. En Render (secretos): `SPAPI_CLIENT_ID/SECRET/REFRESH_TOKEN`, `ADS_CLIENT_ID/SECRET/REFRESH_TOKEN`, `AMAZON_PRO_CONNECTORS`, y los interruptores `AMAZON_PRO_LIVE_SPAPI=1` / `AMAZON_PRO_LIVE_ADS=1` solo tras una verificación humana. **Aviso:** el adaptador lee `AMAZON_PRO_SPAPI_*`/`AMAZON_PRO_ADS_*` mientras `/api/status` espera `SPAPI_*`/`ADS_*`; hay que unificar el nombre antes de conectar.
+Ver `AMAZON_INTEGRACION_FASE4.md` §3–4. En Render (secretos): `AMAZON_PRO_SPAPI_CLIENT_ID/SECRET/REFRESH_TOKEN`, `AMAZON_PRO_ADS_CLIENT_ID/SECRET/REFRESH_TOKEN`, `AMAZON_PRO_CONNECTORS`, y los interruptores `AMAZON_PRO_LIVE_SPAPI=1` / `AMAZON_PRO_LIVE_ADS=1` solo tras una verificación humana. (Aviso de nombres resuelto en la Corrección 4.1: convención única `AMAZON_PRO_*`.)
 
 ## 8. Checklist de despliegue en STAGING (no ejecutar sin orden)
 1. Aprobación de José de esta fase y del commit; **solo entonces** push de la rama y despliegue en el servicio de staging.

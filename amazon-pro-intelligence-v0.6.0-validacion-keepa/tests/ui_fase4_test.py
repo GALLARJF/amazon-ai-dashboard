@@ -77,7 +77,7 @@ def run(pw, name, vp, mobile):
     check(f"{T} admin: Aprobaciones, Conexiones, Historial y Auditoría unificados en una pantalla", all(x in t for x in ("Aprobaciones", "Historial y auditoría", "Conexiones")) and pg.locator("#subnav6").is_hidden())
     check(f"{T} admin: operación diaria arriba; configuración técnica plegada", "Operación diaria" in t and pg.locator("#adm2conn").evaluate("e=>!e.open"))
     pg.locator("#adm2conn > summary").click(); pg.wait_for_timeout(400); ct = pg.locator("#adm2connb").inner_text()
-    check(f"{T} admin: 4 conexiones, todas DESHABILITADAS por defecto, con variables que faltan", all(x in ct for x in ("Amazon SP-API", "Amazon Ads API", "Keepa", "Helium 10")) and ct.count("DESHABILITADO") >= 4 and "SPAPI_CLIENT_ID" in ct)
+    check(f"{T} admin: 4 conexiones, todas DESHABILITADAS por defecto, con variables que faltan", all(x in ct for x in ("Amazon SP-API", "Amazon Ads API", "Keepa", "Helium 10")) and ct.count("DESHABILITADO") >= 4 and "AMAZON_PRO_SPAPI_CLIENT_ID" in ct)
     pg.locator("#adm2hist > summary").click(); pg.wait_for_timeout(400); check(f"{T} admin: auditoría con cadena íntegra y eventos", "✔ íntegra" in pg.locator("#adm2histb").inner_text())
     check(f"{T} admin: nota de solo lectura del viewer", "Solo lectura" in pg.locator("#adm2top").inner_text())
     # ---- viewer: ningún control de escritura activo en las pantallas nuevas

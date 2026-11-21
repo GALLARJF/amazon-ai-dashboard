@@ -1,7 +1,7 @@
 """STAGING · rol viewer SOLO LECTURA — 403 en toda escritura (bloqueo central + segunda barrera), lectura completa como administrador, sin red, sin servicios de pago."""
 import http.cookiejar, json, os, re, socket, subprocess, sys, tempfile, threading, urllib.error, urllib.request
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); sys.path.insert(0, ROOT)
-for k in ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "SPAPI_CLIENT_ID", "SPAPI_CLIENT_SECRET", "SPAPI_REFRESH_TOKEN", "ADS_CLIENT_ID", "ADS_CLIENT_SECRET", "ADS_REFRESH_TOKEN", "H10_API_KEY"):
+for k in ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "AMAZON_PRO_SPAPI_CLIENT_ID", "AMAZON_PRO_SPAPI_CLIENT_SECRET", "AMAZON_PRO_SPAPI_REFRESH_TOKEN", "AMAZON_PRO_ADS_CLIENT_ID", "AMAZON_PRO_ADS_CLIENT_SECRET", "AMAZON_PRO_ADS_REFRESH_TOKEN", "H10_API_KEY"):
     os.environ.pop(k, None)
 VPW = "viewer-pass-" + "x7Qk2m"; APW = "admin-pass-" + "p9Zt4w"
 os.environ.update(AMAZON_PRO_STAGING="1", AMAZON_PRO_SEED_VIEWERS="auditor", AMAZON_PRO_PASSWORD_AUDITOR=VPW, AMAZON_PRO_CONNECTORS="keepa,sp-api,ads", AMAZON_PRO_AI_ENABLE="1")
@@ -99,7 +99,7 @@ check("lista blanca de salida vacía (sin Internet)", S.READ_ONLY_ALLOW == [])
 check("IA y Keepa forzados a desactivados en staging", os.environ["AMAZON_PRO_AI_ENABLE"] == "0" and os.environ["AMAZON_PRO_KEEPA_ENABLE"] == "0" and os.environ["AMAZON_PRO_NO_WORKER"] == "1")
 st_ = json.loads(call(vw, "GET", "/api/status")[1]); check("estado de conexiones: ningún conector CONECTADO/HABILITADO", bool(st_.get("connectors")) and not any(c.get("enabled") or "CONECTADO" in str(c.get("status", "")) for c in st_["connectors"]))
 check("conectores: POST /api/connectors/test → 403 incluso con token de admin", call(adm, "POST", "/api/connectors/test", {"name": "keepa"}, headers={"X-Admin-Token": "t"})[0] == 403)
-for var in ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "SPAPI_CLIENT_ID"):
+for var in ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "AMAZON_PRO_SPAPI_CLIENT_ID"):
     env = {**os.environ, "AMAZON_PRO_STAGING": "1", var: "x"}
     r = subprocess.run([sys.executable, "-c", "import server"], cwd=ROOT, env=env, capture_output=True, text=True)
     check(f"con {var} definida, staging NO arranca (y no imprime su valor)", r.returncode != 0 and "x\n" not in r.stderr.split("variables")[-1][-4:] and var in r.stderr)

@@ -2,8 +2,8 @@
 import json, os, sys, threading, urllib.request, urllib.error, importlib
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, ROOT)
-FAKE = {"KEEPA_KEY": "FAKESECRET_keepa_9f3a", "SPAPI_CLIENT_ID": "FAKESECRET_spid", "SPAPI_CLIENT_SECRET": "FAKESECRET_spsec",
-        "SPAPI_REFRESH_TOKEN": "FAKESECRET_sprt", "ADS_CLIENT_ID": "FAKESECRET_adid", "ADS_CLIENT_SECRET": "FAKESECRET_adsec", "ADS_REFRESH_TOKEN": "FAKESECRET_adrt"}
+FAKE = {"KEEPA_KEY": "FAKESECRET_keepa_9f3a", "AMAZON_PRO_SPAPI_CLIENT_ID": "FAKESECRET_spid", "AMAZON_PRO_SPAPI_CLIENT_SECRET": "FAKESECRET_spsec",
+        "AMAZON_PRO_SPAPI_REFRESH_TOKEN": "FAKESECRET_sprt", "AMAZON_PRO_ADS_CLIENT_ID": "FAKESECRET_adid", "AMAZON_PRO_ADS_CLIENT_SECRET": "FAKESECRET_adsec", "AMAZON_PRO_ADS_REFRESH_TOKEN": "FAKESECRET_adrt"}
 os.environ.update(FAKE); os.environ.pop("AMAZON_PRO_CONNECTORS", None); os.environ.pop("AMAZON_PRO_ADMIN_TOKEN", None)
 import server
 res = []; ALLBODIES = []
@@ -65,7 +65,7 @@ for m in ("PUT", "DELETE", "PATCH"):
     s, _, _ = req(m, "/api/connectors/test", b"{}", J); check(f"{m} → 405", s == 405)
 
 # 4. Habilitación explícita
-os.environ["AMAZON_PRO_CONNECTORS"] = "keepa,sp-api,ads"
+os.environ["AMAZON_PRO_CONNECTORS"] = "keepa,sp-api,ads"; os.environ["AMAZON_PRO_LIVE_SPAPI"] = "1"; os.environ["AMAZON_PRO_LIVE_ADS"] = "1"   # doble activación (Corrección 4.1)
 s, d, _ = req("GET", "/api/status"); j = json.loads(d); check("tras habilitar explícitamente, aparecen como probables", all(c["testable"] for c in j["connectors"] if c["id"] != "helium10"))
 s, d, _ = req("POST", "/api/connectors/test", b'{"name":"keepa"}', J); check("prueba keepa (simulada) OK", s == 200 and json.loads(d)["ok"] is True)
 s, _, _ = req("POST", "/api/connectors/test", b'{"name":"keepa"}', J); check("segunda prueba inmediata → 429", s == 429)
