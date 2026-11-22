@@ -6,7 +6,7 @@
   const W = /(^\s*\+|vaciar|ejemplo|dossier|coworker|chat|guardar|crear|nuevo|nueva|aprobar|rechazar|lanzar|ejecutar|analizar|importar|publicar|activar|archivar|añadir|editar|enviar|proponer|investigar|reanudar|probar|confirmar|eliminar|borrar|registrar|validar|generar|iniciar|aplicar|actualizar|solicitar|reconciliar|fijar|cancelar|descartar|marcar|verificar|subir|cargar|restaurar|respaldo|preguntar|consultar al|medir|calcular|refrescar|cambiar contraseña|restablecer|desactivar|reanudar|pausar|detener|programar|asignar|sincronizar|exportar a)/i;
   const KEEP = '#lgOut,#lgOpen,#lgForm *,.ro-ok,[data-tab],#nav6 *,#bnav *,#subnav6 *,[data-k4v],[data-h2f],[data-h2go],[data-h2prod],[data-x4go],[data-x4open],a.btn,#dmode';
   // Campos de VISUALIZACIÓN que un viewer sí puede usar (no alteran datos): cuenta, modo, filtros y selectores de producto/expediente.
-  const FIELD_OK = '#lgForm *,#acSel,#dmode,#dirDossier,#fMkt,#fPeriod,#fProduct,#k4fc,#k4fd,#k4fk,#k4fp,#k4io,#k4it,#k4par,#v6Prod-ventas,#v6Prod-lanz,[data-view-filter]';
+  const FIELD_OK = '#lgForm *,#acSel,#dmode,#dirDossier,#fMkt,#fPeriod,#fProduct,#k4fc,#k4fd,#k4fk,#k4fp,#k4par,#v6Prod-ventas,#v6Prod-lanz,[data-view-filter]';
   const MSG = () => (document.body.classList.contains('staging') && !(root.V03 && root.V03.V && root.V03.V.viewer) ? 'Solo lectura — staging' : 'Solo lectura — viewer');
   function lockField(el) {
     const m = MSG(); if (el.dataset.vroField === m) return; el.dataset.vroField = m;
