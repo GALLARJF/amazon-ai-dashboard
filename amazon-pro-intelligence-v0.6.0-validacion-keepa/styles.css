@@ -413,3 +413,7 @@ body.shell6{overflow-x:clip}
 @media(max-width:600px){.k4tcs{grid-template-columns:1fr}.k4tc dl>div{grid-template-columns:1fr}}
 @media(max-width:600px){#k4Root label,#k4Root select,#k4Root input{max-width:100%;min-width:0;box-sizing:border-box}#k4Root select{width:100%;text-overflow:ellipsis}}
 @media(max-width:480px){.envbanner{font-size:9.5px;letter-spacing:0;padding:6px 4px;line-height:1.15}}
+
+/* 4.2 · campos bloqueados de solo lectura */
+input.vro-field,select.vro-field,textarea.vro-field{opacity:.7;cursor:not-allowed;background:repeating-linear-gradient(135deg,#ffffff0a 0 6px,#ffffff14 6px 12px)!important;border:1px dashed #8ea6bd!important;color:#c9d6e2!important;text-decoration:none!important;filter:none}
+.ro-badge{display:inline-block;margin:2px 0 6px;padding:1px 8px;border:1px solid #ffb02e88;border-radius:999px;color:#ffb02e;font-size:10.5px;letter-spacing:.3px;text-transform:uppercase}

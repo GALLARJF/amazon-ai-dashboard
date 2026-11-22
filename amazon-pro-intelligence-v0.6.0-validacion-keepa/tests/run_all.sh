@@ -73,6 +73,7 @@ run "P0 Fase 4: Ventas, Productos, Administración y Director IA (1440/390/360, 
 run "P0 Fase 4: arquitectura Amazon SP-API/Ads (desactivada, solo lectura, sin credenciales)" python3 tests/amazon_arch_test.py
 run "P0 Fase 4.1: conectores Amazon de solo lectura (cabeceras, LWA, paginación, 429, ruta interna, staging)" python3 tests/amazon_lectura_test.py
 run "Corrección final de staging: auditor viewer, 403 universal, sin PRODUCCIÓN/datos reales, controles bloqueados, P1, 1440/390/360 + Android" python3 tests/ui_staging_final_test.py
+run "Corrección 4.2: viewer realmente solo lectura (0 campos editables en 15 pantallas, Pre-Launch, admin operativo, 403, 1440/390/360 + Pixel 7)" python3 tests/ui_viewer_ro_total_test.py
 run "P0 Fase 4.1: Productos a 1440 px sin desplazamiento horizontal" python3 tests/ui_prod_1440_test.py
 run "P0 Fase 4: paridad de componentes navegación antigua vs nueva" python3 tests/ui_legacy_paridad_test.py
 run "P0 Fase 2: viewer — todos los controles de escritura desactivados y rotulados" python3 tests/ui_viewer_ro_test.py
