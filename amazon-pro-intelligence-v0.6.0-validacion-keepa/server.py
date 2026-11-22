@@ -25,7 +25,7 @@ HOST = os.environ.get("AMAZON_PRO_BIND", "127.0.0.1")   # V1.0 cloud: 0.0.0.0 de
 PUBLIC_HOST = (os.environ.get("AMAZON_PRO_PUBLIC_HOST") or os.environ.get("RENDER_EXTERNAL_HOSTNAME") or "").strip().lower()   # p. ej. mi-app.onrender.com (sin esquema)
 CLOUD = bool(PUBLIC_HOST)
 STAGING = os.environ.get("AMAZON_PRO_STAGING") == "1"   # entorno de auditoría: datos sintéticos, SOLO LECTURA, sin servicios de pago
-STAGING_LABEL = "STAGING — DATOS SINTÉTICOS — SOLO LECTURA"
+STAGING_LABEL = "STAGING · DATOS SINTÉTICOS · NO USAR PARA DECISIONES REALES"
 FORBIDDEN_ENV = ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY",
                  "AMAZON_PRO_SPAPI_CLIENT_ID", "AMAZON_PRO_SPAPI_CLIENT_SECRET", "AMAZON_PRO_SPAPI_REFRESH_TOKEN",
                  "AMAZON_PRO_ADS_CLIENT_ID", "AMAZON_PRO_ADS_CLIENT_SECRET", "AMAZON_PRO_ADS_REFRESH_TOKEN",
@@ -261,6 +261,13 @@ class H(BaseHTTPRequestHandler):
         if write and not hmac.compare_digest(self.headers.get("X-CSRF-Token") or "", s["csrf"]):
             self._json({"error": "CSRF inválido"}, 403); return None
         return s
+
+    def _staging_denied(self):
+        try:
+            _s = APP["store"].session(self._token()); _v = bool(_s and _s["role"] == "viewer")
+            APP["store"].audit(None, "viewer" if _v else "staging", "viewer.write_blocked" if _v else "staging.write_blocked", {"method": self.command, "path": urllib.parse.urlparse(self.path).path[:120]})
+        except Exception: pass
+        return self._json({"error": "staging de solo lectura: ningún rol puede modificar ni ejecutar nada"}, 403) and None
 
     def _viewer_denied(self):
         try: APP["store"].audit(None, "viewer", "viewer.write_blocked", {"method": self.command, "path": urllib.parse.urlparse(self.path).path[:120]})
@@ -604,8 +611,8 @@ class H(BaseHTTPRequestHandler):
         path = urllib.parse.urlparse(self.path).path
         if not self._local_origin_ok():
             return self._json({"error": "origen no permitido"}, 403)
-        if STAGING and path == "/api/connectors/test":   # staging: no existen conectores que probar
-            return self._json({"error": "staging: conectores deshabilitados"}, 403)
+        if STAGING and path not in ("/api/login", "/api/logout"):   # STAGING: ningún rol (ni admin ni approver) puede escribir; solo login y logout
+            return self._staging_denied()
         if path not in ("/api/login", "/api/logout"):   # BLOQUEO CENTRAL (denegación por defecto): cualquier POST de un viewer, sea cual sea la ruta
             _v = APP["store"].session(self._token())
             if _v and _v["role"] == "viewer":
@@ -798,6 +805,7 @@ class H(BaseHTTPRequestHandler):
         self._json(LAST[name])
 
     def do_PUT(self):
+        if STAGING: return self._staging_denied()
         v = APP["store"].session(self._token()) if self._local_origin_ok() else None
         if v and v["role"] == "viewer": return self._viewer_denied()
         self._json({"error": "método no permitido"}, 405)
@@ -841,7 +849,11 @@ def seed_viewers(store):
     out = []
     for name in [x.strip() for x in (os.environ.get("AMAZON_PRO_SEED_VIEWERS") or "").split(",")]:
         if not name or not name.isidentifier(): continue
-        if store.db.execute("SELECT 1 FROM users WHERE username=?", (name,)).fetchone(): continue
+        row = store.db.execute("SELECT role FROM users WHERE username=?", (name,)).fetchone()
+        if row:
+            if STAGING and row[0] != "viewer":   # staging: un usuario de auditoría NUNCA puede ser admin/approver
+                store.db.execute("UPDATE users SET role='viewer' WHERE username=?", (name,)); store.db.commit()
+            continue
         pw = os.environ.get("AMAZON_PRO_PASSWORD_" + name.upper()) or ""
         if len(pw) < 12: continue
         store.create_user(name, pw, "viewer", []); out.append(name)

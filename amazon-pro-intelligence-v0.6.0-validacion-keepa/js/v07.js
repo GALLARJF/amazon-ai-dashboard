@@ -1,4 +1,4 @@
-/* AHT Executive Neon · V0.7.0 — Briefing del Director, expediente comercial y datos reales de Keepa con PROCEDENCIA del dato.
+/* AHT Executive Neon · V0.7.0 — Briefing del Director, expediente comercial y datos de Keepa con PROCEDENCIA del dato.
    Se acopla a LANZAMIENTOS y DIRECTOR IA (v06.js) sin tocarlos: añade un panel <section class="v7"> al final de cada espacio.
    Todo texto del servidor se escapa con esc() y se pinta como TEXTO; los títulos de competidores son DATOS NO FIABLES. Sin manejadores inline (CSP), sin almacenamiento local, sin red externa. */
 (function (root) {
@@ -65,7 +65,7 @@
     const host = document.getElementById(SPACES[space]); if (!host || host.querySelector('section.v7')) return;
     if (!host.querySelector('.layout, .filters')) return; // V06 aún no ha pintado (o falta sesión)
     const product = pid(); if (!product) return;
-    const sec = document.createElement('section'); sec.className = 'v7'; sec.dataset.space = space; sec.dataset.product = product; sec.dataset.token = String(++seq); sec.setAttribute('role', 'region'); sec.setAttribute('aria-label', 'Panel V0.7: briefing, expediente y datos reales de Keepa');
+    const sec = document.createElement('section'); sec.className = 'v7'; sec.dataset.space = space; sec.dataset.product = product; sec.dataset.token = String(++seq); sec.setAttribute('role', 'region'); sec.setAttribute('aria-label', 'Panel V0.7: briefing, expediente y datos de Keepa');
     sec.innerHTML = '<p role="status" aria-live="polite" class="muted">Cargando panel V0.7…</p>'; host.appendChild(sec);
     fill(sec, space, product, seq).catch((err) => { if (sec.isConnected) sec.innerHTML = `<p role="status" aria-live="polite" class="v7-err">No se pudo cargar el panel V0.7: ${esc(err && err.message)}</p>`; });
   }

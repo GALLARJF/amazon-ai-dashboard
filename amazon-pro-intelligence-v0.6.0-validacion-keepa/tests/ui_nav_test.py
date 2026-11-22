@@ -12,8 +12,8 @@ def check(n, c): R.append(bool(c)); print(("OK   " if c else "FAIL ") + n)
 tmp = tempfile.mkdtemp(); srv = S.make_server(0, admin_token="t", db_path=os.path.join(tmp, "s.db"), cfg_fn=lambda: AI.config({}), admin_password="admin-pass-p9Zt4w"); port = srv.server_address[1]
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 for f in glob.glob(os.path.join(OUT, "*.png")): os.remove(f)
-SECS = [("hoy", "Hoy", ["Hoy"]), ("ventas", "Ventas", ["Mis ventas", "Indicadores", "Panel DEMO"]), ("prod", "Productos", ["Catálogo", "Precio", "Competencia", "Expediente PHIVITAL"]),
-        ("lanz", "Lanzamientos", ["Expediente", "Pre-Launch", "Europa · Mercados"]), ("dir", "Director IA", ["Director", "Datos del Director"]), ("adm", "Administración", ["Administración"])]
+SECS = [("hoy", "Hoy", ["Hoy"]), ("ventas", "Ventas", ["Mis ventas", "Indicadores"]), ("prod", "Productos", ["Catálogo", "Precio", "Competencia", "Expediente PHIVITAL"]),
+        ("lanz", "Lanzamientos", ["Expediente", "Pre-Launch", "Europa · Mercados"]), ("dir", "Director IA", ["Director", "Datos del Director"]), ("adm", "Administración", ["Administración", "Laboratorio DEMO"])]
 K4 = {"Indicadores": "centro", "Precio": "precio", "Competencia": "bench", "Datos del Director": "dir"}
 BAR_JS = """() => { const bar = document.querySelector('#bnav'); const cs = getComputedStyle(bar); if (cs.display === 'none') return {err: 'barra oculta'};
   window.scrollTo(0, document.documentElement.scrollHeight); const top = bar.getBoundingClientRect().top; 
@@ -32,7 +32,7 @@ def run(pw, name, vp, mobile):
     labs = pg.eval_on_selector_all(f"{nav} [data-sec]", "e=>e.map(x=>x.textContent.trim())")
     check(f"[{name}] barra de navegación con exactamente las 6 secciones ({labs})", len(labs) == 6)
     check(f"[{name}] navegación antigua (#tabs) oculta y sin desbordamiento horizontal", not pg.locator("#tabs").is_visible() and pg.evaluate("document.documentElement.scrollWidth<=innerWidth+1"))
-    check(f"[{name}] selector de datos: REAL deshabilitado en staging, modo DEMO/SINTÉTICO activo y rotulado", pg.eval_on_selector("#dmode option[value=real]", "o=>o.disabled") and pg.eval_on_selector("#dmode", "s=>s.value") == "demo" and "DATOS DEMO/SINTÉTICOS" in pg.inner_text("#modeBar"))
+    check(f"[{name}] selector de datos: REAL deshabilitado en staging, modo DEMO/SINTÉTICO activo y rotulado", pg.eval_on_selector("#dmode option[value=real]", "o=>o.disabled") and pg.eval_on_selector("#dmode", "s=>s.value") == "demo" and "DATOS FICTICIOS — NO REPRESENTAN RESULTADOS DE AHT" in pg.inner_text("#modeBar") and "DATOS DEMO/SINTÉTICOS" in pg.eval_on_selector("#dmode", "s=>s.selectedOptions[0].textContent"))
     for i, (sid, lab, subs) in enumerate(SECS, 1):
         pg.click(f'{nav} [data-sec="{sid}"]'); pg.wait_for_timeout(1300)
         for j, sl in enumerate(subs):

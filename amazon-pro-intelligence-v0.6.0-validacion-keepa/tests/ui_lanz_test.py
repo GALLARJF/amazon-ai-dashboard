@@ -16,6 +16,11 @@ for f in glob.glob(os.path.join(OUT, "*.png")): os.remove(f)
 cj = http.cookiejar.CookieJar(); op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
 def call(p, b=None, csrf="", jar=op):
     r = urllib.request.Request(f"http://localhost:{port}" + p, data=json.dumps(b).encode() if b is not None else None, headers={"Content-Type": "application/json", "X-CSRF-Token": csrf}); return json.loads(jar.open(r).read())
+_call0 = call
+def call(*a, **k):   # siembra de datos de prueba: solo aquí se levanta, un instante, el bloqueo de escritura de staging (el servidor lo aplica a todos los roles)
+    S.STAGING = False
+    try: return _call0(*a, **k)
+    finally: S.STAGING = True
 csrf = call("/api/login", {"username": "admin", "password": "admin-pass-p9Zt4w"})["csrf"]; call("/api/v06/order", {"product": "PRD-PHIVITAL-MAGNESIO"}, csrf)
 STEPS = ["Producto y mercado", "Economía unitaria", "Precio y margen", "Benchmark y competidores", "Demanda", "Stock y logística", "Cumplimiento regulatorio", "Documentos y fuentes", "Riesgos y bloqueos", "Recomendación final"]
 LABELS = ["Bloqueos críticos", "Próxima acción", "Responsable", "Progreso del expediente", "Última actualización"]

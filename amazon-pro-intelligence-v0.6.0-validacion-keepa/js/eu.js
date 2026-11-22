@@ -91,7 +91,7 @@
       <label>Comparabilidad<select id="euComp">${['all', 'ALTA', 'MEDIA', 'BAJA'].map((c) => `<option value="${c}" ${c === E.comp ? 'selected' : ''}>${c === 'all' ? 'todas' : c}</option>`).join('')}</select></label>
       <label>Calidad de evidencia<select id="euEvq">${['all', 'ALTA', 'BAJA'].map((c) => `<option value="${c}" ${c === E.evq ? 'selected' : ''}>${c === 'all' ? 'todas' : c}</option>`).join('')}</select></label>
       <label class="chk"><input id="euConf" type="checkbox" ${E.confirmedOnly ? 'checked' : ''}> solo confirmados</label>
-      <span class="muted">Fuente: Keepa API (caché local) · datos reales parciales · nada simulado en este módulo</span></div>`;
+      <span class="muted">Fuente: Keepa API (caché local) · cobertura parcial · ${document.body.classList.contains('staging') ? 'en staging son datos sintéticos de demostración' : 'nada simulado en este módulo'}</span></div>`;
   }
 
   // ------------------------------------------------------------------ descubrimiento ----------------------------------------------------------
@@ -121,11 +121,18 @@
   }
 
   // ------------------------------------------------------------------ vistas -----------------------------------------------------------------------
+  function eduConc() {   // P1: primero conclusión, país, confianza, motivo y datos faltantes
+    const ov = E.ov, rk = ov.ranking, top = rk.ranking[0], miss = rk.pending.flatMap((p) => (p.missing || []).map((m) => `${p.name || p.country}: ${m.criterio}`));
+    const conf = top ? `${(top.coverage * 100).toFixed(0)} % de cobertura de datos${rk.sensitivity ? ' · estable en ' + (rk.sensitivity.stable_share * 100).toFixed(0) + ' % de las variaciones' : ''}` : 'SIN CONFIANZA: no hay país evaluable';
+    const mot = top ? `Mayor puntuación multicriterio (${top.score.toFixed(1)} / 100) entre los países evaluables; es provisional.` : 'Ningún país alcanza la cobertura mínima de datos con fuente y fecha.';
+    const row = (k, v) => `<div class="euc-r"><span>${k}</span><b>${v}</b></div>`;
+    return `<section class="euconc" aria-label="Conclusión de Europa">${row('Conclusión', top ? 'RECOMENDACIÓN PROVISIONAL' : 'SIN RECOMENDACIÓN · REVISAR')}${row('País', top ? esc(ov.names[rk.launch]) : 'Ninguno por ahora')}${row('Confianza', esc(conf))}${row('Motivo', esc(mot))}${row('Datos faltantes', miss.length ? esc(miss.slice(0, 4).join(' · ')) + (miss.length > 4 ? ` · +${miss.length - 4} más (ver «Qué falta»)` : '') : 'ninguno bloqueante')}</section>`;
+  }
   function viewEuropa() {
     const ov = E.ov, rk = ov.ranking, ec = E.econ, bm = E.bench && E.bench.benchmark, kst = ov.keepa;
     const ses = rk.ranking.length ? 'RECOMENDACIÓN PROVISIONAL' : 'SIN DATOS SUFICIENTES (REVISAR)';
     const h = [];
-    h.push(`<article class="card c-cyan wide"><h3>Resumen ejecutivo · ${esc(P().name)}</h3><div class="eudec ${rk.ranking.length ? 'ok' : 'no'}"><b>${ses}</b> · ${rk.ranking.length ? `Primer país provisional: ${esc(ov.names[rk.launch])}${rk.second ? ' · segundo: ' + esc(ov.names[rk.second]) : ''} (cambia si cambian los datos)` : 'No hay recomendación de país, PVP ni secuencia de lanzamiento: faltan datos con fuente y fecha (ver «Qué falta»).'}</div>${kpis()}${filters()}</article>`);
+    h.push(`<article class="card c-cyan wide"><h3>Resumen ejecutivo · ${esc(P().name)}</h3><div class="eudec ${rk.ranking.length ? 'ok' : 'no'}"><b>${ses}</b> · ${rk.ranking.length ? `Primer país provisional: ${esc(ov.names[rk.launch])}${rk.second ? ' · segundo: ' + esc(ov.names[rk.second]) : ''} (cambia si cambian los datos)` : 'No hay recomendación de país, PVP ni secuencia de lanzamiento: faltan datos con fuente y fecha (ver «Qué falta»).'}</div>${eduConc()}${kpis()}${filters()}</article>`);
     h.push(discoveryPanel());
     h.push(`<article class="card c-violet"><h3>Ranking europeo multicriterio <small>pesos editables · NO EVALUABLE si faltan datos</small></h3>
       ${rk.ranking.length ? bars(rk.ranking.map((p) => ({ label: ov.names[p.country], v: p.score, text: p.score.toFixed(1), color: '#b968ff' })), { max: 100, label: 'Ranking' }) : '<p class="muted">Ningún país alcanza la cobertura mínima de datos verificados: no se ordena a nadie por intuición.</p>'}
@@ -287,7 +294,7 @@
   function consentDialog(r) {
     return new Promise((res) => {
       const p = r.preview, cur = esc(p.currency || 'USD'), o = document.createElement('div'); o.className = 'confirm-ov'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true');
-      o.innerHTML = `<div class="confirm-box"><h3>Consentimiento para enviar datos REALES a la IA</h3><p>${esc(r.explanation)}</p><ul><li>Proveedor: <b>${esc(p.provider)}</b> · modelo <b>${esc(p.model)}</b></li><li>Finalidad: ${esc(p.purpose)}</li><li>Coste máximo posible: <b>≈ ${p.estimated_worst_case == null ? 'no calculado' : p.estimated_worst_case.toFixed(5)} ${cur}</b> (tope por consulta ${p.max_cost_per_run}; presupuesto mensual ${p.monthly_budget}; disponible ${p.budget_remaining == null ? 'n/d' : p.budget_remaining.toFixed(4)} ${cur})</li><li>${esc(p.data_sent)}</li></ul><details><summary>Ver el texto exacto que se enviaría</summary><pre style="white-space:pre-wrap;max-height:220px;overflow:auto">${esc(p.user)}</pre></details><div class="confirm-btns"><button id="cfNo">Cancelar (no se envía nada)</button><button id="cfYes" class="primary">Consiento y enviar</button></div></div>`;
+      o.innerHTML = `<div class="confirm-box"><h3>Consentimiento para enviar datos de AHT a la IA</h3><p>${esc(r.explanation)}</p><ul><li>Proveedor: <b>${esc(p.provider)}</b> · modelo <b>${esc(p.model)}</b></li><li>Finalidad: ${esc(p.purpose)}</li><li>Coste máximo posible: <b>≈ ${p.estimated_worst_case == null ? 'no calculado' : p.estimated_worst_case.toFixed(5)} ${cur}</b> (tope por consulta ${p.max_cost_per_run}; presupuesto mensual ${p.monthly_budget}; disponible ${p.budget_remaining == null ? 'n/d' : p.budget_remaining.toFixed(4)} ${cur})</li><li>${esc(p.data_sent)}</li></ul><details><summary>Ver el texto exacto que se enviaría</summary><pre style="white-space:pre-wrap;max-height:220px;overflow:auto">${esc(p.user)}</pre></details><div class="confirm-btns"><button id="cfNo">Cancelar (no se envía nada)</button><button id="cfYes" class="primary">Consiento y enviar</button></div></div>`;
       document.body.appendChild(o); const done = (v) => { o.remove(); res(v); }; $('#cfNo', o).onclick = () => done(false); $('#cfYes', o).onclick = () => done(true); $('#cfNo', o).focus();
     });
   }

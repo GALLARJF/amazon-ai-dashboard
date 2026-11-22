@@ -98,7 +98,7 @@ class Launch:
     @staticmethod
     def calendar(gates):
         ph = [("T-60 a T-30", "Documentación regulatoria y etiquetado", "regulatorio"), ("T-30 a T-15", "Fotografía, listing y A+ (tras validar claims)", "claims"), ("T-15 a T-7", "Envío a Amazon / stock verificado", "stock"),
-              ("T-7 a T0", "Alta del ASIN, revisión final y aprobación de lanzamiento", "aprobacion"), ("T0 a T+14", "Lanzamiento: PPC inicial aprobado, vigilancia diaria", "ppc"), ("T+14 a T+30", "Primera lectura real y ajuste (con datos reales)", "datos")]
+              ("T-7 a T0", "Alta del ASIN, revisión final y aprobación de lanzamiento", "aprobacion"), ("T0 a T+14", "Lanzamiento: PPC inicial aprobado, vigilancia diaria", "ppc"), ("T+14 a T+30", "Primera lectura de resultados y ajuste (con ventas propias)", "datos")]
         return {"label": GEN, "phases": [{"ventana": a, "hito": b, "puerta": c, "estado_puerta": gates.get(c, "PENDIENTE")} for a, b, c in ph], "note": "Fechas relativas a T0 (fecha de lanzamiento aún NO fijada: decisión humana)."}
 
     # ---- compliance -----------------------------------------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ class Launch:
         for c in markets:
             sup = c in KEEPA_COUNTRIES; bm = (cd.get(c) or {}).get("benchmark")
             if not sup:
-                research.append({"country": c, "name": E.NAMES.get(c, c), "state": "PENDIENTE DE CONEXIÓN", "why": "El conector Keepa actual no cubre este mercado: requiere fuente autorizada o importación manual de datos reales", "competitors": 0})
+                research.append({"country": c, "name": E.NAMES.get(c, c), "state": "PENDIENTE DE CONEXIÓN", "why": "El conector Keepa actual no cubre este mercado: requiere fuente autorizada o importación manual de datos de AHT", "competitors": 0})
             elif not bm:
                 research.append({"country": c, "name": E.NAMES.get(c, c), "state": "SIN DATOS", "why": "Sin consulta Keepa realizada/aprobada para este producto", "competitors": 0})
             else:

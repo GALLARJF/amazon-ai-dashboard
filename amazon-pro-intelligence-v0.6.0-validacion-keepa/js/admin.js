@@ -63,7 +63,7 @@
     click('aprob'); click('estado'); click('hist'); moveLegacy();   // las tres pantallas originales se refrescan y quedan dentro de los bloques plegados; la última activa es la que aloja esta pantalla
     const d = await load(); $('#adm2top').innerHTML = top(d); $('#adm2histb').innerHTML = audit(d); $('#adm2connb').innerHTML = conns(d); $('#adm2aprb').innerHTML = approvals(d);
   }
-  function onShow(sec) { if (sec === 'adm') render(); }
-  document.addEventListener('DOMContentLoaded', () => { ensure(); setInterval(() => { const u = X.VV().user || null; if (u !== onShow.u) { onShow.u = u; if (X.NS().sec === 'adm') render(); } }, 700); });
+  function onShow(sec) { if (sec === 'adm' && !(X.NS().sub > 0)) render(); }   // sub 1 = Laboratorio DEMO (pantalla heredada «panel»)
+  document.addEventListener('DOMContentLoaded', () => { ensure(); setInterval(() => { const u = X.VV().user || null; if (u !== onShow.u) { onShow.u = u; if (X.NS().sec === 'adm' && !(X.NS().sub > 0)) render(); } }, 700); });
   root.ADM2 = { onShow, render, _todo: todo, _connState: connState };
 })(self);

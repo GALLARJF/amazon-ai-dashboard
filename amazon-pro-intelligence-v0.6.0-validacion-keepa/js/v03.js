@@ -8,7 +8,7 @@
   const CW = { mercado: 'Analiza competidores importados, precio normalizado y banda', precios: 'Economía determinista, escenarios de PVP y ACoS de equilibrio', seo: 'Keywords vigentes y cobertura del listing', ppc: 'Colchón de ACoS y CPC máximo (con CVR aportada)', creatividad: 'Activos de contenido pendientes y briefs', inventario: 'Cobertura de stock y reposición', cumplimiento: 'Checklist regulatorio, claims y términos de riesgo' };
 
   async function api(method, path, body) {
-    if (V.viewer && method !== 'GET' && path !== '/api/login' && path !== '/api/logout') return { ok: false, status: 403, j: { error: 'Solo lectura: el usuario viewer no puede modificar ni ejecutar nada' } };
+    if ((V.viewer || V.ro) && method !== 'GET' && path !== '/api/login' && path !== '/api/logout') return { ok: false, status: 403, j: { error: 'Solo lectura: este entorno (staging) o rol no puede modificar ni ejecutar nada' } };
     const h = {}; if (body !== undefined) h['Content-Type'] = 'application/json'; if (method === 'POST' && V.csrf) h['X-CSRF-Token'] = V.csrf;
     try { const r = await fetch(path, { method, headers: h, credentials: 'same-origin', body: body !== undefined ? JSON.stringify(body) : undefined }); let j = null; try { j = await r.json(); } catch (e) { /* sin cuerpo */ } return { ok: r.ok, status: r.status, j: j || {} }; }
     catch (e) { return { ok: false, status: 0, j: { error: 'servidor no disponible' } }; }
@@ -22,7 +22,7 @@
       <p style="margin-top:8px"><button class="btn" id="lgGo">Entrar</button></p></form><p class="muted">El primer arranque muestra la contraseña del usuario «admin» en la consola del servidor.</p>`);
     $('#lgForm').onsubmit = async (e) => { e.preventDefault(); const r = await api('POST', '/api/login', { username: $('#lgU').value, password: $('#lgP').value }); if (!r.ok) return loginForm(r.j.error || 'Error de acceso', $('#lgU').value); $('#modal').hidden = true; setRole(r.j.role); V.user = r.j.user; V.csrf = r.j.csrf; await boot(); };
   }
-  function setRole(r) { V.roleReal = r; V.viewer = r === 'viewer'; V.role = V.viewer ? 'admin' : r; document.body.classList.toggle('viewer', V.viewer); if (V.viewer) lockUi(); }
+  function setRole(r) { V.roleReal = r; V.viewer = r === 'viewer'; V.role = V.viewer ? 'admin' : r; document.body.classList.toggle('viewer', V.viewer); V.ro = V.viewer || document.body.classList.contains('staging'); if (V.ro) lockUi(); }
   /* viewer: la interfaz bloquea además lo que ya bloquea el backend (403) */
   function lockUi() {
     const W = /(guardar|crear|nuevo|nueva|aprobar|rechazar|lanzar|ejecutar|analizar|importar|publicar|activar|archivar|añadir|editar|enviar|proponer|investigar|reanudar|probar|confirmar|eliminar|borrar|registrar|validar|generar|iniciar|aplicar|actualizar|solicitar|reconciliar|fijar|cancelar plan|descartar|marcar|verificar|(?:^|\s)subir|(?:^|\s)cargar|restaurar|respaldo|preguntar|consultar al|enviar)/i;

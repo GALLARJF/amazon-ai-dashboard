@@ -38,7 +38,7 @@ with sync_playwright() as p:
     check("sin 'undefined', 'NaN', 'null' ni 'None'", not re.search(r"undefined|NaN|\bnull\b|\bNone\b", t))
     pg.screenshot(path=f"{OUT}/70_k4_centro_escritorio.png", full_page=True)
     # benchmarking · nivel 1
-    pg.click('[data-k4v=bench]'); check("comparativa ejecutiva: ACTIVCORE + 5 columnas", wait(pg, "document.querySelectorAll('#k4Root table.k4cmp thead th').length===7"))
+    pg.click('[data-k4v=bench]'); check("comparativa ejecutiva: ACTIVCORE + 5 columnas", wait(pg, "document.querySelectorAll('#k4Root table.k4cmp thead th').length===7")); pg.evaluate("document.querySelector('#k4evi') && (document.querySelector('#k4evi').open = true)"); pg.wait_for_timeout(200)
     tb = pg.inner_text("#k4Root"); heads = pg.locator("table.k4cmp thead th")
     check("ACTIVCORE destacado como producto propio y 5 referencias K3 (Kérastase, Nioxin, Redken, The Ordinary, Bio-Pilixin)", pg.locator("th.k4own-col").count() == 1 and "PRODUCTO PROPIO" in tb and all(x in tb for x in ("Kérastase", "Nioxin", "Redken", "The Ordinary", "Bio-Pilixin")))
     check("filas comparativas: precio, €/100 mL, activos, dosis, duración, posicionamiento, evidencia, ventajas", all(pg.locator("tr.k4r-" + r).count() == 1 for r in ("precio", "precio_100ml", "activos", "dosis", "duracion", "posicionamiento", "evidencia", "ventajas")))
@@ -103,10 +103,10 @@ with sync_playwright() as p:
     # responsive
     for w, h, nm, fn in ((820, 1100, "tablet", "81_k4_comparativa_tablet"), (390, 844, "movil", "81_k4_comparativa_movil")):
         c2 = b.new_context(viewport={"width": w, "height": h}); p2 = c2.new_page(); login2 = lambda q: (q.goto(f"http://localhost:{port}/"), q.wait_for_selector("#tabs"), q.click("#lgOpen"), q.fill("#lgU", "admin"), q.fill("#lgP", "admin-password-123"), q.click("#lgGo"), q.wait_for_selector(".sessu"))
-        login2(p2); p2.click('#tabs button[data-tab="k4"]'); wait(p2, "document.querySelectorAll('#k4Root .k4kpi').length>=8"); p2.click('[data-k4v=bench]'); wait(p2, "document.querySelectorAll('#k4Root table.k4cmp thead th').length===7")
+        login2(p2); p2.click('#tabs button[data-tab="k4"]'); wait(p2, "document.querySelectorAll('#k4Root .k4kpi').length>=8"); p2.click('[data-k4v=bench]'); wait(p2, "document.querySelectorAll('#k4Root table.k4cmp thead th').length===7"); p2.evaluate("document.querySelector('#k4evi').open = true")
         check(f"{nm}: la página no se desborda (la tabla se desplaza dentro de su región)", p2.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 4"))
         if nm == "movil":
-            check("móvil: selector de comparación por pares visible", p2.locator("#k4par").is_visible()); p2.select_option("#k4par", "0"); p2.wait_for_timeout(300); check("móvil: par ACTIVCORE vs una referencia (3 columnas)", p2.locator("table.k4cmp thead th").count() == 3)
+            p2.evaluate("document.querySelector('#k4evi').open = true"); check("móvil: selector de comparación por pares visible (dentro de «Evidencia»)", p2.locator("#k4par").is_visible()); p2.select_option("#k4par", "0"); p2.wait_for_timeout(300); p2.evaluate("document.querySelector('#k4evi').open = true"); check("móvil: par ACTIVCORE vs una referencia (3 columnas)", p2.locator("table.k4cmp thead th").count() == 3)
             check("móvil: botones táctiles ≥ 40 px", p2.evaluate("[...document.querySelectorAll('.k4sub button')].every(b=>b.getBoundingClientRect().height>=38)"))
         p2.screenshot(path=f"{OUT}/{fn}.png", full_page=True); c2.close()
     check("sin peticiones externas ni errores de consola/página", not ext and not errs)

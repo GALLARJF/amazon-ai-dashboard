@@ -14,6 +14,11 @@ threading.Thread(target=srv.serve_forever, daemon=True).start()
 cj = http.cookiejar.CookieJar(); op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
 def call(p, b=None, csrf=""):
     r = urllib.request.Request(f"http://localhost:{port}" + p, data=json.dumps(b).encode() if b is not None else None, headers={"Content-Type": "application/json", "X-CSRF-Token": csrf}); return json.loads(op.open(r).read())
+_call0 = call
+def call(*a, **k):   # siembra de datos de prueba: solo aquí se levanta, un instante, el bloqueo de escritura de staging (el servidor lo aplica a todos los roles)
+    S.STAGING = False
+    try: return _call0(*a, **k)
+    finally: S.STAGING = True
 csrf = call("/api/login", {"username": "admin", "password": "admin-pass-p9Zt4w"})["csrf"]; call("/api/v06/order", {"product": "PRD-PHIVITAL-MAGNESIO"}, csrf)
 WRITE = re.compile(r"guard|crea|nuev|aprob|rechaz|lanz|ejecut|analiz|import|publi|activ|archiv|añad|edit|envi|propon|investig|reanud|prob(ar|emos)|confirm|elimin|borr|registr|valid|gener|inici|aplic|actualiz|solicit|reconcil|fijar|cancel|descart|marc|verific|sub(ir|e)\b|carg|restaur|respald|pregunt|consult|medir|calcul|refresc|contraseñ|restablec|desactiv|paus|deten|program|asign|sincroniz|descarg|⬇|sellar|firmar|decidir|enviar|ejecutar", re.I)
 NAVOK = re.compile(r"^(hoy|ventas|productos|lanzamientos|director ia|administración|director|admin|salir|datos del director|cerrar|✕|ver decisiones.*|ver lanzamiento|ir a decisiones|ir al producto.*|pendientes de ti.*|sugeridas por reglas.*|en seguimiento.*|resueltas.*|decisiones.*|iniciar sesión)$", re.I)
@@ -54,7 +59,7 @@ with sync_playwright() as p:
     act = 0
     for sid, subs in SECS:
         for j in subs:
-            pg2.evaluate(f"NAV6.go('{sid}',{j})"); pg2.wait_for_timeout(1000); act += pg2.evaluate("[...document.querySelectorAll('main.tab.on button:not(:disabled), main.tab.on input[type=file]:not(:disabled)')].filter(e=>/guard|aprob|import|crear|nuev|ejecut|lanz/i.test(e.textContent+e.type)).length")
-    check(f"control negativo: con un ADMIN la misma prueba ve {act} controles de escritura ACTIVOS (≥ 8): la prueba es sensible", act >= 8)
+            pg2.evaluate(f"NAV6.go('{sid}',{j})"); pg2.wait_for_timeout(1000); act += pg2.evaluate("[...document.querySelectorAll('main.tab.on button:not(:disabled), main.tab.on input[type=file]:not(:disabled)')].filter(e=>/guard|aprob|import|crear|nuev/i.test(e.textContent+e.type)).length")
+    check(f"STAGING: también con un ADMIN la misma interfaz deja {act} controles de escritura activos (0): staging es de solo lectura para todos los roles", act == 0)
     b.close()
 print(f"{sum(R)}/{len(R)} OK"); sys.exit(0 if all(R) else 1)

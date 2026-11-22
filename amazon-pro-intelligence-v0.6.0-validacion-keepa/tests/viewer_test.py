@@ -91,7 +91,7 @@ check("recorrer todas las pantallas (GET) no escribe en ninguna tabla de datos",
 
 # ---- 4) STAGING: etiqueta, sin conectores, sin red, sin servicios de pago
 c, html, hd = call(mk(), "GET", "/"); html = html.decode()
-check("la etiqueta «STAGING — DATOS SINTÉTICOS — SOLO LECTURA» está en el HTML servido (antes de iniciar sesión)", S.STAGING_LABEL in html and 'id="envBanner"' in html)
+check("la etiqueta «STAGING · DATOS SINTÉTICOS · NO USAR PARA DECISIONES REALES» está en el HTML servido (antes de iniciar sesión)", S.STAGING_LABEL in html and 'id="envBanner"' in html)
 check("cabecera X-Env: staging", hd.get("X-Env") == "staging")
 check("navegación completa visible (12 pestañas)", all(x in html for x in ("INICIO", "LANZAMIENTOS", "MIS VENTAS", "PRODUCTOS", "DIRECTOR IA", "Panel DEMO", "Piloto PHIVITAL", "Pre-Launch", "K4", "EUROPA · MERCADOS", "Historial · Auditoría", "Estado · Conexiones", "Aprobaciones")))
 check("enabled_connectors() vacío aunque AMAZON_PRO_CONNECTORS=keepa,sp-api,ads", S.enabled_connectors() == set())
@@ -105,5 +105,5 @@ for var in ("KEEPA_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "AMAZON_PRO_
     check(f"con {var} definida, staging NO arranca (y no imprime su valor)", r.returncode != 0 and "x\n" not in r.stderr.split("variables")[-1][-4:] and var in r.stderr)
 # archivos estáticos: la UI bloquea además del backend
 js = open(os.path.join(ROOT, "js/v03.js"), encoding="utf-8").read()
-check("UI: api() no envía escrituras del viewer y lockUi desactiva controles de escritura", "V.viewer && method !== 'GET'" in js and "function lockUi" in js)
+check("UI: api() no envía escrituras del viewer y lockUi desactiva controles de escritura", "(V.viewer || V.ro) && method !== 'GET'" in js and "function lockUi" in js)
 print(f"\n{sum(R)}/{len(R)} OK"); sys.exit(0 if all(R) else 1)

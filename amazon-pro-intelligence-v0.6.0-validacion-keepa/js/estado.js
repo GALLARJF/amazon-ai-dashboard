@@ -23,7 +23,7 @@
 
     const anyVerified = conns && conns.some((c) => c.status.startsWith('CONECTADO'));
     const B = [
-      [S.source === 'demo' ? 'ABIERTO' : 'PARCIAL', 'Datos reales verificados', S.source === 'demo' ? 'Todo el panel usa datos DEMO.' : 'CSV importado: aún sin conciliar contra SP-API/Seller Central.'],
+      [S.source === 'demo' ? 'ABIERTO' : 'PARCIAL', 'Datos de AHT verificados', S.source === 'demo' ? 'Todo el panel usa datos DEMO.' : 'CSV importado: aún sin conciliar contra SP-API/Seller Central.'],
       [anyVerified ? 'PARCIAL' : 'ABIERTO', 'Conexiones reales con prueba', 'Ningún conector habilitado y probado con credenciales reales.'],
       ['ABIERTO', 'Tarifas de comisión verificadas', 'Las tablas de comisión por categoría son orientativas (verified:false).'],
       ['ABIERTO', 'Tarifas FBA, almacenaje y devoluciones reales', 'Se introducen a mano; falta contraste con la calculadora/informes de Amazon.'],
@@ -34,7 +34,7 @@
       ['ABIERTO', 'Titular legal y cuenta Seller Central del piloto', 'La cuenta PhiVital figura «POR CONFIRMAR»: no se asume titularidad ni se mezclan contabilidades.'],
       ['ABIERTO', 'Revisión regulatoria por especialista', 'Las listas regulatorias y de claims son plantillas orientativas.'],
       ['ABIERTO', 'Conector de escritura (precios, campañas, publicaciones)', 'No existe por diseño; requiere diseño aparte con doble aprobación y auditoría.'],
-      ['ABIERTO', 'Despliegue seguro', 'Hoy solo local (127.0.0.1); falta TLS, gestión de secretos y entorno de producción.'],
+      ['ABIERTO', 'Despliegue seguro', 'Hoy solo local (127.0.0.1); falta TLS, gestión de secretos y entorno definitivo.'],
       ['ABIERTO', 'Integración real con Executive Neon', 'Contrato y exportación listos; falta acordar esquema con la plataforma e importar con upsert.'],
     ];
     const NEED = { mercado: 'Keepa / importación CSV de competidores', precios: 'Costes documentados + tarifas vigentes de Amazon', seo: 'Helium 10 / Brand Analytics (exportación)', ppc: 'Amazon Ads (informes reales)', creatividad: 'Listing real (SP-API)', inventario: 'SP-API / FBA o stock propio', cumplimiento: 'Documentación regulatoria y reseñas' };

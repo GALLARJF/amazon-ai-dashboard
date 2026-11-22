@@ -21,7 +21,7 @@
   /* ---------- Cabecera / filtros ---------- */
   function renderBadge() {
     const b = $('#badge');
-    if (S.source === 'demo') { b.textContent = 'DEMO · SIN DATOS REALES'; b.className = 'badge'; }
+    if (S.source === 'demo') { b.textContent = 'DEMO · DATOS FICTICIOS'; b.className = 'badge'; }
     else { b.textContent = 'DATOS IMPORTADOS (CSV) · SIN VERIFICAR VÍA API'; b.className = 'badge csv'; }
   }
   function renderProducts() {
