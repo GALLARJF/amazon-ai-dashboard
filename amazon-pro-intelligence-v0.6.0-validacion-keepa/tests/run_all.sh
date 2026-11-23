@@ -83,4 +83,5 @@ run "K4: API (roles, CSRF, aislamiento demo/producción, derechos de imagen, exp
 run "K4: centro de mando NEON (navegador real, escritorio/tablet/móvil)" python3 tests/ui_k4_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
+run "Auditoría visual autenticada de staging (viewer, 15 pantallas, 1440/390/360/Pixel 7, 0 errores JS, 0 externas)" python3 tests/auditoria_visual_staging_test.py
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }
