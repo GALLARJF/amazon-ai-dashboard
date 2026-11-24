@@ -2,7 +2,7 @@
 # Ejecuta TODAS las pruebas V0.5.0 y FALLA si alguna falla. Uso: bash tests/run_all.sh (requiere node, python3, playwright, jsonschema)
 cd "$(dirname "$0")/.."; FAIL=0; N=0; NOK=0
 echo "SHA $(git rev-parse HEAD 2>/dev/null || echo desconocido) · inicio $(date -u +%FT%TZ)"
-run(){ N=$((N+1)); echo "== [$N] $1"; shift; o=$("$@" 2>&1); rc=$?; echo "$o" | tail -1; echo "   rc=$rc"; [ $rc -ne 0 ] && { echo "   >>> FALLO (rc=$rc)"; FAIL=1; } || NOK=$((NOK+1)); }
+run(){ N=$((N+1)); echo "== [$N] $1"; shift; o=$("$@" 2>&1); rc=$?; echo "$o" | tail -1; echo "   rc=$rc"; [ $rc -ne 0 ] && { echo "$o" | grep -E "^FAIL|FALLO|Error|Traceback" | head -8 | sed "s/^/   | /"; echo "   >>> FALLO (rc=$rc)"; FAIL=1; } || NOK=$((NOK+1)); }
 for f in calc economics dossier integration; do run "js/$f (heredado V0.2)" node tests/$f.test.js; done
 run "paridad JS↔Python" python3 tests/parity_test.py
 run "store/auditoría" python3 tests/store_test.py
