@@ -4,6 +4,8 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, ROOT)
 FAKE = {"KEEPA_API_KEY": "FAKESECRET_keepa_9f3a", "AMAZON_PRO_SPAPI_CLIENT_ID": "FAKESECRET_spid", "AMAZON_PRO_SPAPI_CLIENT_SECRET": "FAKESECRET_spsec",
         "AMAZON_PRO_SPAPI_REFRESH_TOKEN": "FAKESECRET_sprt", "AMAZON_PRO_ADS_CLIENT_ID": "FAKESECRET_adid", "AMAZON_PRO_ADS_CLIENT_SECRET": "FAKESECRET_adsec", "AMAZON_PRO_ADS_REFRESH_TOKEN": "FAKESECRET_adrt"}
+for _k in list(os.environ):   # aislamiento: ninguna variable heredada del entorno del operador/CI puede alterar la prueba
+    if _k.startswith(("AMAZON_PRO_", "KEEPA_", "OPENAI_", "ANTHROPIC_", "H10_")): os.environ.pop(_k)
 os.environ.update(FAKE); os.environ.pop("AMAZON_PRO_CONNECTORS", None); os.environ.pop("AMAZON_PRO_ADMIN_TOKEN", None)
 import server
 res = []; ALLBODIES = []
