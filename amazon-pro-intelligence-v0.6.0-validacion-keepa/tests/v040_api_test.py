@@ -84,9 +84,11 @@ s_, bt, _ = G("/api/eu/export?what=benchmark"); check("CSV benchmark con registr
 # --- Director EU
 def ask(q, who=ADM, **kw): return P_("/api/eu/director", {"question": q, **kw}, who)[1]
 d = ask("¿En qué país europeo conviene lanzar ACTIVCORE?")
-check("Director sin IA habilitada para analista/solicitud: respuesta determinista, sin recomendación y lista de datos que faltan", d["answer"].startswith("SIN IA") and "SIN DATOS SUFICIENTES" in d["answer"] and "DATOS QUE FALTAN" in d["answer"] and d["status"] == "SIN_DATOS_SUFICIENTES")
+check("Director sin IA habilitada para analista/solicitud: respuesta determinista, sin recomendación y lista de datos que faltan", d["answer"].startswith("SIN IA") and "SIN DATOS SUFICIENTES" in d["answer"] and "[SIN RECOMENDACIÓN]" in d["answer"] and "Ningún país es evaluable" in d["answer"] and d["status"] == "SIN_DATOS_SUFICIENTES")
+d = ask("¿Qué datos faltan para decidir el país?")
+check("Director (intención «faltan»): lista [DATOS QUE FALTAN] sin recomendación", d["answer"].startswith("SIN IA") and "[DATOS QUE FALTAN]" in d["answer"] and d["status"] == "SIN_DATOS_SUFICIENTES")
 d = ask("¿Qué pasa si bajamos el precio a 39,90 €?", ANA)
-check("pregunta de precio: cálculo por país (ES completo con hipótesis, FR faltan datos) y el analista NO puede usar IA", "39.90" in d["answer"] and "HIPÓTESIS" in d["answer"] and "faltan" in d["answer"] and d["ai"]["reason"] == "IA_NO_SOLICITADA" and not OC)
+check("pregunta de precio: cálculo por país (ES completo con hipótesis, FR faltan datos) y el analista NO puede usar IA", "39,90 €" in d["answer"] and "[CÁLCULO · HIPÓTESIS]" in d["answer"] and "[DATO NO DISPONIBLE] Francia" in d["answer"] and "faltan" in d["answer"] and d["ai"]["reason"] == "IA_NO_SOLICITADA" and not OC)
 d = ask("resumen")
 check("IA habilitada, 1ª llamada aún NO verificada: bloqueo PRIMERA_LLAMADA_SOLO_SINTETICO y 0 llamadas a OpenAI", d["ai"]["reason"] == "PRIMERA_LLAMADA_SOLO_SINTETICO" and not OC)
 st.put(SY.ACCOUNT_ID, "ai_run", {"mode": "REAL", "error": None, "token_source": "reportado_por_proveedor", "origin_verified": True, "model": "gpt-6-luna"}, actor="test")  # simula la primera llamada real ya verificada

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Ejecuta TODAS las pruebas V0.5.0 y FALLA si alguna falla. Uso: bash tests/run_all.sh (requiere node, python3, playwright, jsonschema)
-cd "$(dirname "$0")/.."; FAIL=0
-run(){ echo "== $1"; shift; o=$("$@" 2>&1); rc=$?; echo "$o" | tail -1; [ $rc -ne 0 ] && { echo "   >>> FALLO (rc=$rc)"; FAIL=1; }; }
+cd "$(dirname "$0")/.."; FAIL=0; N=0; NOK=0
+echo "SHA $(git rev-parse HEAD 2>/dev/null || echo desconocido) · inicio $(date -u +%FT%TZ)"
+run(){ N=$((N+1)); echo "== [$N] $1"; shift; o=$("$@" 2>&1); rc=$?; echo "$o" | tail -1; echo "   rc=$rc"; [ $rc -ne 0 ] && { echo "$o" | grep -E "^FAIL|FALLO|Error|Traceback" | head -8 | sed "s/^/   | /"; echo "   >>> FALLO (rc=$rc)"; FAIL=1; } || NOK=$((NOK+1)); }
 for f in calc economics dossier integration; do run "js/$f (heredado V0.2)" node tests/$f.test.js; done
 run "paridad JS↔Python" python3 tests/parity_test.py
 run "store/auditoría" python3 tests/store_test.py
@@ -83,4 +84,7 @@ run "K4: API (roles, CSRF, aislamiento demo/producción, derechos de imagen, exp
 run "K4: centro de mando NEON (navegador real, escritorio/tablet/móvil)" python3 tests/ui_k4_test.py
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
+run "Consistencia alias KEEPA_KEY/KEEPA_API_KEY (status, configuración, guardia staging)" python3 tests/keepa_alias_consistency_test.py
+run "Auditoría visual autenticada de staging (viewer, 15 pantallas, 1440/390/360/Pixel 7, 0 errores JS, 0 externas)" python3 tests/auditoria_visual_staging_test.py
+echo "RESUMEN: $N suites ejecutadas · $NOK con rc=0 · $((N-NOK)) con fallo · fin $(date -u +%FT%TZ)"
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }

@@ -48,9 +48,14 @@ def director_race(n, **e):
     dr = D.Director(s, lambda: AI.config(env(**e))); res = []
     ts = [threading.Thread(target=lambda: res.append(dr.analyze("a", did, "u", "resumen", today=TODAY))) for _ in range(n)]; [t.start() for t in ts]; [t.join() for t in ts]
     return res, s
+# (a) 4 hilos con tope de concurrencia 4 (el máximo permitido por ai.config): la puerta de concurrencia no interviene y el motivo del rechazo es DETERMINISTA (solo presupuesto)
+res, s = director_race(4, AMAZON_PRO_AI_MONTHLY_BUDGET="0.0035", AMAZON_PRO_AI_MAX_CONCURRENT="4")
+check("4 análisis simultáneos, presupuesto para 2 peores casos → solo 2 llegan al proveedor", len(HITS) == 2)
+check("el resto queda SIN IA con motivo PRESUPUESTO_MENSUAL_EXCEDIDO", sum(1 for r in res if r["ai"]["reason"] == "PRESUPUESTO_MENSUAL_EXCEDIDO") == 2)
+# (b) con 6 hilos y tope 4 el reparto del motivo entre las dos puertas (concurrencia/presupuesto) depende del orden de los hilos; lo que NO puede variar es el gasto
 res, s = director_race(6, AMAZON_PRO_AI_MONTHLY_BUDGET="0.0035", AMAZON_PRO_AI_MAX_CONCURRENT="4")
-check("6 análisis simultáneos, presupuesto para 2 peores casos → solo 2 llegan al proveedor", len(HITS) == 2)
-check("el resto queda SIN IA con motivo PRESUPUESTO_MENSUAL_EXCEDIDO", sum(1 for r in res if r["ai"]["reason"] == "PRESUPUESTO_MENSUAL_EXCEDIDO") == 4)
+check("6 hilos / tope 4: nunca más de 2 llamadas al proveedor (el gasto no depende del orden de los hilos)", len(HITS) <= 2 and len(HITS) >= 1)
+check("6 hilos / tope 4: todo rechazo es SIN IA con motivo PRESUPUESTO_MENSUAL_EXCEDIDO o IA_OCUPADA, y no hay otros", all(r["ai"]["reason"] in ("PRESUPUESTO_MENSUAL_EXCEDIDO", "IA_OCUPADA") for r in res if r["ai"]["mode"] == "SIN_IA") and sum(1 for r in res if r["ai"]["mode"] != "SIN_IA") == len(HITS))
 check("todas las respuestas incluyen el resumen determinista (la app no se bloquea)", all(r["answer"] for r in res))
 res, s = director_race(6, AMAZON_PRO_AI_MONTHLY_BUDGET="5")
 check("concurrencia por defecto = 1: 6 simultáneos → 1 llamada, resto IA_OCUPADA", len(HITS) == 1 and sum(1 for r in res if r["ai"]["reason"] == "IA_OCUPADA") == 5)
