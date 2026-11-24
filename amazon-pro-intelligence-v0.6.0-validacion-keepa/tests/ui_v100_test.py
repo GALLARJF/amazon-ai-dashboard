@@ -1,5 +1,5 @@
 """V1.0 · V1-09 — Cinco secciones NEON en móvil/tableta/escritorio con Chromium real: sin desbordes, producto por defecto ACTIVCORE, sin errores de consola, sin red externa, flujo ACTIVCORE, descarga CSV. Capturas 60+."""
-import glob, os, re, sys, tempfile, threading
+import time, glob, os, re, sys, tempfile, threading
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); sys.path.insert(0, ROOT)
 os.environ.update(AMAZON_PRO_NO_WORKER="1", AMAZON_PRO_KEEPA_ENABLE="0")
 for k in ("AMAZON_PRO_KEEPA_KEY", "KEEPA_API_KEY", "OPENAI_API_KEY"): os.environ.pop(k, None)
@@ -37,9 +37,13 @@ with sync_playwright() as p:
         check("[%s] sin peticiones a red externa" % nm, not ext)
         if nm == "movil":
             pg.select_option("#v6Prod-lanz", "PRD-ACTIVCORE-V2"); pg.wait_for_selector('section.v7[data-space="lanz"] .v7-keepa tbody tr', timeout=10000)
-            try: pg.wait_for_function("()=>document.querySelectorAll('section.v7[data-space=\"lanz\"] .v7-keepa tbody tr').length===20&&/NO DECIDIBLE/.test((document.querySelector('section.v7[data-space=\"lanz\"] .v7-brief')||{}).innerText||'')", timeout=15000)   # espera la carga asíncrona completa (la aserción de abajo NO se relaja)
-            except Exception: print("   [diag] tras 15 s: filas=%d" % pg.locator('section.v7[data-space="lanz"] .v7-keepa tbody tr').count())
-            check("[movil] ACTIVCORE: veredicto NO DECIDIBLE visible y 20 competidores con procedencia", "NO DECIDIBLE" in pg.inner_text('section.v7[data-space="lanz"] .v7-brief') and pg.locator('section.v7[data-space="lanz"] .v7-keepa tbody tr').count() == 20)
+            _R = 'section.v7[data-space="lanz"] .v7-keepa tbody tr'; _B = 'section.v7[data-space="lanz"] .v7-brief'
+            _t0 = time.time()   # repintado asíncrono: se exige un instantáneo coherente completo dentro de 15 s; la aserción NO se relaja
+            while True:
+                _b = "NO DECIDIBLE" in pg.inner_text(_B); _n = pg.locator(_R).count(); _ok = _b and _n == 20
+                if _ok or time.time() - _t0 > 15: break
+                time.sleep(0.25)
+            check("[movil] ACTIVCORE: veredicto NO DECIDIBLE visible y 20 competidores con procedencia%s" % ("" if _ok else " [filas=%d veredicto=%s]" % (_n, _b)), _ok)
         ctx.close()
     # error visible al fallar el servidor (estado de error, no pantalla en blanco)
     ctx = b.new_context(viewport={"width": 1600, "height": 900}); pg = ctx.new_page(); pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs")
