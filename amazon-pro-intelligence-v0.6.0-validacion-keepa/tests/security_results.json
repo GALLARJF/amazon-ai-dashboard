@@ -133,15 +133,15 @@
  ],
  [
   "tras habilitar explícitamente, aparecen como probables",
-  false
+  true
  ],
  [
   "prueba keepa (simulada) OK",
-  false
+  true
  ],
  [
   "segunda prueba inmediata → 429",
-  false
+  true
  ],
  [
   "prueba sp-api simulada OK",
@@ -189,7 +189,7 @@
  ],
  [
   "error de red: respuesta con código fijo, sin texto de excepción",
-  false
+  true
  ],
  [
   "NINGÚN secreto (FAKESECRET) apareció en ninguna respuesta HTTP",
