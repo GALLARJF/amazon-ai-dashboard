@@ -37,6 +37,8 @@ with sync_playwright() as p:
         check("[%s] sin peticiones a red externa" % nm, not ext)
         if nm == "movil":
             pg.select_option("#v6Prod-lanz", "PRD-ACTIVCORE-V2"); pg.wait_for_selector('section.v7[data-space="lanz"] .v7-keepa tbody tr', timeout=10000)
+            try: pg.wait_for_function("()=>document.querySelectorAll('section.v7[data-space=\"lanz\"] .v7-keepa tbody tr').length===20&&/NO DECIDIBLE/.test((document.querySelector('section.v7[data-space=\"lanz\"] .v7-brief')||{}).innerText||'')", timeout=15000)   # espera la carga asíncrona completa (la aserción de abajo NO se relaja)
+            except Exception: print("   [diag] tras 15 s: filas=%d" % pg.locator('section.v7[data-space="lanz"] .v7-keepa tbody tr').count())
             check("[movil] ACTIVCORE: veredicto NO DECIDIBLE visible y 20 competidores con procedencia", "NO DECIDIBLE" in pg.inner_text('section.v7[data-space="lanz"] .v7-brief') and pg.locator('section.v7[data-space="lanz"] .v7-keepa tbody tr').count() == 20)
         ctx.close()
     # error visible al fallar el servidor (estado de error, no pantalla en blanco)

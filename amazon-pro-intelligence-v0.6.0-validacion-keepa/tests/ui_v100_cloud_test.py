@@ -75,6 +75,8 @@ with sync_playwright() as p:
             check("[%s] %s: sin desborde (%d px) y con contenido" % (nm, t, sw), sw <= 1 and len(pg.inner_text("body").strip()) > 400)
             n += 1; pg.screenshot(path=os.path.join(OUT, "7%d_cloud_%s_%s.png" % (n % 10, nm, k)))
         pg.click("#tabs button[data-tab=lanz]"); pg.wait_for_selector("#v6Prod-lanz"); pg.wait_for_selector('section.v7[data-space="lanz"] .v7-keepa tbody tr', timeout=10000)
+        try: pg.wait_for_function("()=>document.querySelectorAll('section.v7[data-space=\"lanz\"] .v7-keepa tbody tr').length===20&&/NO DECIDIBLE/.test((document.querySelector('section.v7[data-space=\"lanz\"] .v7-brief')||{}).innerText||'')", timeout=15000)   # espera la carga asíncrona completa (la aserción de abajo NO se relaja)
+        except Exception: print("   [diag] tras 15 s: filas=%d" % pg.locator('section.v7[data-space="lanz"] .v7-keepa tbody tr').count())
         check("[%s] ACTIVCORE por defecto: NO DECIDIBLE y 20 competidores reales con procedencia" % nm, pg.eval_on_selector("#v6Prod-lanz", "e=>e.value") == "PRD-ACTIVCORE-V2" and "NO DECIDIBLE" in pg.inner_text('section.v7[data-space="lanz"] .v7-brief') and pg.locator('section.v7[data-space="lanz"] .v7-keepa tbody tr').count() == 20)
         check("[%s] sin errores de consola/página%s y sin red externa" % (nm, (": " + "; ".join(errs[:2])[:120]) if errs else ""), not errs and not ext)
         ctx.close()
