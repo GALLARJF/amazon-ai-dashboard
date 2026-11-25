@@ -12,7 +12,7 @@
     { id: 'hoy', l: 'Hoy', s: 'Hoy', i: '◉', subs: [{ l: 'Hoy', tab: 'inicio' }] },
     { id: 'ventas', l: 'Ventas', s: 'Ventas', i: '€', subs: [{ l: 'Mis ventas', tab: 'ventas' }, { l: 'Indicadores', tab: 'k4', k4: 'centro' }] },
     { id: 'prod', l: 'Productos', s: 'Productos', i: '▣', subs: [{ l: 'Catálogo', tab: 'prod' }, { l: 'Precio', tab: 'k4', k4: 'precio' }, { l: 'Competencia', tab: 'k4', k4: 'bench' }, { l: 'Expediente PHIVITAL', tab: 'piloto' }] },
-    { id: 'lanz', l: 'Lanzamientos', s: 'Lanzam.', i: '✈', subs: [{ l: 'Expediente', tab: 'lanz' }, { l: 'Pre-Launch', tab: 'prelaunch' }, { l: 'Europa · Mercados', tab: 'europa' }] },
+    { id: 'lanz', l: 'Lanzamientos', s: 'Lanzam.', i: '✈', subs: [{ l: 'Expediente', tab: 'lanz' }, { l: 'Pre-Launch', tab: 'prelaunch' }, { l: 'Europa · Mercados', tab: 'europa' }, { l: 'Economía comercial', tab: 'comercial' }] },
     { id: 'dir', l: 'Director IA', s: 'Director', i: '✦', subs: [{ l: 'Director', tab: 'dir' }, { l: 'Datos del Director', tab: 'k4', k4: 'dir' }] },
     { id: 'dec', l: 'Decisiones', s: 'Decisiones', i: '✔', hidden: true, subs: [{ l: 'Decisiones', tab: 'decisiones' }] },
     { id: 'adm', l: 'Administración', s: 'Admin', i: '⚙', admin: true, subs: [{ l: 'Administración', tab: 'hist' }, { l: 'Laboratorio DEMO', tab: 'panel', demo: true }] },
