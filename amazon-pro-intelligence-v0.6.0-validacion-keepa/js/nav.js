@@ -9,7 +9,9 @@
   const STAGING = () => !!$('#envBanner');
   // sección → sub-secciones (tab heredada, vista K4 opcional, demo = solo en modo DEMO)
   const SECS = [
-    { id: 'hoy', l: 'Hoy', s: 'Hoy', i: '◉', subs: [{ l: 'Hoy', tab: 'inicio' }] },
+    { id: 'hoy', l: Q.get('shell') === '6' ? 'Hoy' : 'Dashboard', s: 'Hoy', i: '◉', subs: [{ l: 'Hoy', tab: Q.get('shell') === '6' ? 'inicio' : 'dash' }] },
+    { id: 'bench', l: 'Benchmarking', s: 'Bench', i: '⌕', hidden: true, subs: [{ l: 'Benchmarking', tab: 'bench' }] },
+    { id: 'hoyold', l: 'Hoy (interno)', s: 'Hoy', i: '◉', hidden: true, subs: [{ l: 'Hoy', tab: 'inicio' }] },
     { id: 'ventas', l: 'Ventas', s: 'Ventas', i: '€', subs: [{ l: 'Mis ventas', tab: 'ventas' }, { l: 'Indicadores', tab: 'k4', k4: 'centro' }] },
     { id: 'prod', l: 'Productos', s: 'Productos', i: '▣', subs: [{ l: 'Catálogo', tab: 'prod' }, { l: 'Precio', tab: 'k4', k4: 'precio' }, { l: 'Competencia', tab: 'k4', k4: 'bench' }, { l: 'Expediente PHIVITAL', tab: 'piloto' }] },
     { id: 'lanz', l: 'Lanzamientos', s: 'Lanzam.', i: '✈', subs: [{ l: 'Expediente', tab: 'lanz' }, { l: 'Pre-Launch', tab: 'prelaunch' }, { l: 'Europa · Mercados', tab: 'europa' }] },
@@ -21,7 +23,7 @@
   try { const m = sessionStorage.getItem('apiMode'); if (m === 'demo' || m === 'real') ST.mode = m; } catch (e) { /* sin almacenamiento */ }
   const tabOf = (s) => { const x = $('.tab.on'); return x ? x.id.replace(/^tab-/, '') : null; };
   const subs = (sec) => sec.subs.filter((x) => !x.demo || ST.mode === 'demo');
-  const allowedInDemo = (sec, sub) => STAGING() || sec.admin || sec.id === 'hoy' || sec.id === 'dec' || sub.demo;   // modo DEMO: nunca se muestran datos reales
+  const allowedInDemo = (sec, sub) => STAGING() || sec.admin || sec.id === 'hoy' || sec.id === 'bench' || sec.id === 'hoyold' || sec.id === 'dec' || sub.demo;   // modo DEMO: nunca se muestran datos reales
   const allowedInReal = (sub) => !sub.demo;
 
   function build() {
@@ -66,7 +68,9 @@
     else { ST.guard = true; $('#modeGuard').innerHTML = `<article class="card c-amber"><h3>Modo DATOS DEMO/SINTÉTICOS</h3><p>Esta sección muestra datos de AHT, y en este modo nunca se mezclan con los demo. ${STAGING() ? 'En staging no hay datos de AHT: usa «Hoy» y «Administración › Laboratorio DEMO».' : 'Cambia a <b>DATOS REALES</b> para verla, o usa «Hoy» y «Administración › Laboratorio DEMO».'}</p>${STAGING() ? '' : '<p><button type="button" class="btn ro-ok" data-togreal="1">Cambiar a DATOS REALES</button></p>'}</article>`; }
     if (ok && sub.tab === 'panel') { const tp = $('#tab-panel'); if (tp && !tp.querySelector('.ficticio')) { const m = document.createElement('div'); m.className = 'ficticio'; m.setAttribute('role', 'note'); m.textContent = 'DATOS FICTICIOS — NO REPRESENTAN RESULTADOS DE AHT'; tp.insertBefore(m, tp.firstChild); } }
     paintNav(); scrollTo(0, 0); const hd = $('header.top'); if (hd) hd.classList.remove('acct-open');
-    if (ok && root.HOY2) root.HOY2.onShow(sec.id);
+    if (ok && root.HOY2) root.HOY2.onShow(sec.id === 'hoyold' ? 'hoy' : sec.id);
+    if (ok && root.DASH7) root.DASH7.onShow(sec.id);
+    if (ok && root.BENCH7) root.BENCH7.onShow(sec.id);
     if (ok && root.LANZ2) root.LANZ2.onShow(sec.id);
     if (ok && root.VENTAS2) root.VENTAS2.onShow(sec.id);
     if (ok && root.PROD2) root.PROD2.onShow(sec.id);

@@ -25,7 +25,7 @@ with sync_playwright() as p:
             for v in pg.evaluate("[...document.querySelectorAll('[data-k4v]')].map(e=>e.dataset.k4v)"): pg.evaluate(f"document.querySelector('[data-k4v=\"{v}\"]').click()"); pg.wait_for_timeout(900); OLD |= set(pg.evaluate(HEAD))
         OLD |= set(pg.evaluate(HEAD))
     pg.close()
-    pg = b.new_context(viewport={"width": 1440, "height": 900}).new_page(); pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached"); login(pg); NEW = set()
+    pg = b.new_context(viewport={"width": 1440, "height": 900}).new_page(); pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached"); login(pg); NEW = set()
     pg.add_init_script("0")
     for sid, subs in (("hoy", [0]), ("ventas", [0, 1, 2]), ("prod", [0, 1, 2, 3]), ("lanz", [0, 1, 2]), ("dir", [0, 1]), ("adm", [0]), ("dec", [0])):
         for j in subs:

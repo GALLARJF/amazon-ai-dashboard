@@ -40,7 +40,7 @@ with sync_playwright() as p:
         resp = []; pg.on("response", lambda r_: resp.append((r_.request.method, r_.url.split("?")[0].replace(f"http://localhost:{port}", ""), r_.status)) if r_.status >= 400 else None)
         pg.on("pageerror", lambda e: perr.append(str(e))); pg.on("console", lambda m: cerr.append(m.text) if m.type == "error" else None)
         pg.on("request", lambda r: reqs.append(r.url) if not r.url.startswith(("http://localhost", "http://127.0.0.1", "data:", "blob:")) else None)
-        pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#lgOpen", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", PW["auditor"]); pg.click("#lgGo")
+        pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#lgOpen", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", PW["auditor"]); pg.click("#lgGo")
         pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
         body = pg.inner_text("body")
         me = pg.evaluate("()=>fetch('/api/me',{credentials:'same-origin'}).then(r=>r.json())")

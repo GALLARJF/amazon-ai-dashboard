@@ -22,7 +22,7 @@ def route(r):
     else: EXTERNAL.append(u); r.abort()
 SCREENS = {"ventas": ("#ventas2", "ventas2top"), "prod": ("#prod2", "prod2top"), "adm": ("#adm2", "adm2top"), "dir": ("#dir2", "d2top")}
 def login(pg):
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
 def goto(pg, sec, sel):
     pg.evaluate(f"NAV6.go('{sec}',0)"); pg.wait_for_selector(sel, state="visible", timeout=10000); pg.wait_for_timeout(1200)
 VIS = "e => e.checkVisibility ? e.checkVisibility() : true"

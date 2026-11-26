@@ -61,7 +61,7 @@ def route(r):
     else: EXT.append(r.request.url); r.abort()
 ANDROID = "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
 def login(pg, user):
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", user); pg.fill("#lgP", PW[user]); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", user); pg.fill("#lgP", PW[user]); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
 def ctxpg(pw, vp, mobile, ua=None, device=None):
     kw = dict(p.devices[device]) if device else dict(viewport=vp, device_scale_factor=1, is_mobile=mobile, has_touch=mobile, **({"user_agent": ua} if ua else {}))
     ctx = pw.new_context(**kw); ctx.route("**/*", route); pg = ctx.new_page(); errs = []

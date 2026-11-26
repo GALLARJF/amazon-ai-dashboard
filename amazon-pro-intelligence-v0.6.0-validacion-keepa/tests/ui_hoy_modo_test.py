@@ -20,7 +20,7 @@ def badge(pg, b): return pg.inner_text(f'[data-blk="{b}"] .h2b').strip()
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_context(viewport={"width": 1440, "height": 900}).new_page(); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached")
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached")
     pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_selector("#h2top .h2sit", timeout=10000); pg.wait_for_timeout(1500)
     # --- REAL sin ventas importadas: nada de ceros
     B = blocks(pg)

@@ -20,7 +20,7 @@ with sync_playwright() as p:
     b = p.chromium.launch(); ctx = b.new_context(viewport={"width": 1600, "height": 900}); pg = ctx.new_page(); errs = []; ext = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
     pg.on("request", lambda r: not re.match(r"^(http://(localhost|127\.0\.0\.1):%d/|data:|blob:)" % port, r.url) and ext.append(r.url))
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs")
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#tabs")
     check("index.html carga js/v07.js", "js/v07.js" in open(os.path.join(ROOT, "index.html"), encoding="utf-8").read())
     src = open(os.path.join(ROOT, "js", "v07.js"), encoding="utf-8").read()
     check("v07.js: sin manejadores inline, sin eval, sin innerHTML con datos sin escapar (usa esc)", not re.search(r"\bon(click|error|load)\s*=", src) and "eval(" not in src and "esc(" in src and "localStorage" not in src)
@@ -80,7 +80,7 @@ with sync_playwright() as p:
     # móvil y tablet
     for name, w, h, idx in (("tablet", 820, 1100, 44), ("movil", 390, 844, 45)):
         c2 = b.new_context(viewport={"width": w, "height": h}); q = c2.new_page(); q.on("pageerror", lambda e: errs.append(str(e)))
-        q.goto(f"http://localhost:{port}/"); q.wait_for_selector("#tabs"); q.click("#lgOpen"); q.fill("#lgU", "admin"); q.fill("#lgP", "admin-password-123"); q.click("#lgGo"); q.wait_for_selector(".sessu")
+        q.goto(f"http://localhost:{port}/?shell=6"); q.wait_for_selector("#tabs"); q.click("#lgOpen"); q.fill("#lgU", "admin"); q.fill("#lgP", "admin-password-123"); q.click("#lgGo"); q.wait_for_selector(".sessu")
         q.click("#tabs button[data-tab=lanz]"); q.wait_for_selector("#v6Prod-lanz"); q.select_option("#v6Prod-lanz", AC); q.wait_for_selector('section.v7[data-space="lanz"] .v7-keepa tbody tr'); q.wait_for_timeout(300)
         q.wait_for_selector('section.v7 .v7-keepa tbody tr'); q.wait_for_timeout(600)
         ov = q.evaluate("(()=>{const s=document.querySelector('section.v7');if(!s)return [999,0,0];const bad=[...s.querySelectorAll('*')].filter(e=>!e.closest('.v7-scroll')&&e.getBoundingClientRect().right>window.innerWidth+2).length;return [bad, window.innerWidth, s.getBoundingClientRect().right]})()")

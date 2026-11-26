@@ -13,7 +13,7 @@ threading.Thread(target=srv.serve_forever, daemon=True).start()
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_context(viewport={"width": 1440, "height": 900}).new_page(); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
     pg.evaluate("NAV6.go('lanz',0)"); pg.wait_for_selector("#lanz2 .lzc", timeout=10000); pg.wait_for_timeout(800)
     t = pg.inner_text("#lanz2")
     check("REAL: cabecera rotulada REAL (no DEMO) y 3 lanzamientos", "REAL" in pg.inner_text("#lanz2 .h2head h2") and "DEMO" not in pg.inner_text("#lanz2 .h2head h2") and pg.locator("#lanz2 .lzc").count() == 3)

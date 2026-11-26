@@ -44,7 +44,7 @@ def hreq(port_, method, path, body=None, jar=None, csrf=""):
 WR = [("POST", "/api/v06/decide", {"id": 1, "approve": True}), ("POST", "/api/catalog/update", {"id": "PRD-ACTIVCORE-V2", "patch": {"name": "x"}}), ("POST", "/api/dossiers", {"name": "x"}),
       ("POST", "/api/k4/import", {"csv": "a"}), ("PUT", "/api/catalog/update", {}), ("PATCH", "/api/catalog/update", {}), ("DELETE", "/api/dossiers/1", None)]
 def login(pg, user, p_, legacy=False):
-    pg.goto(f"http://localhost:{p_}/" + ("?legacy=1" if legacy else "")); pg.wait_for_selector("#lgOpen", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", user); pg.fill("#lgP", PW[user]); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
+    pg.goto(f"http://localhost:{p_}/" + ("?legacy=1&shell=6" if legacy else "?shell=6")); pg.wait_for_selector("#lgOpen", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", user); pg.fill("#lgP", PW[user]); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
 def ctxpg(pw, vp, mobile, ua=None, device=None):
     kw = dict(p.devices[device]) if device else dict(viewport=vp, device_scale_factor=1, is_mobile=mobile, has_touch=mobile, **({"user_agent": ua} if ua else {}))
     ctx = pw.new_context(**kw); pg = ctx.new_page(); errs = []; pg.on("pageerror", lambda e: errs.append(str(e))); return pg, errs
