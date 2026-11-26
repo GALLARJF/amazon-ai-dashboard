@@ -10,15 +10,17 @@ Ruta: `amazon-pro-intelligence-v0.6.0-validacion-keepa/docs/rediseno/BACKLOG_PR8
 ## Prioridad 1 — PR #8 (comentario 7188957830)
 | ID | Objetivo | Aceptación | Estado |
 |---|---|---|---|
-| R1-01 | Gráficos individuales diferenciados en los 6 KPI (series demo explícitas; real = Sin datos) | test: 6 sparklines/gráficos distintos en demo; ninguno en real | PENDIENTE |
-| R1-02 | Chat vacío sin textos de ejemplo | test DOM | PENDIENTE |
-| R1-03 | Filtros: etiqueta AHT; Región Global/Europa/América; países ES FR DE IT US; CA/MX futuros configurables | test filtros | PENDIENTE |
-| R1-04 | Contexto de filtros al Director IA con contrato validado (servidor) | test API + UI | PENDIENTE |
-| R1-05 | Conservar borrador/chat y fullscreen al cambiar filtros; evitar carrera de respuestas asíncronas | test | PENDIENTE |
-| R1-06 | Notificaciones: fallo HTTP = «Sin datos»; alertas con evidencia, estado y contexto | test | PENDIENTE |
-| R1-07 | Selección vacía: contrato y rotulado «sin datos» coherente en todas las métricas | test | PENDIENTE |
-| R1-08 | Donut: contribución negativa no es segmento positivo; alternativa para pérdidas | test | PENDIENTE |
-| R1-09 | Pruebas con usuario autorizado y chat real con proveedor simulado; fullscreen por interacción real | tests | PENDIENTE |
+| R1-01 | Gráficos individuales diferenciados en los 6 KPI (series demo explícitas; real = Sin datos) | test: 6 sparklines/gráficos distintos en demo; ninguno en real | HECHO |
+| R1-02 | Chat vacío sin textos de ejemplo | test DOM | HECHO |
+| R1-03 | Filtros: etiqueta AHT; Región Global/Europa/América; países ES FR DE IT US; CA/MX futuros configurables | test filtros | HECHO |
+| R1-04 | Contexto de filtros al Director IA con contrato validado (servidor) | test API + UI | HECHO |
+| R1-05 | Conservar borrador/chat y fullscreen al cambiar filtros; evitar carrera de respuestas asíncronas | test | HECHO |
+| R1-06 | Notificaciones: fallo HTTP = «Sin datos»; alertas con evidencia, estado y contexto | test | HECHO |
+| R1-07 | Selección vacía: contrato y rotulado «sin datos» coherente en todas las métricas | test | HECHO |
+| R1-08 | Donut: contribución negativa no es segmento positivo; alternativa para pérdidas | test | HECHO |
+| R1-09 | Pruebas con usuario autorizado y chat real con proveedor simulado; fullscreen por interacción real | tests | HECHO |
+
+Notas: R1-01 modelo de dirección 26/11 (infográfico en ahtcorporativo@gmail.com) aplicado: iconos, variación DEMO, gráficos por KPI, donut con tabla, periodo como desplegable, pie «Datos simulados». R1-09 «chat real» = proveedor SIMULADO (mock), nunca IA real. Pendiente de confirmar con José: Benchmarking en cabecera (la orden lo pide; el modelo no lo muestra).
 
 ## Prioridad 2 — Benchmarking página completa
 R2-01 prompt libre, adjuntos pendientes, ejecutar, resultados conversacionales, tablas/gráficos/informe, historial persistente + exportar, contexto producto/ASIN/país/periodo, fuentes con fecha y evidencia, estimado vs real, escenarios; reutilizar K3/K4 y Keepa sin llamadas reales; persistencia en SQLite actual (verificar backups). PENDIENTE.

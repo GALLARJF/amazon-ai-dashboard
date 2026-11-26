@@ -68,6 +68,26 @@ for _svc in C.SERVICIOS.values():
 READ_ONLY_ALLOW.append(("GET", C.DL_HOST, re.compile(r"^/.*$")))   # descarga de informes SP-API ya generados (URL prefirmada de S3)
 
 
+DASH_LINES = {"all", "phivital", "cosm", "home", "agri", "tech"}
+DASH_SUBS = {"all", "sup", "dep"}
+DASH_REGIONS = {"all": {"all", "ES", "DE", "FR", "IT", "US"}, "eu": {"all", "ES", "DE", "FR", "IT"}, "am": {"all", "US"}}
+DASH_PERIODS = {"dia", "semana", "mes", "anio"}
+
+
+def validate_dash_context(c):
+    """Contexto de filtros del dashboard enviado al Director IA: lista blanca estricta, sin texto libre."""
+    if not isinstance(c, dict) or set(c) - {"line", "sub", "region", "country", "period"}:
+        return None, "campos no permitidos"
+    o = {"line": c.get("line", "all"), "sub": c.get("sub", "all"), "region": c.get("region", "all"), "country": c.get("country", "all"), "period": c.get("period", "mes")}
+    if o["line"] not in DASH_LINES or o["sub"] not in DASH_SUBS or o["period"] not in DASH_PERIODS or not isinstance(o["region"], str) or o["region"] not in DASH_REGIONS:
+        return None, "valor fuera de catálogo"
+    if not isinstance(o["country"], str) or o["country"] not in DASH_REGIONS[o["region"]]:
+        return None, "país incompatible con la región"
+    if o["sub"] != "all" and o["line"] != "phivital":
+        return None, "subdivisión solo para PHIVITAL"
+    return o, None
+
+
 class Blocked(Exception):
     pass
 
@@ -728,7 +748,14 @@ class H(BaseHTTPRequestHandler):
         if path == "/api/director/ask":
             if not isinstance(b.get("question"), str) or not b["question"].strip() or len(b["question"]) > 1000:
                 return self._json({"error": "pregunta requerida (≤1000 caracteres)"}, 400)
+            ctx = None
+            if b.get("context") is not None:
+                ctx, cerr = validate_dash_context(b.get("context"))
+                if cerr:
+                    return self._json({"error": "contexto de filtros inválido: " + cerr}, 400)
             r = dr.analyze(aid, str(b.get("dossier")), actor, b["question"], b.get("coworkers") if isinstance(b.get("coworkers"), list) else None, confirm=b.get("confirm"))
+            if ctx and isinstance(r, dict) and "answer" in r:
+                r["context"] = ctx   # contrato validado: el servidor devuelve el contexto que ha aceptado (no cambia el cálculo determinista)
             return self._json(r)
         if path == "/api/approvals":
             rec = st.get(aid, str(b.get("dossier")))

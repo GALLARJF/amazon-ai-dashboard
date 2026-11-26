@@ -6,8 +6,11 @@
   const LINES = [
     { id: 'phivital', l: 'PHIVITAL', w: 0.34, subs: [{ id: 'sup', l: 'Suplementos nutricionales', w: 0.6 }, { id: 'dep', l: 'Nutrición deportiva', w: 0.4 }] },
     { id: 'cosm', l: 'Cosmética', w: 0.26 }, { id: 'home', l: 'Home & Care', w: 0.18 }, { id: 'agri', l: 'Agricultura', w: 0.14 }, { id: 'tech', l: 'Nuevas tecnologías', w: 0.08 }];
+  // Regiones del filtro: Global (= todas) · Europa · América. País dependiente de la región.
   const REGIONS = [{ id: 'eu', l: 'Europa', w: 0.8, countries: [{ id: 'ES', l: 'España', w: 0.4 }, { id: 'DE', l: 'Alemania', w: 0.25 }, { id: 'FR', l: 'Francia', w: 0.2 }, { id: 'IT', l: 'Italia', w: 0.15 }] },
-    { id: 'na', l: 'Norteamérica', w: 0.2, countries: [{ id: 'US', l: 'Estados Unidos', w: 0.75 }, { id: 'CA', l: 'Canadá', w: 0.25 }] }];
+    { id: 'am', l: 'América', w: 0.2, countries: [{ id: 'US', l: 'Estados Unidos', w: 1 }] }];
+  // Países futuros CONFIGURABLES: no entran en el reparto ni en el contrato hasta que se habiliten (config explícita + fuente de datos).
+  const FUTURE = [{ id: 'CA', l: 'Canadá', region: 'am' }, { id: 'MX', l: 'México', region: 'am' }];
   const PERIODS = [{ id: 'dia', l: 'Día', f: 1 / 30 }, { id: 'semana', l: 'Semana', f: 7 / 30 }, { id: 'mes', l: 'Mes', f: 1 }, { id: 'anio', l: 'Año', f: 12 }];
   // Ejemplo coherente de dirección (Consolidado AHT · Todas · Mes), en céntimos para evitar errores de coma flotante
   const BASE = { bruto: 4990000, neto: 4123967, uds: 1000, ads: 499000, fab: 899000, com: 748500, log: 541000 };
@@ -35,15 +38,21 @@
   const eur = (c) => Math.round(c) / 100;
   function compute(f) {
     const per = PERIODS.find((p) => p.id === (f.period || 'mes')) || PERIODS[2], t = {}, rs = filter(f);
+    if (!rs.length) return { empty: true, bruto: null, neto: null, uds: null, ads: null, fab: null, com: null, log: null, contrib: null, contribPct: null, rows: 0, donut: [], loss: false };   // selección vacía = «sin datos», nunca ceros
     MET.forEach((m) => { t[m] = rs.reduce((a, r) => a + r[m], 0); });
     const k = (m) => (m === 'uds' ? Math.round(t[m] * per.f) : Math.round(t[m] * per.f));
     const neto = k('neto'), fab = k('fab'), com = k('com'), log = k('log'), ads = k('ads'), contrib = neto - fab - com - log - ads;
     const out = { bruto: eur(k('bruto')), neto: eur(neto), uds: k('uds'), ads: eur(ads), fab: eur(fab), com: eur(com), log: eur(log), contrib: eur(contrib), contribPct: neto > 0 ? Math.round((contrib / neto) * 10000) / 100 : null, rows: rs.length };
-    out.donut = neto > 0 ? [['Fabricación', fab], ['Comisiones', com], ['Logística y otros', log], ['Publicidad', ads], ['Contribución', contrib]].map(([l, v]) => ({ l, eur: eur(v), pct: Math.round((v / neto) * 10000) / 100 })) : [];
+    out.loss = contrib < 0; out.empty = false;
+    out.donut = neto > 0 ? [['Fabricación', fab], ['Comisiones', com], ['Logística y otros', log], ['Publicidad', ads], ['Contribución', contrib]].map(([l, v]) => ({ l, eur: eur(v), pct: Math.round((v / neto) * 10000) / 100, neg: v < 0 })) : [];
     return out;
   }
   // ratio ponderado de varias selecciones (suma de contribuciones / suma de netas) — NO promedio de porcentajes
   function weighted(list) { const n = list.reduce((a, x) => a + x.neto, 0), c = list.reduce((a, x) => a + x.contrib, 0); return n > 0 ? Math.round((c / n) * 10000) / 100 : null; }
-  const api = { LINES, REGIONS, PERIODS, BASE, compute, weighted, rows };
+  // Series DEMO explícitas (12 puntos, deterministas, forma distinta por indicador). Solo se piden en modo demo; en datos reales no existen → «Sin datos».
+  const SHAPE = { bruto: [.82, .86, .9, .95, .93, 1, 1.04, 1.08, 1.05, 1.12, 1.15, 1.2], neto: [.9, .88, .95, 1, 1.02, .98, 1.05, 1.07, 1.1, 1.06, 1.12, 1.16], uds: [.7, .74, .74, .82, .86, .9, .9, .95, 1.0, 1.02, 1.08, 1.12],
+    ads: [.7, .8, .95, 1.1, 1.2, 1.15, 1.05, 1.1, .95, 1.0, .9, 1.05], contrib: [.6, .72, .8, .95, 1.02, 1.1, 1.0, 1.08, 1.15, 1.12, 1.2, 1.26], pct: [.9, .94, .96, 1.0, 1.03, 1.0, 1.04, 1.02, 1.05, 1.06, 1.03, 1.08] };
+  function series(f, m) { const c = compute(f); if (c.empty) return null; const base = m === 'pct' ? c.contribPct : c[m]; if (base == null) return null; return SHAPE[m].map((k) => Math.round(base * k * 100) / 100); }
+  const api = { FUTURE, series, LINES, REGIONS, PERIODS, BASE, compute, weighted, rows };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.D7C = api;
 })(typeof self !== 'undefined' ? self : this);

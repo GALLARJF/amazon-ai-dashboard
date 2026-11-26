@@ -67,18 +67,18 @@
       $('#cfNo', o).onclick = () => done(false); $('#cfYes', o).onclick = () => done(true); $('#cfNo', o).focus();
     });
   }
-  async function ask(q) {
+  async function ask(q, ctx) {
     if (!q.trim()) return;
     if (!V.user) return loginForm();
     const tgt = V.synthSel && V.synth ? { account: V.synth.account, dossier: V.synth.id } : { account: acct(), dossier: V.dossierId };
     if (!tgt.dossier) { V.chat.push({ text: 'Selecciona o crea un expediente (pestaña Piloto) antes de preguntar.' }); return renderDirector(); }
     V.chat.push({ me: true, text: q }); V.chat.push({ text: 'Analizando con los coworkers…' }); renderDirector();
-    let r = await api('POST', '/api/director/ask', { ...tgt, question: q });
+    let r = await api('POST', '/api/director/ask', { ...tgt, question: q, ...(ctx ? { context: ctx } : {}) });
     if (r.ok && r.j.needs_confirmation) {  // primera llamada facturable: confirmación humana explícita
       const okc = await confirmDialog(r.j); V.chat.pop();
       if (!okc) { V.chat.push({ text: 'Cancelado por ti: no se ha enviado nada a OpenAI y no se ha cobrado nada.' }); return renderDirector(); }
       V.chat.push({ text: 'Llamando a OpenAI…' }); renderDirector();
-      r = await api('POST', '/api/director/ask', { ...tgt, question: q, confirm: { accepted: true, model: r.j.model } });
+      r = await api('POST', '/api/director/ask', { ...tgt, question: q, ...(ctx ? { context: ctx } : {}), confirm: { accepted: true, model: r.j.model } });
     }
     V.chat.pop();
     if (!r.ok) V.chat.push({ text: 'Error: ' + (r.j.error || r.status) }); else {
@@ -87,6 +87,7 @@
       else if (s) meta += ` · modelo ${s.model || '—'} · ${s.duration_ms} ms · tokens ${s.tokens_in}/${s.tokens_out} (${s.token_source || '—'}) · coste est. ${s.cost_estimate == null ? 'no calculado (precios sin configurar)' : s.cost_estimate.toFixed(6) + ' ' + s.currency}`;
       if (s && s.mode === 'REAL') meta += s.origin_verified ? ` · ✔ procede de OpenAI (HTTPS api.openai.com, respuesta ${s.response_id})` : ' · procedencia de OpenAI NO verificada (no se declara IA real verificada)';
       if (j.ai.reason && j.ai.mode === 'SIN_IA') meta += ` · motivo: ${j.ai.reason_text || j.ai.reason}`;
+      if (j.context) meta += ` · contexto validado por el servidor: ${[j.context.line, j.context.sub !== 'all' ? j.context.sub : '', j.context.region, j.context.country, j.context.period].filter((x) => x && x !== 'all').join('/') || 'global'}`;
       V.chat.push({ text: j.answer, mode: j.ai.mode, meta });
     }
     await Promise.all([loadCw(), loadDossiers()]); renderDirector(); renderCoworkers();
