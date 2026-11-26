@@ -36,7 +36,7 @@ def seed_comp(pid, d):
 for pid, d in SEN.items(): seed(pid, d)
 NAME = {ACT: "ACTIVCORE", MAG: "Magnesio", OME: "Omega-3"}
 def login(pg):
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
     pg.evaluate("NAV6.go('lanz',0)"); pg.wait_for_selector("#lanz2 .lzc", timeout=10000); pg.wait_for_timeout(800)
 def prog(pg, pid): return re.search(r"(\d+) de 10 completos · (\d+) parciales", pg.locator(f'[data-lz-card="{pid}"]').inner_text()).groups()
 def open_all(pg):
@@ -106,7 +106,7 @@ with sync_playwright() as p:
             m = pg.evaluate("[scrollX, document.documentElement.scrollWidth, innerWidth]"); check(f"{T} sin desplazamiento horizontal {m}", m[0] == 0 and m[1] <= m[2])
         check(f"{T} sin errores de consola", errs == []); ctx.close()
     # ---------- lógica de estado (item 4): sin comparabilidad confirmada no hay GO
-    pg = b.new_context().new_page(); pg.goto(f"http://localhost:{port}/"); pg.wait_for_function("window.LANZ2")
+    pg = b.new_context().new_page(); pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_function("window.LANZ2")
     r = pg.evaluate("""()=>{const mk=(cmp)=>({sections:[{id:'economia',rows:[{contribution:3,margin:.2}]},{id:'cumplimiento',open:0,ok:12},{id:'paises',ranking:[1]},{id:'competidores',rows:cmp},{id:'recomendacion',verdict:'EVALUAR POR PAÍSES',reasons:[]}]});
       const st=[{id:'economia',state:'OK'}]; const f=(c)=>LANZ2._statusOf(mk(c),st).v;
       return {sin:f([]), auto:f([{estado_comparabilidad:'AUTOMATICA'}]), mixto:f([{estado_comparabilidad:'CONFIRMADA'},{estado_comparabilidad:'SUGERIDA'}]), conf:f([{estado_comparabilidad:'CONFIRMADA'},{estado_comparabilidad:'CONFIRMADA'}])}}""")

@@ -33,7 +33,7 @@ def wait_text(pg, sub, n=1, timeout=15):
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_context(viewport={"width": 1600, "height": 840}).new_page(); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#tabs"); pg.click("#tabs button[data-tab=panel]"); pg.wait_for_selector("#kpis .kpi"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(800)
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#tabs"); pg.click("#tabs button[data-tab=panel]"); pg.wait_for_selector("#kpis .kpi"); pg.click("#lgOpen"); pg.fill("#lgU", "admin"); pg.fill("#lgP", "admin-password-123"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(800)
     opts = pg.eval_on_selector_all("#dirDossier option", "els => els.map(e => e.textContent)")
     check("el desplegable ofrece «SINTÉTICO · PRUEBA API» etiquetado como prueba segura", any("SINTÉTICO · PRUEBA API" in o and "prueba segura" in o for o in opts))
     check("el desplegable conserva el expediente PHIVITAL tal cual", any("PHIVITAL" in o.upper() for o in opts))

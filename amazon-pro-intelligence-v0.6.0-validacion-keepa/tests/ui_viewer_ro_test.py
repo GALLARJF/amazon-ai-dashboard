@@ -46,7 +46,7 @@ def sweep(pg, tag, expect_ro):
     return bad, tot, locked
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_context(viewport={"width": 1440, "height": 900}).new_page()
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached")
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached")
     pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(2000)
     bad, tot, locked = sweep(pg, "viewer", True)
     for x in bad[:40]: print("   ", x)
@@ -54,7 +54,7 @@ with sync_playwright() as p:
     vt = pg.evaluate("document.querySelectorAll('.vro').length"); check(f"VIEWER: los controles bloqueados se ven bloqueados (clase .vro → opacidad, tachado y 🔒; {vt} en la última pantalla o más)", pg.evaluate("(()=>{const e=document.querySelector('button.vro');if(!e)return true;const s=getComputedStyle(e);return parseFloat(s.opacity)<0.6&&s.cursor==='not-allowed'})()"))
     pg.close()
     # control negativo: el mismo barrido con un ADMIN debe encontrar los controles ACTIVOS (la prueba distingue de verdad)
-    pg2 = b.new_context(viewport={"width": 1440, "height": 900}).new_page(); pg2.goto(f"http://localhost:{port}/"); pg2.wait_for_selector("#nav6", state="attached")
+    pg2 = b.new_context(viewport={"width": 1440, "height": 900}).new_page(); pg2.goto(f"http://localhost:{port}/?shell=6"); pg2.wait_for_selector("#nav6", state="attached")
     pg2.click("#lgOpen"); pg2.fill("#lgU", "admin"); pg2.fill("#lgP", "admin-pass-p9Zt4w"); pg2.click("#lgGo"); pg2.wait_for_selector(".sessu"); pg2.wait_for_timeout(2000)
     act = 0
     for sid, subs in SECS:

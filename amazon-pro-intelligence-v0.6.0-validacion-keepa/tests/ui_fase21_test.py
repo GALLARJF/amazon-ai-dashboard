@@ -33,7 +33,7 @@ CUT_JS = """() => { const cw = document.documentElement.clientWidth, out = []; c
   sel.forEach((q) => document.querySelectorAll(q).forEach((e) => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); if (!r.width || s.display === 'none' || e.closest('[hidden]') || getComputedStyle(e.parentElement).display === 'none') return; if (r.left < -0.5 || r.right > cw + 0.5) out.push(q + ' L' + Math.round(r.left) + ' R' + Math.round(r.right) + ' (cw ' + cw + ')'); })); return out; }"""
 BAR_JS = open(os.path.join(ROOT, "tests", "ui_nav_test.py"), encoding="utf-8").read().split('BAR_JS = """')[1].split('"""')[0]
 def login(pg):
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached")
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached")
     pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_selector("#h2top .h2sit", timeout=10000); pg.wait_for_timeout(1500)
 def run(pw, name, vp, mobile):
     ctx = pw.new_context(viewport=vp, device_scale_factor=1, is_mobile=mobile, has_touch=mobile); pg = ctx.new_page(); errs = []

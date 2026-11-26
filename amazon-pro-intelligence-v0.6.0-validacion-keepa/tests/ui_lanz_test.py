@@ -25,7 +25,7 @@ csrf = call("/api/login", {"username": "admin", "password": "admin-pass-p9Zt4w"}
 STEPS = ["Producto y mercado", "Economía unitaria", "Precio y margen", "Benchmark y competidores", "Demanda", "Stock y logística", "Cumplimiento regulatorio", "Documentos y fuentes", "Riesgos y bloqueos", "Recomendación final"]
 LABELS = ["Bloqueos críticos", "Próxima acción", "Responsable", "Progreso del expediente", "Última actualización"]
 def login(pg):
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
     pg.evaluate("NAV6.go('lanz',0)"); pg.wait_for_selector("#lanz2 .lzc", timeout=10000); pg.wait_for_timeout(800)
 def card(pg, name): return pg.locator("#lanz2 .lzc", has_text=name).first
 def run(pw, name, vp, mobile):
@@ -96,7 +96,7 @@ def run(pw, name, vp, mobile):
     check(f"{T} sin errores de consola", errs == []); ctx.close()
 # ---- lógica de estado (pura, sin servidor de datos): casos que los datos de staging no cubren
 def logic(pw):
-    pg = pw.new_context().new_page(); pg.goto(f"http://localhost:{port}/"); pg.wait_for_function("window.LANZ2")
+    pg = pw.new_context().new_page(); pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_function("window.LANZ2")
     r = pg.evaluate("""()=>{const mk=(o)=>({sections:[{id:'economia',rows:o.eco||[]},{id:'cumplimiento',open:o.open||0,ok:o.ok||0},{id:'paises',ranking:o.rank||[]},{id:'competidores',rows:o.cmp||[]},{id:'recomendacion',verdict:o.verdict||'NO DECIDIBLE TODAVÍA',reasons:o.reasons||[]}]});
       const st=(s)=>s.map((x)=>({id:x,state:'SIN DATOS'})); const f=(o,steps)=>LANZ2._statusOf(mk(o),steps||st(['economia','benchmark','cumplimiento'])).v;
       const pos=[{contribution:3,margin:.2},{contribution:2,margin:.1}], neg=[{contribution:-1,margin:-.1},{contribution:-2,margin:-.2}];

@@ -12,7 +12,7 @@ srv = S.make_server(0, admin_token="t", db_path=os.path.join(tempfile.mkdtemp(),
 threading.Thread(target=srv.serve_forever, daemon=True).start()
 with sync_playwright() as p:
     b = p.chromium.launch(args=[], ignore_default_args=["--hide-scrollbars"]); pg = b.new_context(viewport={"width": 1440, "height": 900}, device_scale_factor=1).new_page()
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached"); pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
     for via in ("menú", "enlace del Director"):
         if via == "menú": pg.evaluate("NAV6.go('prod',0)")
         else:

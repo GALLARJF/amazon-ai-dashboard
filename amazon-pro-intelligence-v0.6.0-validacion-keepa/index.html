@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AHT Executive Neon · Amazon Pro Intelligence V1.0.0-candidata</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles7.css">
 </head>
 <body>
 <!--ENV-BANNER-->
@@ -15,7 +16,9 @@
 </header>
 
 <nav class="tabs" id="tabs">
-  <button data-tab="inicio" class="on main">INICIO</button>
+  <button data-tab="dash" class="on main">DASHBOARD</button>
+  <button data-tab="bench" class="main">BENCHMARKING</button>
+  <button data-tab="inicio" class="main">INICIO (interno)</button>
   <button data-tab="lanz" class="main">LANZAMIENTOS</button>
   <button data-tab="ventas" class="main">MIS VENTAS</button>
   <button data-tab="prod" class="main">PRODUCTOS</button>
@@ -31,7 +34,9 @@
   <button data-tab="aprob" class="adv">Aprobaciones <span id="apCount" class="pill">0</span></button>
   <button data-tab="decisiones" class="adv">Decisiones</button>
 </nav>
-<main id="tab-inicio" class="tab on v6root"><div id="v6inicio" class="v6"></div></main>
+<main id="tab-dash" class="tab on"><div id="dash7" class="dash7"></div></main>
+<main id="tab-bench" class="tab"><div id="bench7" class="bench7"></div></main>
+<main id="tab-inicio" class="tab v6root"><div id="v6inicio" class="v6"></div></main>
 <main id="tab-lanz" class="tab v6root"><div id="v6lanz" class="v6"></div></main>
 <main id="tab-ventas" class="tab v6root"><div id="v6ventas" class="v6"></div></main>
 <main id="tab-prod" class="tab v6root"><div id="v6prod" class="v6"></div></main>
@@ -110,6 +115,7 @@
 
 <div id="modal" class="modal" hidden><div class="mbox card c-cyan"><button class="x" id="mClose" aria-label="Cerrar">✕</button><div id="mBody"></div></div></div>
 
+<script src="js/dash7calc.js"></script>
 <script src="js/calc.js"></script>
 <script src="js/economics.js"></script>
 <script src="js/dossier.js"></script>
@@ -132,6 +138,7 @@
 <script src="js/ventas.js"></script>
 <script src="js/prod.js"></script>
 <script src="js/admin.js"></script>
+<script src="js/dash7.js"></script>
 <script src="js/nav.js"></script>
 </body>
 </html>

@@ -25,7 +25,7 @@ def run(pw, name, vp, mobile):
     ctx = pw.new_context(viewport=vp, device_scale_factor=1, is_mobile=mobile, has_touch=mobile); pg = ctx.new_page(); errs = []; writes = []; ext = []
     pg.on("pageerror", lambda e: errs.append(str(e))); pg.on("console", lambda m: m.type == "error" and "Failed to load resource" not in m.text and errs.append(m.text))
     pg.on("request", lambda r: (r.method != "GET" and not r.url.endswith(("/api/login", "/api/logout")) and writes.append((r.method, r.url))) or (not re.match(r"^(http://(localhost|127\.0\.0\.1):%d/|data:|blob:)" % port, r.url) and ext.append(r.url)))
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached")
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached")
     pg.click("#lgOpen"); pg.fill("#lgU", "auditor"); pg.fill("#lgP", "viewer-pass-x7Qk2m"); pg.click("#lgGo"); pg.wait_for_selector(".sessu"); pg.wait_for_timeout(1500)
     nav = "#bnav" if mobile else "#nav6"
     check(f"[{name}] etiqueta STAGING visible y sesión «auditor · viewer»", pg.locator("#envBanner").is_visible() and "auditor · viewer" in pg.inner_text("#sess"))

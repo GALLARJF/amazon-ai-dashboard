@@ -306,8 +306,8 @@ class H(BaseHTTPRequestHandler):
             return self._api_get(path, q)
         if path in ("/", "/index.html"):
             f = "index.html"
-        elif path == "/styles.css":
-            f = "styles.css"
+        elif path in ("/styles.css", "/styles7.css"):
+            f = path[1:]
         elif path == "/favicon.ico":
             return self._send(204)
         else:

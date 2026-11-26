@@ -15,7 +15,7 @@ def login(pg):
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_context(viewport={"width": 1440, "height": 900}).new_page(); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e)))
-    pg.goto(f"http://localhost:{port}/"); pg.wait_for_selector("#nav6", state="attached"); login(pg)
+    pg.goto(f"http://localhost:{port}/?shell=6"); pg.wait_for_selector("#nav6", state="attached"); login(pg)
     check("fuera de staging NO hay etiqueta de staging", pg.locator("#envBanner").count() == 0)
     check("por defecto: DATOS REALES (selector, barra verde, sin datos demo)", pg.eval_on_selector("#dmode", "s=>s.value") == "real" and "DATOS REALES" in pg.inner_text("#modeBar") and pg.locator(".v6demo").count() == 0)
     check("en modo REAL no existe «Laboratorio DEMO» (no es una pestaña)", pg.locator("#subnav6 [data-sub]", has_text="Laboratorio DEMO").count() == 0 and "Laboratorio DEMO" not in pg.inner_text("#nav6"))
