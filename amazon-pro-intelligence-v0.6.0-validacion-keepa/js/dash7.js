@@ -124,8 +124,3 @@
   document.addEventListener('DOMContentLoaded', () => { if (L6) { $$('#tabs button[data-tab=dash], #tabs button[data-tab=bench]').forEach((b) => b.remove()); const m = $('#tabs button[data-tab=inicio]'); if (m) m.textContent = 'INICIO'; const d = $('#tab-dash'); if (d) d.classList.remove('on'); const i = $('#tab-inicio'); if (i) i.classList.add('on'); return; } header(); bind(); render(); });
   root.DASH7 = { F, render, onShow, ctx };
 })(self);
-(function (root) {   // marcador de la entrega 2 (se sustituye por la página Benchmarking completa)
-  'use strict';
-  if (root.BENCH7) return;
-  root.BENCH7 = { onShow(id) { document.body.classList.toggle('dash7on', id === 'hoy' || id === 'bench'); const el = document.getElementById('bench7'); if (id === 'bench' && el && !el.dataset.done) { el.dataset.done = '1'; el.innerHTML = '<div class="rot7 demo" role="note"><b>PENDIENTE</b><span>Benchmarking: entrega 2 de este rediseño.</span></div>'; } } };
-})(self);

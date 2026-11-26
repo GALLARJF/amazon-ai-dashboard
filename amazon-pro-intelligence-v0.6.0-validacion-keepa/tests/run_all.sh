@@ -88,5 +88,6 @@ run "Consistencia alias KEEPA_KEY/KEEPA_API_KEY (status, configuración, guardia
 run "Auditoría visual autenticada de staging (viewer, 15 pantallas, 1440/390/360/Pixel 7, 0 errores JS, 0 externas)" python3 tests/auditoria_visual_staging_test.py
 run "Rediseño F1: Dashboard AHT simplificado (cálculo, filtros, navegación, viewer, capturas)" python3 tests/dash7_test.py
 run "Rediseño F1: Dashboard con usuario autorizado, contexto Director IA y notificaciones" python3 tests/dash7_auth_test.py
+run "Rediseño F2: Benchmarking página completa (API, persistencia, viewer, UI, exportación, capturas)" python3 tests/bench7_test.py
 echo "RESUMEN: $N suites ejecutadas · $NOK con rc=0 · $((N-NOK)) con fallo · fin $(date -u +%FT%TZ)"
 [ $FAIL -eq 0 ] && echo "TODAS LAS SUITES OK" || { echo "HAY SUITES CON FALLOS"; exit 1; }

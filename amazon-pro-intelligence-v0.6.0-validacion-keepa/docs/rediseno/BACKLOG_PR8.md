@@ -23,7 +23,7 @@ Ruta: `amazon-pro-intelligence-v0.6.0-validacion-keepa/docs/rediseno/BACKLOG_PR8
 Notas: R1-01 modelo de dirección 26/11 (infográfico en ahtcorporativo@gmail.com) aplicado: iconos, variación DEMO, gráficos por KPI, donut con tabla, periodo como desplegable, pie «Datos simulados». R1-09 «chat real» = proveedor SIMULADO (mock), nunca IA real. Pendiente de confirmar con José: Benchmarking en cabecera (la orden lo pide; el modelo no lo muestra).
 
 ## Prioridad 2 — Benchmarking página completa
-R2-01 prompt libre, adjuntos pendientes, ejecutar, resultados conversacionales, tablas/gráficos/informe, historial persistente + exportar, contexto producto/ASIN/país/periodo, fuentes con fecha y evidencia, estimado vs real, escenarios; reutilizar K3/K4 y Keepa sin llamadas reales; persistencia en SQLite actual (verificar backups). PENDIENTE.
+R2-01 HECHO — página Benchmarking completa: prompt libre, adjuntos/voz PENDIENTES, resultados conversacionales, tablas/gráfico/escenarios, historial persistente SQLite (reinicio verificado, incluido en respaldo), exportar MD/CSV/JSON, contexto producto/ASIN/país/periodo, fuentes con fecha y evidencia, estimado vs real, Keepa solo lectura de estado (sin clave, 0 llamadas). API `/api/bench7/*` (backend/bench7.py). Tests: tests/bench7_test.py 52/52. Interpretación del prompt por IA: PENDIENTE.
 
 ## Prioridad 3
 R3-01 pruebas dirigidas y capturas escritorio/móvil; R3-02 auditar cambios K1–K3 posteriores a 17/11; R3-03 plan de integración PR7/PR8 sin fusionar. PENDIENTE. Regresión amplia solo al final.

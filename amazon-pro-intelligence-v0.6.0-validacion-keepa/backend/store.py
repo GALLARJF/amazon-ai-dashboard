@@ -3,7 +3,7 @@ Aislamiento: TODA lectura/escritura de datos de negocio exige account_id y se fi
 Sin secretos: contraseñas con scrypt+sal; sesiones guardadas como hash SHA-256 del token."""
 import hashlib, hmac, json, os, secrets, sqlite3, threading, time
 
-KINDS = {"brand", "product", "dossier", "dataset", "evidence", "task", "ai_run", "query", "approval", "news", "cost_doc", "plan"}
+KINDS = {"brand", "product", "dossier", "dataset", "evidence", "task", "ai_run", "query", "approval", "news", "cost_doc", "plan", "bench7_run"}
 ROLES = {"viewer": 0, "analyst": 1, "approver": 2, "admin": 3}   # viewer: SOLO LECTURA (lee como admin; nunca escribe)
 SESSION_TTL = 8 * 3600
 SCHEMA = """
