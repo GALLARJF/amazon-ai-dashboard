@@ -26,4 +26,4 @@ Notas: R1-01 modelo de dirección 26/11 (infográfico en ahtcorporativo@gmail.co
 R2-01 HECHO — página Benchmarking completa: prompt libre, adjuntos/voz PENDIENTES, resultados conversacionales, tablas/gráfico/escenarios, historial persistente SQLite (reinicio verificado, incluido en respaldo), exportar MD/CSV/JSON, contexto producto/ASIN/país/periodo, fuentes con fecha y evidencia, estimado vs real, Keepa solo lectura de estado (sin clave, 0 llamadas). API `/api/bench7/*` (backend/bench7.py). Tests: tests/bench7_test.py 52/52. Interpretación del prompt por IA: PENDIENTE.
 
 ## Prioridad 3
-R3-01 pruebas dirigidas y capturas escritorio/móvil; R3-02 auditar cambios K1–K3 posteriores a 17/11; R3-03 plan de integración PR7/PR8 sin fusionar. PENDIENTE. Regresión amplia solo al final.
+R3-01 HECHO (tests dirigidos y capturas); R3-02 HECHO — ver `INTEGRACION_PR7_PR8_Y_AUDITORIA_K1_K3.md`; R3-03 HECHO — plan documentado, sin fusionar. Pendiente: regresión amplia al cierre (run_all.sh).
