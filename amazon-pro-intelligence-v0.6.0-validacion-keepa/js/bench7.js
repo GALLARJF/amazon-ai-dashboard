@@ -42,12 +42,12 @@
     el.innerHTML = `<div class="bn7"><aside class="hs7 card7"><h4>Historial <small>persistente · SQLite</small></h4><ul id="b7Hist" class="hl7"></ul><p class="muted sm7">Los resultados se guardan en el servidor y entran en el respaldo existente.</p></aside>
       <section class="mn7"><div class="ctx7">
         <label class="f7"><span>Producto ·</span><select id="b7Prod" class="ro-ok" data-view-filter><option value="">Sin producto</option></select></label>
-        <label class="f7"><span>ASIN ·</span><input id="b7Asin" class="ro-ok" data-view-filter maxlength="10" placeholder="B0XXXXXXXX" aria-label="ASIN"></label>
+        <label class="f7"><span>ASIN ·</span><input id="b7Asin" class="ro-ok" data-view-filter maxlength="10" placeholder="ASIN (10 caract.)" aria-label="ASIN"></label>
         <label class="f7"><span>País ·</span><select id="b7Cty" class="ro-ok" data-view-filter></select></label>
         <label class="f7"><span>Periodo ·</span><select id="b7Per" class="ro-ok" data-view-filter></select></label>
         <span id="b7Kp" class="kp7" title="Estado de Keepa (sin llamar)">Keepa: …</span></div>
         <div id="b7Res" class="res7" aria-live="polite"></div>
-        <details class="hy7"><summary>Hipótesis de costes (escenarios de contribución, por unidad)</summary><div class="hg7">${[['pvp', 'PVP (IVA incl.) €'], ['coste_unit', 'Coste unidad €'], ['comision_pct', 'Comisión (0–1)'], ['logistica_unit', 'Logística €'], ['ads_unit', 'Publicidad €']].map(([k, l]) => `<label>${l}<input id="b7h_${k}" class="ro-ok" data-view-filter inputmode="decimal" aria-label="${l}"></label>`).join('')}</div></details>
+        <details class="hy7"><summary>Hipótesis de costes (escenarios de contribución, por unidad)</summary><div class="hg7">${[['pvp', 'PVP (IVA incl.) €'], ['iva_pct', 'IVA (0–1, ej. 0.21)'], ['coste_unit', 'Coste unidad €'], ['comision_pct', 'Comisión (0–1)'], ['logistica_unit', 'Logística €'], ['ads_unit', 'Publicidad €']].map(([k, l]) => `<label>${l}<input id="b7h_${k}" class="ro-ok" data-view-filter inputmode="decimal" aria-label="${l}"></label>`).join('')}</div></details>
         <form id="b7Form" class="cf7"><span id="b7Ro" class="ro7" hidden>Solo lectura: ejecutar requiere un rol que pueda escribir</span><textarea id="b7In" rows="3" placeholder="Escribe tu petición de benchmarking…" aria-label="Petición de benchmarking"></textarea>
           <div class="c7bar"><label class="ic7 ro-ok" title="Adjuntos: PENDIENTE"><input id="b7File" type="file" multiple hidden>＋</label><button type="button" id="b7Mic" class="ic7" disabled title="Voz: PENDIENTE">🎤</button><span class="pd7">Adjuntos, voz, búsqueda web e informe PDF: PENDIENTES</span><span id="b7Err" class="er7" role="alert"></span>
             <button type="button" id="b7Md" class="ic7 ro-ok">Exportar MD</button><button type="button" id="b7Csv" class="ic7 ro-ok">CSV</button><button type="button" id="b7Js" class="ic7 ro-ok">JSON</button><button type="submit" id="b7Run" class="c7send">Ejecutar ➤</button></div></form></section></div>`;
@@ -69,7 +69,7 @@
   async function run() {
     if (S.busy || ro()) return; const q = $('#b7In').value.trim(), er = $('#b7Err'); if (!q) { er.textContent = 'Escribe una petición.'; return; }
     const num = (id) => { const v = $(id).value.trim().replace(',', '.'); return v === '' ? null : Number(v); }, ctx = { product: $('#b7Prod').value, asin: $('#b7Asin').value.trim(), country: $('#b7Cty').value, period: $('#b7Per').value };
-    ['pvp', 'coste_unit', 'comision_pct', 'logistica_unit', 'ads_unit'].forEach((k) => { const v = num('#b7h_' + k); if (v !== null) ctx[k] = v; });
+    ['pvp', 'iva_pct', 'coste_unit', 'comision_pct', 'logistica_unit', 'ads_unit'].forEach((k) => { const v = num('#b7h_' + k); if (v !== null) ctx[k] = v; });
     S.busy = true; $('#b7Run').disabled = true; er.textContent = '';
     try { const r = await api('POST', '/api/bench7/run', { prompt: q, context: ctx }); if (r.ok) { S.cur = r.j; $('#b7In').value = ''; renderResult(S.cur); await load(); } else er.textContent = 'Error: ' + ((r.j && r.j.error) || r.status); }
     catch (e) { er.textContent = 'Error de red'; }
