@@ -55,7 +55,14 @@ check("override simulado queda marcado como simulado", C.parametros({"comision_p
 check("simulación con comisión 12 % sube la contribución (no toca los parámetros base)", C.economia_unitaria("FBA", 1, None, 300, 90, overrides={"comision_pct": 0.12})["contribucion_antes_ads_ud"] > 15.40 and C.PARAMS["comision_pct"]["v"] == 0.15)
 # --- objetivos, CPA máximo
 ob = C.objetivos(e300)
-check("objetivos 10/15/18/20 %: CPA máximo = contribución antes de Ads − objetivo (10 % → 11,28)", [o["objetivo_contribucion_pct"] for o in ob] == [0.10, 0.15, 0.18, 0.20] and ob[0]["cpa_maximo_ud"] == 11.28, ob[0])
+check("objetivos 10/15/18/20 € por unidad: CPA máximo = contribución antes de Ads − objetivo (10 € → 5,40; 15 € → 0,40)", [o["objetivo_contribucion_ud"] for o in ob] == [10.0, 15.0, 18.0, 20.0] and ob[0]["cpa_maximo_ud"] == 5.4 and ob[1]["cpa_maximo_ud"] == 0.4 and all(o["unidad_objetivo"] == "€/ud" for o in ob), ob[:2])
+for nm, ov in (("IVA 21 (no fracción)", {"iva": 21}), ("comisión 15 (no fracción)", {"comision_pct": 15}), ("PVP 0", {"pvp_bruto": 0}), ("ventana fraccionaria", {"ventana_atribucion_dias": 7.5}), ("negativo", {"incidencias": -1})):
+    check("override inválido rechazado: " + nm, raises(C.parametros, ov))
+check("cantidades no enteras rechazadas", raises(C.economia_unitaria, "FBA", 1, None, 100.5, 90))
+check("lote 2: regulación aparte sin confirmar si el coste la incluye → rechazada (no se asume)", raises(C.economia_unitaria, "FBA", 2, None, 300, 90, None, 0.0, None, 5.0))
+eo = C.economia_unitaria("FBA", 1, None, 300, 90, None, muestras_coste_total=100, costes_fijos_periodo=500)
+check("resultado operativo resta muestras y fijos una vez; base = contribución antes de Ads si Ads no informado", eo["resultado_operativo_periodo"] == round(eo["contribucion_antes_ads_ud"] * 300 - 500 - 100, 2) and "ANTES de Ads" in eo["resultado_operativo_base"])
+check("tarifa FBA: fuente oficial y recargo 1,5 % por confirmar", "sell.amazon.es/precios" in C.PARAMS["fba_tarifa"]["nota"] and "1,5 %" in C.PARAMS["fba_tarifa"]["nota"])
 check("objetivos marcados NO garantizados", all("NO garantizado" in o["garantia"] for o in ob))
 bajo = C.objetivos(C.economia_unitaria("FBA", 1, 20, 300, 90))
 check("objetivo inalcanzable se dice, sin cifras inventadas", all(o["cpa_maximo_ud"] is None and "INALCANZABLE" in o["estado"] for o in bajo[-2:]))

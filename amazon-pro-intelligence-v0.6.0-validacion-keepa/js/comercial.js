@@ -24,7 +24,7 @@
     const tacos = tc.map((j) => ({ tacos: E(j).tacos, ads_ud: E(j).ads_ud, contribucion_tras_ads_ud: E(j).contribucion_tras_ads_ud }));
     let h = `<section class="card c-cyan"><h3>HOY · Economía comercial ACTIVCORE ${badge('SOLO LECTURA', 'b7-doc')} ${badge('PARÁMETROS ' + String(E(fba).estado_parametros || 'pendiente').toUpperCase(), 'b7-wait')}</h3>
       <p>Contribución por unidad <b>antes de Ads</b>: FBA 300 ventas/90 d <b>${eur(E(fba).contribucion_antes_ads_ud)}</b> · FBM <b>${eur(E(fbm).contribucion_antes_ads_ud)}</b> · FBA 100 ventas/90 d <b>${eur(E(p100).contribucion_antes_ads_ud)}</b> (plan 39 €/mes prorrateado: no se reutiliza la base de 300).</p>
-      <p class="muted">Objetivos 10/15/18–20 % de contribución: NO garantizados. Ninguna tarifa figura como verificada sin evidencia oficial. Presupuesto de Ads propuesto: NO AUTORIZADO. Ninguna acción se ejecuta desde esta pantalla.</p>${err(fba)}</section>`;
+      <p class="muted">Objetivos 10/15/18/20 € de contribución por unidad: NO garantizados. Ninguna tarifa figura como verificada sin evidencia oficial. Presupuesto de Ads propuesto: NO AUTORIZADO. Ninguna acción se ejecuta desde esta pantalla.</p>${err(fba)}</section>`;
     h += `<section class="card"><h3>DECISIONES pendientes de una persona</h3><ol>
       <li>Autorizar (o no) el Ads piloto de ${esc(((pil.ads_piloto || {}).importe))} € / ${esc(((pil.ads_piloto || {}).dias))} días y el envío FBA de ${esc(((pil.reparto_unidades || {}).fba))} uds: <b>NO AUTORIZADO</b>.</li>
       <li>Confirmar coste del lote 2 (8,99 €, pendiente) y la tarifa FBA 3,81 € (condicionada a peso/dimensiones).</li>

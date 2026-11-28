@@ -22,9 +22,9 @@ PARAMS = {
     "pvp_bruto": _p(49.90, "€ con IVA", nota="PVP propuesto; decisión de José"),
     "iva": _p(0.21, "fracción", nota="tipo aplicable al producto POR CONFIRMAR con asesor fiscal"),
     "coste_lote_1": _p(12.55, "€/ud", incluye_regulacion=True, nota="incluye regulación (no sumar regulación aparte)"),
-    "coste_lote_2": _p(8.99, "€/ud", "pendiente", incluye_regulacion=True, nota="lote 2 pendiente de confirmar"),
+    "coste_lote_2": _p(8.99, "€/ud", "pendiente", incluye_regulacion=None, nota="lote 2 pendiente de confirmar; si incluye regulación está POR CONFIRMAR (PR6 y PR7 se contradicen): no se asume"),
     "comision_pct": _p(0.15, "fracción del PVP bruto", nota="escenario; porcentaje de Belleza y base (con IVA) POR CONFIRMAR en tarifas vigentes de Amazon.es"),
-    "fba_tarifa": _p(3.81, "€/ud", "pendiente", nota="condicionada a peso y dimensiones reales del envío"),
+    "fba_tarifa": _p(3.81, "€/ud", "pendiente", nota="condicionada a peso y dimensiones reales; POR CONFIRMAR si incluye el recargo FBA 1,5 % vigente desde 17/04/2026. Fuente a contrastar: https://sell.amazon.es/precios (plan 39 € sin IVA; Belleza >10 € = 15 % sobre precio total con IVA; categoría del SKU pendiente)"),
     "fba_entrada": _p(0.30, "€/ud"), "fba_preparacion": _p(0.15, "€/ud"), "fba_almacen": _p(0.15, "€/ud"),
     "plan_mensual": _p(39.0, "€/mes", nota="se prorratea por ventas reales y horizonte; no es coste por unidad fijo"),
     "promociones": _p(0.50, "€/ud", nota="provisión; se anula si se aplica un descuento efectivo explícito (sin doble provisión)"),
@@ -35,7 +35,7 @@ PARAMS = {
 }
 LOTES = {1: "coste_lote_1", 2: "coste_lote_2"}
 TACOS_ESCENARIOS = (0.0, 0.05, 0.10, 0.15, 0.25)
-OBJETIVOS_CONTRIBUCION = (0.10, 0.15, 0.18, 0.20)   # sobre ventas netas; no garantizados (la base del % se confirma con la auditoría)
+OBJETIVOS_CONTRIBUCION = (10.0, 15.0, 18.0, 20.0)   # € de contribución POR UNIDAD (no porcentajes); no garantizados
 PILOTO = {"fba": 100, "reserva_flexible_aht": 100, "otros_canales_reserva": 350}   # propuesta, NO autorizada
 TRAMOS_PRESUPUESTO = ({"tramo": "prueba", "dias": "1–10", "importe": 150}, {"tramo": "hasta día 30", "dias": "11–30", "importe": 350},
                       {"tramo": "días 31–60", "dias": "31–60", "importe": 750}, {"tramo": "días 61–90", "dias": "61–90", "importe": 1000})
@@ -63,8 +63,12 @@ def parametros(overrides=None):
         if k not in p: raise ValueError("parámetro desconocido: " + str(k)[:40])
         if k == "ventas_ads_base":
             if v not in ("bruto", "neto"): raise ValueError("ventas_ads_base: bruto|neto")
-        else:
-            _num(v, k, 0, 100000)
+        elif k in ("iva", "comision_pct"): _num(v, k, 0, 1)
+        elif k == "pvp_bruto":
+            if _num(v, k, 0, 100000) <= 0: raise ValueError("pvp_bruto: debe ser positivo")
+        elif k == "ventana_atribucion_dias":
+            if _num(v, k, 1, 365) != int(v): raise ValueError("ventana_atribucion_dias: entero")
+        else: _num(v, k, 0, 100000)
         p[k]["v"] = v; p[k]["origen"] = "simulado por la petición (no es el valor de la auditoría)"
     return p
 
@@ -81,10 +85,13 @@ def economia_unitaria(canal="FBA", lote=1, pvp=None, ventas=300, dias=90, tacos=
     P = parametros(overrides)
     pvp = P["pvp_bruto"]["v"] if pvp is None else _num(pvp, "pvp", 0.5, 5000)
     ventas = _num(ventas, "ventas", 1, 1_000_000); dias = _num(dias, "dias", 1, 3650)
+    if ventas != int(ventas) or dias != int(dias): raise ValueError("ventas y dias: números enteros")
     descuento_pct = _num(descuento_pct, "descuento_pct", 0, 0.9); regulacion_aparte = _num(regulacion_aparte, "regulacion_aparte", 0, 1000)
     muestras_coste_total = _num(muestras_coste_total, "muestras_coste_total", 0, 1e7)
     if tacos is not None: tacos = _num(tacos, "tacos", 0, 1)
     cl = P[LOTES[lote]]
+    if lote == 2 and regulacion_aparte > 0 and cl.get("incluye_regulacion") is None:
+        raise ValueError("lote 2: no se sabe si el coste incluye regulación (POR CONFIRMAR); confirmar antes de imputar regulación aparte")
     if cl.get("incluye_regulacion") and regulacion_aparte > 0:
         raise ValueError("doble imputación: el coste del lote ya incluye la regulación; no se puede añadir regulación aparte")
     pvp_ef = mul(pvp, 1 - descuento_pct); iva = P["iva"]["v"]; neto = r2(pvp_ef / (1 + iva))
@@ -115,8 +122,9 @@ def economia_unitaria(canal="FBA", lote=1, pvp=None, ventas=300, dias=90, tacos=
     if costes_fijos_periodo is not None:
         fijos = _num(costes_fijos_periodo, "costes_fijos_periodo", 0, 1e7)
         base = res.get("contribucion_tras_ads_ud", contrib)
-        res["resultado_operativo_periodo"] = r2(base * ventas - fijos)
-        res["resultado_operativo_nota"] = "costes fijos informados explícitamente; el plan profesional ya está prorrateado en la contribución y NO debe repetirse aquí"
+        res["resultado_operativo_periodo"] = r2(base * ventas - fijos - (muestras_coste_total or 0))
+        res["resultado_operativo_base"] = "contribución tras Ads" if "contribucion_tras_ads_ud" in res else "contribución ANTES de Ads (Ads no informado: no se supone 0 € de Ads real)"
+        res["resultado_operativo_nota"] = "costes fijos informados explícitamente y muestras restadas UNA vez; el plan profesional ya está prorrateado en la contribución y NO debe repetirse aquí"
     else:
         res["resultado_operativo_periodo"] = None; res["resultado_operativo_nota"] = "NO CALCULABLE: costes fijos del periodo no informados (sin doble imputación del plan profesional)"
     muestras = r2(muestras_coste_total) if muestras_coste_total else 0.0
@@ -138,12 +146,12 @@ def economia_unitaria(canal="FBA", lote=1, pvp=None, ventas=300, dias=90, tacos=
 
 
 def objetivos(eco, lista=OBJETIVOS_CONTRIBUCION):
-    """CPA máximo y presupuesto residual de Ads para alcanzar cada objetivo de contribución (% de ventas netas). No garantizado."""
+    """CPA máximo y presupuesto residual de Ads para alcanzar cada objetivo de contribución en € POR UNIDAD (10, 15, 18, 20 €). No garantizado."""
     neto, c0, ventas = eco["precio_neto_sin_iva"], eco["contribucion_antes_ads_ud"], eco["ventas_horizonte"]
     out = []
     for o in lista:
-        _num(o, "objetivo", 0, 0.9); objetivo_ud = mul(o, neto); cpa = r2(c0 - objetivo_ud)
-        out.append({"objetivo_contribucion_pct": o, "contribucion_objetivo_ud": objetivo_ud, "cpa_maximo_ud": cpa if cpa >= 0 else None, "tacos_maximo": round(cpa / neto, 4) if cpa >= 0 and neto else None,
+        o = _num(o, "objetivo (€/ud)", 0, 1000); cpa = r2(c0 - o)
+        out.append({"objetivo_contribucion_ud": o, "unidad_objetivo": "€/ud", "cpa_maximo_ud": cpa if cpa >= 0 else None, "tacos_maximo": round(cpa / neto, 4) if cpa >= 0 and neto else None,
                     "presupuesto_residual_ads": r2(cpa * ventas) if cpa >= 0 else None, "estado": "alcanzable con estos parámetros" if cpa >= 0 else "INALCANZABLE con estos parámetros (la contribución antes de Ads ya queda por debajo del objetivo)",
                     "garantia": "NO garantizado: depende de parámetros estimados/pendientes"})
     return out
