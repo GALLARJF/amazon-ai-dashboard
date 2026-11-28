@@ -27,3 +27,11 @@ R2-01 HECHO — página Benchmarking completa: prompt libre, adjuntos/voz PENDIE
 
 ## Prioridad 3
 R3-01 HECHO (tests dirigidos y capturas); R3-02 HECHO — ver `INTEGRACION_PR7_PR8_Y_AUDITORIA_K1_K3.md`; R3-03 HECHO — plan documentado, sin fusionar. Pendiente: regresión amplia al cierre (run_all.sh).
+
+## Prioridad 0 (orden 28/11) — Candidato integrado Amazon Pro Intelligence Global
+- P0-01 HECHO — referencias originales en `docs/rediseno/referencia/` (infografía aprobada y esquema «3 ALT»); captura integrada 1920×1080 en `docs/rediseno/capturas/integrado_dashboard_1920x1080.png`.
+- P0-02 HECHO — rama independiente `aht-integracion-amazon-pro-global` = PR #8 + PR #7 (conflicto solo en `server.py`, resuelto conservando rutas `bench7` y `v08`). Las PR originales NO se fusionan.
+- P0-03 HECHO — Benchmarking: IVA explícito (venta neta = PVP/(1+IVA)), alcance de evidencia Keepa (país/ASIN propio/foto puntual), ASIN de 10 alfanuméricos sin truncar. bench7 60/60.
+- P0-04 HECHO — PR #7: objetivos en €/ud (10/15/18/20), validación de overrides por rango/entero, lote 2 regulación POR CONFIRMAR, resultado operativo con muestras, nota fuente tarifas Amazon. comercial 76/76.
+- P0-05 PENDIENTE — despliegue a STAGING: requiere autorización expresa de José/Dirección. Sin despliegue, sin gasto, sin Keepa.
+- Decisión de diseño abierta: la infografía aprobada muestra KPI 3×2; el esquema «3 ALT» muestra otra disposición. Se implementó la infografía aprobada.
