@@ -6,9 +6,9 @@ import re, time
 from . import keepa_real as KR, keepa as KP
 from .catalog import ACCOUNT_ID
 
-ASIN = re.compile(r"^B0[A-Z0-9]{8}$")
+ASIN = re.compile(r"^[A-Z0-9]{10}$")   # ASIN: 10 alfanuméricos (no solo prefijo B0)
 PERIODS = {"dia": "Día", "semana": "Semana", "mes": "Mes", "anio": "Año"}
-SC_FIELDS = ("pvp", "coste_unit", "comision_pct", "logistica_unit", "ads_unit")   # escenario: solo con datos aportados por el usuario
+SC_FIELDS = ("pvp", "iva_pct", "coste_unit", "comision_pct", "logistica_unit", "ads_unit")   # escenario: solo con datos aportados por el usuario
 
 
 def _today(): return time.strftime("%Y-%m-%d", time.gmtime())
@@ -24,29 +24,44 @@ def _num(v, lo, hi, name):
 def clean_context(c):
     if c is None: c = {}
     if not isinstance(c, dict) or set(c) - {"product", "asin", "country", "period", *SC_FIELDS}: raise ValueError("contexto con campos no permitidos")
-    o = {"product": str(c.get("product") or "")[:60], "asin": str(c.get("asin") or "").upper().strip()[:10], "country": str(c.get("country") or "ES").upper(), "period": str(c.get("period") or "mes")}
-    if o["asin"] and not ASIN.match(o["asin"]): raise ValueError("ASIN inválido (B0 + 8 caracteres)")
+    o = {"product": str(c.get("product") or "")[:60], "asin": str(c.get("asin") or "").upper().strip(), "country": str(c.get("country") or "ES").upper(), "period": str(c.get("period") or "mes")}
+    if o["asin"] and not ASIN.match(o["asin"]): raise ValueError("ASIN inválido (10 caracteres alfanuméricos)")
     if o["country"] not in KP.DOMAINS: raise ValueError("país no soportado")
     if o["period"] not in PERIODS: raise ValueError("periodo inválido")
-    o["pvp"] = _num(c.get("pvp"), 0.01, 100000, "pvp"); o["coste_unit"] = _num(c.get("coste_unit"), 0, 100000, "coste_unit")
+    o["pvp"] = _num(c.get("pvp"), 0.01, 100000, "pvp"); o["iva_pct"] = _num(c.get("iva_pct"), 0, 1, "iva_pct (0–1)"); o["coste_unit"] = _num(c.get("coste_unit"), 0, 100000, "coste_unit")
     o["comision_pct"] = _num(c.get("comision_pct"), 0, 1, "comision_pct (0–1)"); o["logistica_unit"] = _num(c.get("logistica_unit"), 0, 100000, "logistica_unit"); o["ads_unit"] = _num(c.get("ads_unit"), 0, 100000, "ads_unit")
     return o
 
 
 def scenarios(c):
     miss = [k for k in SC_FIELDS if c.get(k) is None]
-    if miss: return {"state": "NO CALCULABLE", "faltan": miss, "nota": "No se supone ningún coste ausente."}
+    if miss: return {"state": "NO CALCULABLE", "faltan": miss, "nota": "No se supone ningún dato ausente (tampoco el IVA)."}
     def one(pvp, ads):
-        com = pvp * c["comision_pct"]; contrib = pvp - c["coste_unit"] - com - c["logistica_unit"] - ads
-        return {"pvp": round(pvp, 2), "comision": round(com, 2), "ads": round(ads, 2), "contribucion_unit": round(contrib, 2), "contribucion_pct": round(contrib / pvp * 100, 2)}
-    return {"state": "ESTIMADO", "nota": "Hipótesis del usuario; contribución antes de overhead general.", "filas": [{"escenario": "Base", **one(c["pvp"], c["ads_unit"])}, {"escenario": "PVP −10 %", **one(c["pvp"] * 0.9, c["ads_unit"])}, {"escenario": "Ads +25 %", **one(c["pvp"], c["ads_unit"] * 1.25)}]}
+        neto = pvp / (1 + c["iva_pct"]); iva = pvp - neto
+        com = pvp * c["comision_pct"]   # comisión sobre el precio total con IVA (base contractual Amazon ES); otra base requiere confirmación
+        contrib = neto - c["coste_unit"] - com - c["logistica_unit"] - ads
+        return {"pvp_con_iva": round(pvp, 2), "iva": round(iva, 2), "venta_neta": round(neto, 2), "comision": round(com, 2), "ads": round(ads, 2),
+                "contribucion_unit": round(contrib, 2), "contribucion_pct_neta": round(contrib / neto * 100, 2)}
+    return {"state": "ESTIMADO", "nota": "Hipótesis del usuario. Venta neta = PVP / (1+IVA); comisión sobre PVP con IVA; porcentaje sobre venta neta; antes de overhead.",
+            "filas": [{"escenario": "Base", **one(c["pvp"], c["ads_unit"])}, {"escenario": "PVP −10 %", **one(c["pvp"] * 0.9, c["ads_unit"])}, {"escenario": "Ads +25 %", **one(c["pvp"], c["ads_unit"] * 1.25)}]}
+
+
+def evidence_scope(prod, ctx, kr):
+    """(usable, motivo, alcance). La caché Keepa es una foto ES de un producto concreto: no se atribuye a otro país/ASIN/periodo."""
+    if not prod: return False, "Sin producto seleccionado.", None
+    if not (kr and kr.get("state") == "REAL"): return False, "No hay evidencia real de Keepa para este producto.", None
+    pa = ((prod.get("own_asins") or {}).get(ctx["country"]) or "").upper()
+    if ctx["asin"] and ctx["asin"] != pa: return False, f"ASIN {ctx['asin']} no coincide con el ASIN propio registrado del producto en {ctx['country']} ({pa or 'ninguno'}): incompatible, no se muestran datos.", None
+    dom = kr.get("domain") or "ES"
+    if ctx["country"] != dom: return False, f"La evidencia es de {dom}; no se atribuye a {ctx['country']}.", None
+    return True, None, {"pais": dom, "fecha_consulta": kr.get("consulted_at"), "periodo": "FOTO PUNTUAL (no cubre el periodo «" + PERIODS[ctx["period"]] + "» seleccionado)"}
 
 
 def build(APP, prompt, ctx):
     pid = ctx["product"]; prod = APP["catalog"].get(pid) if pid else None
     kr = KR.load(pid) if prod else None
-    real = bool(kr and kr.get("state") == "REAL")
-    src = [{"fuente": "Keepa", "estado": "CACHÉ LOCAL" if real else "NO CONSULTADA", "fecha": kr.get("consulted_at") if real else None, "evidencia": kr.get("source") if real else "Sin consulta autorizada: no se usa cuota (0 tokens)."},
+    real, why_not, scope = evidence_scope(prod, ctx, kr)
+    src = [{"fuente": "Keepa", "estado": "CACHÉ LOCAL" if real else "NO CONSULTADA", "fecha": kr.get("consulted_at") if real else None, "evidencia": (kr.get("source") + " · " + scope["periodo"]) if real else (why_not + " Sin consulta autorizada: no se usa cuota (0 tokens).")},
            {"fuente": "Amazon (SP-API/Ads)", "estado": "NO CONSULTADA", "fecha": None, "evidencia": "Conector de solo lectura no habilitado en esta pantalla."},
            {"fuente": "Web", "estado": "NO CONSULTADA", "fecha": None, "evidencia": "Sin navegación automática en esta entrega (pendiente)."}]
     comp = []
@@ -56,13 +71,13 @@ def build(APP, prompt, ctx):
     sections = [
         {"id": "fuentes", "titulo": "Fuentes y evidencia", "tipo": "tabla", "filas": src},
         {"id": "mercado", "titulo": "BSR, precios, ofertas e histórico", "estado": "REAL (caché local)" if real else "NO DISPONIBLE", "tipo": "tabla", "filas": comp,
-         "nota": None if real else "No hay evidencia real de Keepa para este producto; consultarla requiere autorización expresa y cuota."},
+         "alcance": scope, "nota": None if real else why_not + " Consultarla requiere autorización expresa y cuota."},
         {"id": "ventas", "titulo": "Ventas estimadas", "estado": "NO DISPONIBLE", "tipo": "texto", "texto": "Las ventas estimadas (si se calculan) se mostrarán SIEMPRE separadas de las reales y marcadas ESTIMADO. Hoy no hay ventas reales ni estimación."},
         {"id": "escenarios", "titulo": "Costes y escenarios de contribución", "tipo": "escenarios", **scenarios(ctx)}]
     if real and kr["summary"].get("price_median_fresh") is not None:
         sections[1]["resumen"] = {"competidores": kr["summary"]["n"], "con_precio": kr["summary"]["n_priced"], "mediana_precio_fresco_eur": kr["summary"]["price_median_fresh"], "mediana_100ml": kr["summary"]["per_100ml_median"]}
     resp = [f"Petición recibida para {prod['name'] if prod else (pid or 'sin producto')} · {ctx['country']} · {PERIODS[ctx['period']]}."]
-    resp.append("Modo LOCAL: no se ha llamado a Keepa, Amazon ni a la web, y no se ha consumido cuota ni gastado nada.")
+    resp.append("Modo LOCAL (registro y escenarios; NO es un benchmark operativo con IA): no se ha llamado a Keepa, Amazon ni a la web, y no se ha consumido cuota ni gastado nada.")
     resp.append("Datos de mercado: " + ("hay evidencia real en caché local (ver tabla, con fecha y fuente)." if real else "NO DISPONIBLES para este producto."))
     resp.append("Escenarios: " + ("calculados con tus hipótesis (ESTIMADO)." if ctx and scenarios(ctx)["state"] == "ESTIMADO" else "NO CALCULABLES: faltan datos que no se inventan."))
     resp.append("Interpretación libre del prompt por IA: PENDIENTE (el prompt queda guardado en el historial).")

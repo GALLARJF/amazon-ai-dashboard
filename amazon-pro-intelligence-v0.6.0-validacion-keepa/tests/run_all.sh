@@ -85,6 +85,8 @@ run "K4: centro de mando NEON (navegador real, escritorio/tablet/móvil)" python
 run "V0.7.0: registro de suites v0.7 en batería y coordinador" python3 tests/v070_registro_test.py
 run "V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)" python3 tests/v070_entrega_test.py
 run "Consistencia alias KEEPA_KEY/KEEPA_API_KEY (status, configuración, guardia staging)" python3 tests/keepa_alias_consistency_test.py
+run "V1.1: motor económico comercial, lectura de Ads y API /api/v08 (solo lectura)" python3 tests/comercial_test.py
+run "V1.1: evidencia visual Economía comercial (viewer, 4 viewports, solo lectura)" python3 tests/comercial_visual_test.py
 run "Auditoría visual autenticada de staging (viewer, 15 pantallas, 1440/390/360/Pixel 7, 0 errores JS, 0 externas)" python3 tests/auditoria_visual_staging_test.py
 run "Rediseño F1: Dashboard AHT simplificado (cálculo, filtros, navegación, viewer, capturas)" python3 tests/dash7_test.py
 run "Rediseño F1: Dashboard con usuario autorizado, contexto Director IA y notificaciones" python3 tests/dash7_auth_test.py

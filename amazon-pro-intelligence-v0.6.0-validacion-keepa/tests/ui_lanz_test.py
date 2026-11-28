@@ -64,7 +64,7 @@ def run(pw, name, vp, mobile):
     pg.click('[data-lz-step="demanda"] > summary'); check(f"{T} Demanda: SIN DATOS y no se estima", "Ninguna: no se estima demanda" in pg.inner_text('[data-lz-step="demanda"]'))
     pg.click("#lanz2 #lzmet > summary"); pg.wait_for_timeout(300)
     check(f"{T} Metodología: reglas del estado + las 11 secciones originales siguen accesibles (cálculos intactos)", "NO GO solo si" in pg.inner_text("#lzmetbody") and pg.locator("#lzlegacy #v6lanz .v6sec").count() == 11)
-    check(f"{T} sigue accesible la exportación original (Markdown/HTML) y los cálculos de Pre-Launch y Europa", pg.locator('#lzlegacy a[href*="fmt=md"]').count() >= 1 and pg.locator('#subnav6 [data-sub]').count() == 3)
+    check(f"{T} sigue accesible la exportación original (Markdown/HTML) y los cálculos de Pre-Launch y Europa", pg.locator('#lzlegacy a[href*="fmt=md"]').count() >= 1 and pg.locator('#subnav6 [data-sub]').count() == 4)   # 3 originales + «Economía comercial» (V1.1)
     # ---- cambio de producto: el detalle sigue al elegido, sin duplicar
     pg.click('[data-lz-open="PRD-PHIVITAL-MAGNESIO"]'); pg.wait_for_timeout(1200)
     check(f"{T} al abrir PHIVITAL el detalle cambia y no se duplica (1 solo detalle, 66 requisitos)", pg.locator("#lanz2 .lzdet").count() == 1 and "PHIVITAL Magnesio" in pg.inner_text('[data-lz-level="1"]') and "66 requisitos" in pg.inner_text('[data-lz-level="2"]'))

@@ -30,7 +30,7 @@ srv, port = start(); a = C(port); check("login admin", a.login("admin", "admin-p
 c, o = a.req("GET", "/api/bench7/opciones"); check("opciones: productos del catálogo, países y periodos", c == 200 and any(p["id"] == "PRD-ACTIVCORE-V2" for p in o["productos"]) and "ES" in o["paises"] and len(o["periodos"]) == 4)
 c, k = a.req("GET", "/api/bench7/keepa"); ks = json.dumps(k)
 check("estado de Keepa: clave presente SIN exponerla, sin llamadas, aviso suscripción ≠ API", c == 200 and k["clave_presente"] is True and (FAKEKEY not in ks and "SECRET" not in ks) and k["consulta_real_realizada_ahora"] is False and k["red"] == 0 and "≠" in k["nota"])
-CTX = {"product": "PRD-ACTIVCORE-V2", "country": "ES", "period": "mes", "pvp": 49.9, "coste_unit": 8.99, "comision_pct": 0.15, "logistica_unit": 5.41, "ads_unit": 4.99}
+CTX = {"product": "PRD-ACTIVCORE-V2", "country": "ES", "period": "mes", "pvp": 49.9, "iva_pct": 0.21, "coste_unit": 8.99, "comision_pct": 0.15, "logistica_unit": 5.41, "ads_unit": 4.99}
 c, r = a.req("POST", "/api/bench7/run", {"prompt": "Compara ACTIVCORE frente a la competencia", "context": CTX}); rid = r.get("id")
 res = r.get("result", {}); secs = {x["id"]: x for x in res.get("sections", [])}
 check("ejecutar: resultado LOCAL con 0 llamadas de red y 0 tokens, 4 secciones", c == 200 and res["mode"].startswith("LOCAL") and res["network_calls"] == 0 and res["tokens_spent_now"] == 0 and list(secs) == ["fuentes", "mercado", "ventas", "escenarios"])
@@ -38,9 +38,9 @@ check("fuentes: Keepa/Amazon/web con estado, fecha y evidencia; Amazon y web NO 
 check("mercado: datos REALES solo desde caché local con origen y fecha; resumen con mediana", secs["mercado"]["estado"].startswith("REAL") and all(f["origen"].startswith("REAL") and f["fecha_precio"] for f in secs["mercado"]["filas"] if f["precio_eur"] is not None) and secs["mercado"]["resumen"]["mediana_precio_fresco_eur"] is not None)
 check("ventas estimadas: NO DISPONIBLE y separadas de las reales", secs["ventas"]["estado"] == "NO DISPONIBLE" and "ESTIMADO" in secs["ventas"]["texto"])
 f0 = secs["escenarios"]["filas"][0]
-check("escenarios: ESTIMADO con 3 filas; contribución base = 49,90−8,99−7,485−5,41−4,99 = 23,02", secs["escenarios"]["state"] == "ESTIMADO" and len(secs["escenarios"]["filas"]) == 3 and f0["contribucion_unit"] == 23.02 and abs(f0["contribucion_pct"] - 46.14) < 0.01)
+check("escenarios: ESTIMADO con 3 filas; venta neta 49,90/1,21 = 41,24; contribución = 41,24−8,99−7,485−5,41−4,99 = 14,36 (34,83 % s/neta)", secs["escenarios"]["state"] == "ESTIMADO" and len(secs["escenarios"]["filas"]) == 3 and f0["venta_neta"] == 41.24 and f0["iva"] == 8.66 and f0["contribucion_unit"] == 14.36 and abs(f0["contribucion_pct_neta"] - 34.83) < 0.01)
 c, r2 = a.req("POST", "/api/bench7/run", {"prompt": "sin costes", "context": {"product": "PRD-PHIVITAL-MAGNESIO", "country": "DE", "period": "dia"}}); s2 = {x["id"]: x for x in r2["result"]["sections"]}
-check("sin costes: NO CALCULABLE y lista lo que falta; producto sin evidencia → mercado NO DISPONIBLE (nada inventado)", s2["escenarios"]["state"] == "NO CALCULABLE" and set(s2["escenarios"]["faltan"]) == {"pvp", "coste_unit", "comision_pct", "logistica_unit", "ads_unit"} and s2["mercado"]["estado"] == "NO DISPONIBLE" and s2["mercado"]["filas"] == [])
+check("sin costes: NO CALCULABLE y lista lo que falta; producto sin evidencia → mercado NO DISPONIBLE (nada inventado)", s2["escenarios"]["state"] == "NO CALCULABLE" and set(s2["escenarios"]["faltan"]) == {"pvp", "iva_pct", "coste_unit", "comision_pct", "logistica_unit", "ads_unit"} and s2["mercado"]["estado"] == "NO DISPONIBLE" and s2["mercado"]["filas"] == [])
 bad = [{"prompt": "", "context": {}}, {"prompt": "x" * 4001, "context": {}}, {"prompt": "x", "context": {"country": "XX"}}, {"prompt": "x", "context": {"period": "decada"}}, {"prompt": "x", "context": {"asin": "no"}}, {"prompt": "x", "context": {"foo": 1}}, {"prompt": "x", "context": {"comision_pct": 5}}, {"prompt": "x", "context": {"pvp": "caro"}}, {"prompt": "x", "context": "texto"}, {"prompt": 5, "context": {}}]
 check("validación: 10 entradas inválidas → 400", [a.req("POST", "/api/bench7/run", b)[0] for b in bad] == [400] * 10)
 c, h = a.req("GET", "/api/bench7/historial"); check("historial: 2 ejecuciones, más reciente primero, con SQLite", c == 200 and len(h["items"]) == 2 and h["items"][0]["prompt"] == "sin costes" and "SQLite" in h["persistencia"])
@@ -50,7 +50,24 @@ check("sin sesión: 401", C(port).req("GET", "/api/bench7/historial")[0] == 401 
 srv.shutdown(); srv.server_close()
 srv, port = start(); a = C(port); a.login("admin", "admin-password-123")
 c, h = a.req("GET", "/api/bench7/historial"); c2, r = a.req("GET", "/api/bench7/run?id=" + rid)
-check("persistencia: tras REINICIAR el servidor el historial y el resultado siguen (SQLite)", len(h["items"]) == 2 and c2 == 200 and r["result"]["sections"][3]["filas"][0]["contribucion_unit"] == 23.02 and r["prompt"].startswith("Compara"))
+check("persistencia: tras REINICIAR el servidor el historial y el resultado siguen (SQLite)", len(h["items"]) == 2 and c2 == 200 and r["result"]["sections"][3]["filas"][0]["contribucion_unit"] == 14.36 and r["prompt"].startswith("Compara"))
+# --- defectos auditoría ChatGPT (IVA y alcance de la evidencia) ---
+no_iva = dict(CTX); no_iva.pop("iva_pct")
+c, r = a.req("POST", "/api/bench7/run", {"prompt": "x", "context": no_iva}); sc = {x["id"]: x for x in r["result"]["sections"]}["escenarios"]
+check("sin IVA explícito: NO CALCULABLE (no se inventa el IVA)", c == 200 and sc["state"] == "NO CALCULABLE" and sc["faltan"] == ["iva_pct"])
+c, r = a.req("POST", "/api/bench7/run", {"prompt": "x", "context": {**CTX, "iva_pct": 0.10}}); f = {x["id"]: x for x in r["result"]["sections"]}["escenarios"]["filas"][0]
+check("IVA 10 % cambia la venta neta (49,90/1,10 = 45,36)", f["venta_neta"] == 45.36)
+c, r = a.req("POST", "/api/bench7/run", {"prompt": "x", "context": {**CTX, "country": "DE"}}); m = {x["id"]: x for x in r["result"]["sections"]}["mercado"]
+check("país distinto de la caché (DE): no se atribuye la evidencia ES; mercado NO DISPONIBLE con motivo", c == 200 and m["estado"] == "NO DISPONIBLE" and m["filas"] == [] and "ES" in m["nota"])
+c, r = a.req("POST", "/api/bench7/run", {"prompt": "x", "context": {**CTX, "asin": "B0ZZZZZZZZ"}}); m = {x["id"]: x for x in r["result"]["sections"]}["mercado"]
+check("ASIN incoherente con el producto: bloqueado, sin datos", c == 200 and m["estado"] == "NO DISPONIBLE" and "no coincide" in m["nota"])
+c, r = a.req("POST", "/api/bench7/run", {"prompt": "x", "context": CTX}); m = {x["id"]: x for x in r["result"]["sections"]}["mercado"]
+check("evidencia válida muestra alcance: país, fecha y periodo = FOTO PUNTUAL", m["alcance"]["pais"] == "ES" and m["alcance"]["fecha_consulta"] and "FOTO PUNTUAL" in m["alcance"]["periodo"])
+c, r = a.req("POST", "/api/bench7/run", {"prompt": "x", "context": {"asin": "B0ABC12345X"}})
+check("ASIN de 11 caracteres rechazado (no se trunca)", c == 400)
+c, r = a.req("POST", "/api/bench7/run", {"prompt": "x", "context": {"asin": "1234567890"}})
+check("ASIN de 10 alfanuméricos sin prefijo B0 aceptado", c == 200)
+check("respuesta aclara modo local, no benchmark operativo con IA", "NO es un benchmark operativo" in r["result"]["answer"])
 from backend import respaldo100 as RB
 data, sha = RB.exportar_bytes(DB); check("el respaldo existente incluye el historial (el .db contiene bench7_run)", b"bench7_run" in data and len(sha) == 64)
 from playwright.sync_api import sync_playwright
@@ -70,7 +87,7 @@ with sync_playwright() as p:
         check(f"[{vp}] estado de Keepa visible sin clave y sin llamadas", "Keepa: clave presente" in pg.inner_text("#b7Kp") and FAKEKEY not in pg.content())
         n0 = pg.locator("#b7Hist [data-rid]").count(); check(f"[{vp}] historial previo cargado (persistente, ≥2)", n0 >= 2)
         pg.select_option("#b7Prod", "PRD-ACTIVCORE-V2")
-        for k, v in (("pvp", "49,90"), ("coste_unit", "8.99"), ("comision_pct", "0.15"), ("logistica_unit", "5.41"), ("ads_unit", "4.99")): pg.fill(f"#b7h_{k}", v) if pg.locator(f"#b7h_{k}").is_visible() else pg.evaluate("([k,v])=>{document.getElementById('b7h_'+k).value=v}", [k, v])
+        for k, v in (("pvp", "49,90"), ("iva_pct", "0.21"), ("coste_unit", "8.99"), ("comision_pct", "0.15"), ("logistica_unit", "5.41"), ("ads_unit", "4.99")): pg.fill(f"#b7h_{k}", v) if pg.locator(f"#b7h_{k}").is_visible() else pg.evaluate("([k,v])=>{document.getElementById('b7h_'+k).value=v}", [k, v])
         pg.fill("#b7In", "Benchmark de ACTIVCORE en ES\nlínea 2"); pg.keyboard.press("Control+Enter"); pg.wait_for_selector(".rs7", timeout=8000); pg.wait_for_timeout(500)
         t = pg.inner_text("#b7Res")
         check(f"[{vp}] resultado en área conversacional: respuesta, fuentes, mercado con gráfico y tabla, ventas, escenarios", all(x in t for x in ("Fuentes y evidencia", "BSR, precios, ofertas", "Ventas estimadas", "Costes y escenarios", "LOCAL · SIN RED · SIN KEEPA", "ESTIMADO", "NO CONSULTADA")) and pg.locator("#b7Res .ch7 svg").count() == 1 and pg.locator("#b7Res table").count() >= 3)
