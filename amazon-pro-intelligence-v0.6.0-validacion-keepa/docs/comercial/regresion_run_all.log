@@ -1,0 +1,272 @@
+SHA 460e385a392353eaac73cb08573831f0e4b04ff3 · inicio 2026-11-25T13:44:47Z
+== [1] js/calc (heredado V0.2)
+11 grupos de pruebas OK
+   rc=0
+== [2] js/economics (heredado V0.2)
+21 pruebas del motor económico OK
+   rc=0
+== [3] js/dossier (heredado V0.2)
+29 pruebas del expediente OK
+   rc=0
+== [4] js/integration (heredado V0.2)
+16 pruebas de integración OK
+   rc=0
+== [5] paridad JS↔Python
+paridad JS↔Python: 657/657 casos idénticos
+   rc=0
+== [6] store/auditoría
+17/17 OK
+   rc=0
+== [7] backend (motor, coworkers, piloto, IA, Director)
+51/51 OK
+   rc=0
+== [8] ámbito/compatibilidad de contrato (JS)
+6 pruebas de ámbito/compatibilidad OK
+   rc=0
+== [9] OpenAI (Responses, presupuestos, E2E, sin consumo real)
+50/50 OK
+   rc=0
+== [10] presupuesto: concurrencia, reintentos, timeouts, consumo incierto
+31/31 OK
+   rc=0
+== [11] IDs/tarifas == documentación oficial
+15/15 OK
+   rc=0
+== [12] V0.3.3: ACL usage, no-fuga de clave, sintético, guardia 1ª llamada
+32/32 OK
+   rc=0
+== [13] V0.3.3: archivo local de clave, Windows, ENABLE=0 => cero llamadas
+21/21 OK
+   rc=0
+== [14] API (auth, roles, aislamiento, Director, aprobaciones)
+51/51 OK
+   rc=0
+== [15] seguridad (heredada V0.2)
+53/53 pruebas de seguridad OK
+   rc=0
+== [16] esquema
+OK   esquema rechaza: falta ingest_allowed
+   rc=0
+== [17] UI (navegador real + capturas)
+40/40 OK
+   rc=0
+== [18] V0.3.4: confirmación, procedencia OpenAI, registro mínimo, explicaciones
+23/23 OK
+   rc=0
+== [19] V0.3.4: UI prueba sintética (desplegable, confirmación, errores)
+15/15 OK
+   rc=0
+== [20] V0.3.4: restablecer contraseña de admin (conserva datos y ai.env)
+21/21 OK
+   rc=0
+== [21] V0.4.0: Keepa (cliente, tokens, caché, 429, incompleto, sin claves)
+27/27 OK
+   rc=0
+== [22] V0.4.0: motor europeo (economía, benchmark, ranking, sensibilidad)
+30/30 OK
+   rc=0
+== [23] V0.4.0: API europea + Director EU (ACL, CSRF, consentimiento, anclaje)
+46/46 OK
+   rc=0
+== [24] V0.4.0: UI EUROPA · ACTIVCORE (navegador real + capturas)
+18/18 OK
+   rc=0
+== [25] V0.5.0: catálogo, descubrimiento, aislamiento, costes, ACL
+43/43 OK
+   rc=0
+== [26] V0.5.0: UI Categoría→Producto→ANALIZAR EUROPA (navegador real + capturas)
+18/18 OK
+   rc=0
+== [27] V0.5.0: lanzador Windows (lógica)
+9/9 OK
+   rc=0
+== [28] V0.6.0: operación (tareas, N1–N4, bandeja, modelos, libro, economía, expediente, importador, API)
+74/74 OK
+   rc=0
+== [29] V0.6.0: UI cinco espacios NEON (navegador real + capturas)
+27/27 OK
+   rc=0
+== [30] V0.6.0 misión Keepa: presupuesto, duplicados, errores, persistencia (MOCK)
+18/18 OK
+   rc=0
+== [31] V0.6.0 misión Keepa: flujo Director IA con tope 10 (MOCK)
+16/16 OK
+   rc=0
+== [32] V0.6.0 misión Keepa: coherencia de evidencias REALES (lectura de ficheros)
+9/9 OK
+   rc=0
+== [33] V0.7.0: datos reales de Keepa integrados (sin red ni gasto)
+21/21 OK
+   rc=0
+== [34] V0.7.0: expediente comercial ACTIVCORE
+41/41 OK
+   rc=0
+== [35] V0.7.0: Director IA, briefing determinista
+29/29 OK
+   rc=0
+== [36] V0.7.0: seguridad de /api/v07/*
+23/23 OK
+   rc=0
+== [37] V0.7.0: UI NEON (navegador real + capturas)
+31/31 OK
+   rc=0
+== [38] V0.7.0: ciclo de desarrollo autónomo (3 intentos, bloqueo, dependencias)
+9/9 OK
+   rc=0
+== [39] V1.0: relevo (bloqueo de concurrencia, recuperación, commit controlado)
+14/14 OK
+   rc=0
+== [40] V1.0: matriz de aceptación (4 categorías)
+6/6 OK
+   rc=0
+== [41] V1.0: PREPARAR Y LANZAR extremo a extremo con persistencia
+12/12 OK
+   rc=0
+== [42] V1.0: VENDER Y OPTIMIZAR con CSV importados (simulados, etiquetados)
+16/16 OK
+   rc=0
+== [43] V1.0: motor financiero (escenarios, sensibilidad, equilibrio)
+20/20 OK
+   rc=0
+== [44] V1.0: exportaciones CSV/HTML/MD con trazabilidad
+14/14 OK
+   rc=0
+== [45] V1.0: persistencia (respaldo, restauración, BD corrupta)
+16/16 OK
+   rc=0
+== [46] V1.0: ficha única de integraciones bloqueadas
+6/6 OK
+   rc=0
+== [47] V1.0: interfaz NEON móvil/tableta/escritorio (Chromium real)
+44/44 OK
+   rc=0
+== [48] V1.0: Director IA plan de especialistas
+14/14 OK
+   rc=0
+== [49] V1.0: adaptadores SP-API/Ads solo lectura (simulados)
+16/16 OK
+   rc=0
+== [50] V1.0: documentación verificable
+10/10 OK
+   rc=0
+== [51] V1.0: entrega candidata (informe, ZIP sin claves)
+16/16 OK
+   rc=0
+== [52] V1.0: modo cloud (proceso real, HTTPS simulado, secretos, respaldo)
+29/29 OK
+   rc=0
+== [53] V1.0: Chromium contra el modo cloud con proxy HTTPS
+37/37 OK
+   rc=0
+== [54] V1.0: respaldo fuera del disco, restauración y rotación de contraseñas
+20/20 OK
+   rc=0
+== [55] K1: Keepa seguro (modos, aprobación, tope, duplicados, concurrencia, comparabilidad) — simulado
+29/29 OK
+   rc=0
+== [56] K1: capa HTTP de Keepa y descubrimiento — simulado
+12/12 OK
+   rc=0
+== [57] K2: Director Amazon IA por intención (competidores, precio, país, faltantes, riesgos) — simulado
+33/33 OK
+   rc=0
+== [58] K3: segmentación competitiva (motor, validación vs referencia, API, revisión, Director, persistencia, cloud) — simulado
+90/90 OK
+   rc=0
+== [59] K3: interfaz NEON de segmentos (navegador real, escritorio/tablet/móvil)
+37/37 OK
+   rc=0
+== [60] K4: contratos, costes, medios con derechos, datos, pricing de 5 dictámenes y Director
+46/46 OK
+   rc=0
+== [61] K4 Consejero F1–F2: proveedores, libro de evidencias, verificador, motor y pruebas anti-plantilla (SIMULADO)
+102/102
+   rc=0
+== [62] STAGING: rol viewer SOLO LECTURA (403 en toda escritura, lectura como admin, sin servicios de pago)
+32/32 OK
+   rc=0
+== [63] P0 Fase 1: navegación de 6 secciones con viewer + barra móvil Android (navegador real)
+108/108 OK
+   rc=0
+== [64] P0 Fase 1: selector DATOS REALES / DEMO sin mezcla y ?legacy=1 transitorio
+18/18 OK
+   rc=0
+== [65] P0 Fase 2: HOY ejecutivo, DECISIONES unificada y DIRECTOR IA simplificado (viewer, escritorio + Android)
+121/121 OK
+   rc=0
+== [66] P0 Fase 2: HOY/DECISIONES/DIRECTOR con el selector REAL/DEMO sin mezcla
+23/23 OK
+   rc=0
+== [67] P0 Fase 2.1: prioridades, sin vacíos, sin scroll horizontal, cabecera móvil, decisión plegable
+58/58 OK
+   rc=0
+== [68] P0 Fase 3: Lanzamientos guiados (4 niveles, 10 pasos, viewer, móvil)
+107/110 OK
+   rc=1
+   | FAIL [desktop] sigue accesible la exportación original (Markdown/HTML) y los cálculos de Pre-Launch y Europa
+   | FAIL [android] sigue accesible la exportación original (Markdown/HTML) y los cálculos de Pre-Launch y Europa
+   | FAIL [android360] sigue accesible la exportación original (Markdown/HTML) y los cálculos de Pre-Launch y Europa
+   >>> FALLO (rc=1)
+== [69] P0 Fase 3: Lanzamientos con selector REAL/DEMO sin mezcla
+9/9 OK
+   rc=0
+== [70] P0 Fase 3.1: aislamiento por producto (centinelas), acordeones móviles, coherencia de estado
+104/104 OK
+   rc=0
+== [71] P0 Fase 4: Ventas, Productos, Administración y Director IA (1440/390/360, viewer, 0 llamadas externas)
+174/174 OK
+   rc=0
+== [72] P0 Fase 4: arquitectura Amazon SP-API/Ads (desactivada, solo lectura, sin credenciales)
+17/17 OK
+   rc=0
+== [73] P0 Fase 4.1: conectores Amazon de solo lectura (cabeceras, LWA, paginación, 429, ruta interna, staging)
+63/63 OK
+   rc=0
+== [74] Corrección final de staging: auditor viewer, 403 universal, sin PRODUCCIÓN/datos reales, controles bloqueados, P1, 1440/390/360 + Android
+79/79 OK
+   rc=0
+== [75] Corrección 4.2: viewer realmente solo lectura (0 campos editables en 15 pantallas, Pre-Launch, admin operativo, 403, 1440/390/360 + Pixel 7)
+52/52 OK
+   rc=0
+== [76] P0 Fase 4.1: Productos a 1440 px sin desplazamiento horizontal
+6/6 OK
+   rc=0
+== [77] P0 Fase 4: paridad de componentes navegación antigua vs nueva
+2/2 OK
+   rc=0
+== [78] P0 Fase 2: viewer — todos los controles de escritura desactivados y rotulados
+3/3 OK
+   rc=0
+== [79] K4: planificador robusto (ejecución única, reintentos, recuperación, tope de gasto, parada)
+14/14
+   rc=0
+== [80] K4 it.2: selección, umbrales, conciliación, informe, explorador, planificador (API)
+27/27
+   rc=0
+== [81] K4: API (roles, CSRF, aislamiento demo/producción, derechos de imagen, export, persistencia)
+43/43 OK
+   rc=0
+== [82] K4: centro de mando NEON (navegador real, escritorio/tablet/móvil)
+52/52 OK
+   rc=0
+== [83] V0.7.0: registro de suites v0.7 en batería y coordinador
+110/110 OK
+   rc=0
+== [84] V0.7.0: entrega candidata (versión, informe real, ZIP sin claves)
+15/15 OK
+   rc=0
+== [85] Consistencia alias KEEPA_KEY/KEEPA_API_KEY (status, configuración, guardia staging)
+13/13 OK
+   rc=0
+== [86] V1.1: motor económico comercial, lectura de Ads y API /api/v08 (solo lectura)
+67/67 OK
+   rc=0
+== [87] V1.1: evidencia visual Economía comercial (viewer, 4 viewports, solo lectura)
+21/21 OK
+   rc=0
+== [88] Auditoría visual autenticada de staging (viewer, 15 pantallas, 1440/390/360/Pixel 7, 0 errores JS, 0 externas)
+35/35 OK
+   rc=0
+RESUMEN: 88 suites ejecutadas · 87 con rc=0 · 1 con fallo · fin 2026-11-25T14:05:44Z
+HAY SUITES CON FALLOS
+done
